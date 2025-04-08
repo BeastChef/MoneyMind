@@ -19,4 +19,6 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version = "1.9.22" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version = "1.9.22" }
 
