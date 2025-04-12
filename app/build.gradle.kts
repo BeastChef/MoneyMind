@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt) // было id("org.jetbrains.kotlin.kapt")
+    id("org.jetbrains.kotlin.kapt") // без версии!
 }
 
 android {
