@@ -54,7 +54,7 @@ dependencies {
 
     // Core KTX (нужно для ContextCompat и других утилит)
     implementation("androidx.core:core-ktx:1.12.0")
-
+    implementation(libs.activity.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

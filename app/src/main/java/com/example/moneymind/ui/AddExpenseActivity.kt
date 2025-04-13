@@ -1,13 +1,16 @@
-package com.example.moneymind
+package com.example.moneymind.ui
 
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.viewModels
+import com.example.moneymind.MoneyMindApp
+import com.example.moneymind.R
 import com.example.moneymind.data.*
 import java.util.*
-
+import com.example.moneymind.viewmodel.ExpenseViewModel
+import com.example.moneymind.viewmodel.ExpenseViewModelFactory
 class AddExpenseActivity : AppCompatActivity() {
 
     private lateinit var amountInput: EditText

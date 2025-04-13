@@ -1,8 +1,8 @@
 package com.example.moneymind
 
 import android.app.Application
-import com.example.moneymind.data.AppDatabase
 import com.example.moneymind.data.ExpenseRepository
+import data.AppDatabase
 
 class MoneyMindApp : Application() {
     val database by lazy { AppDatabase.getDatabase(this) }

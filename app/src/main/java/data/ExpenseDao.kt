@@ -1,4 +1,4 @@
-package com.example.moneymind
+package data
 
 import androidx.room.*
 import com.example.moneymind.data.Expense
