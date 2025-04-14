@@ -1,5 +1,6 @@
 package com.example.moneymind.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -7,13 +8,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneymind.R;
-
-import java.util.Arrays;
-import java.util.List;
+import com.example.moneymind.data.Expense;
+import com.example.moneymind.viewmodel.ExpenseViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,17 +30,22 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // 🔽 Подключаем адаптер
+        // 🔽 Инициализация RecyclerView
         RecyclerView recyclerView = findViewById(R.id.expensesRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        List<Expense> expenses = Arrays.asList(
-                new Expense("Мясо", "-500 ₽", "10 апр 2025", android.R.drawable.ic_menu_info_details),
-                new Expense("Мёд", "-200 ₽", "11 апр 2025", android.R.drawable.ic_menu_info_details),
-                new Expense("Пиво викингов", "-300 ₽", "12 апр 2025", android.R.drawable.ic_menu_info_details)
-        );
-
-        ExpenseAdapter adapter = new ExpenseAdapter(expenses);
+        // 🔽 Создаём адаптер и устанавливаем в RecyclerView
+        ExpenseAdapter adapter = new ExpenseAdapter();
         recyclerView.setAdapter(adapter);
+
+        // 🔽 Подключаем ViewModel и подписываемся на LiveData
+        ExpenseViewModel viewModel = new ViewModelProvider(this).get(ExpenseViewModel.class);
+        viewModel.getExpenses().observe(this, adapter::setExpenseList);
+
+        // 🔽 FAB: кнопка добавления расхода
+        findViewById(R.id.fabAddExpense).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
+            startActivity(intent);
+        });
     }
 }

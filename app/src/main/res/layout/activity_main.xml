@@ -8,6 +8,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
+    <!-- RecyclerView для списка расходов -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/expensesRecyclerView"
         android:layout_width="0dp"
@@ -16,12 +17,13 @@
         android:padding="16dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/addExpenseButton"
+        app:layout_constraintBottom_toTopOf="@+id/fabAddExpense"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- FloatingActionButton для добавления расходов -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addExpenseButton"
+        android:id="@+id/fabAddExpense"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"

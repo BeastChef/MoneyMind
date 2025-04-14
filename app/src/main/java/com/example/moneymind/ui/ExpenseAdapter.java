@@ -5,20 +5,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.example.moneymind.utils.Utils;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneymind.R;
 
+import java.util.ArrayList;
 import java.util.List;
-
+import com.example.moneymind.data.Expense;
 public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder> {
 
-    private final List<Expense> expenses;
+    private List<Expense> expenses;
 
-    public ExpenseAdapter(List<Expense> expenses) {
-        this.expenses = expenses;
+    public ExpenseAdapter() {
+        this.expenses = new ArrayList<>();
+    }
+
+    public void setExpenseList(@NonNull List<? extends Expense> newExpenses) {
+        this.expenses.clear();
+        this.expenses.addAll(newExpenses);
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -32,10 +40,10 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     @Override
     public void onBindViewHolder(@NonNull ExpenseViewHolder holder, int position) {
         Expense expense = expenses.get(position);
-        holder.title.setText(expense.title);
-        holder.amount.setText(expense.amount);
-        holder.date.setText(expense.date);
-        holder.icon.setImageResource(expense.iconResId);
+        holder.title.setText(expense.getCategory());
+        holder.amount.setText("-" + expense.getAmount() + " ₽");
+        holder.date.setText(Utils.formatDate(expense.getDate()));
+        holder.icon.setImageResource(R.drawable.ic_baseline_money_24); // после добавления иконки
     }
 
     @Override

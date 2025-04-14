@@ -7,7 +7,9 @@ import kotlinx.coroutines.launch
 
 class ExpenseViewModel(private val repository: ExpenseRepository) : ViewModel() {
 
-    val allExpenses: LiveData<List<Expense>> = repository.allExpenses.asLiveData()
+    private val allExpenses: LiveData<List<Expense>> = repository.allExpenses.asLiveData()
+
+    fun getExpenses(): LiveData<List<Expense>> = allExpenses
 
     fun insert(expense: Expense) = viewModelScope.launch {
         repository.insert(expense)
