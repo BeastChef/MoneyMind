@@ -1,7 +1,7 @@
 package com.example.moneymind.data
 
 import kotlinx.coroutines.flow.Flow
-import data.ExpenseDao
+import com.example.moneymind.data.ExpenseDao
 
 class ExpenseRepository(private val expenseDao: ExpenseDao) {
 

@@ -1,4 +1,4 @@
-package data
+package com.example.moneymind.data
 
 import android.content.Context
 import androidx.room.Database
