@@ -1,21 +1,29 @@
 package com.example.moneymind.ui
 
+import android.app.DatePickerDialog
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import com.example.moneymind.MoneyMindApp
 import com.example.moneymind.R
-import com.example.moneymind.data.*
-import java.util.*
+import com.example.moneymind.data.Expense
 import com.example.moneymind.viewmodel.ExpenseViewModel
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
+import java.text.SimpleDateFormat
+import java.util.*
+
 class AddExpenseActivity : AppCompatActivity() {
 
-    private lateinit var amountInput: EditText
-    private lateinit var categoryInput: EditText
-    private lateinit var saveButton: Button
+    private lateinit var titleInput: TextInputEditText
+    private lateinit var amountInput: TextInputEditText
+    private lateinit var dateInput: TextInputEditText
+    private lateinit var saveButton: MaterialButton
+
+    private var selectedDateMillis: Long = System.currentTimeMillis()
 
     private val viewModel: ExpenseViewModel by viewModels {
         ExpenseViewModelFactory((application as MoneyMindApp).repository)
@@ -25,24 +33,55 @@ class AddExpenseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_expense)
 
-        amountInput = findViewById(R.id.editTextAmount)
-        categoryInput = findViewById(R.id.editTextCategory)
-        saveButton = findViewById(R.id.buttonSave)
+        titleInput = findViewById(R.id.inputTitle)
+        amountInput = findViewById(R.id.inputAmount)
+        dateInput = findViewById(R.id.inputDate)
+        saveButton = findViewById(R.id.saveButton)
+
+        val calendar = Calendar.getInstance()
+        val formatter = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+        dateInput.setText(formatter.format(calendar.time))
+
+        dateInput.setOnClickListener {
+            val listener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                calendar.set(year, month, dayOfMonth)
+                selectedDateMillis = calendar.timeInMillis
+                dateInput.setText(formatter.format(calendar.time))
+            }
+
+            DatePickerDialog(
+                this,
+                listener,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            ).show()
+        }
 
         saveButton.setOnClickListener {
+            val title = titleInput.text.toString().trim()
             val amount = amountInput.text.toString().toDoubleOrNull()
-            val category = categoryInput.text.toString()
 
-            if (amount != null && category.isNotBlank()) {
-                val expense = Expense(
-                    amount = amount,
-                    category = category,
-                    date = Date().time,
-                    note = null
-                )
-                viewModel.insert(expense)
-                finish()
+            if (title.isBlank() || amount == null) {
+                Toast.makeText(this, "Введите корректные данные", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            val expense = Expense(
+                amount = amount,
+                category = title,
+                date = selectedDateMillis,
+                note = null
+            )
+
+            viewModel.insert(expense)
+            Snackbar.make(saveButton, "Расход добавлен", Snackbar.LENGTH_SHORT).show()
+
+            titleInput.text?.clear()
+            amountInput.text?.clear()
+            dateInput.setText("")
+
+            finish()
         }
     }
 }

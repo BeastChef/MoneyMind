@@ -12,9 +12,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.moneymind.MoneyMindApp;
 import com.example.moneymind.R;
-import com.example.moneymind.data.Expense;
 import com.example.moneymind.viewmodel.ExpenseViewModel;
+import com.example.moneymind.viewmodel.ExpenseViewModelFactory;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,19 +31,19 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // 🔽 Инициализация RecyclerView
         RecyclerView recyclerView = findViewById(R.id.expensesRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        // 🔽 Создаём адаптер и устанавливаем в RecyclerView
         ExpenseAdapter adapter = new ExpenseAdapter();
         recyclerView.setAdapter(adapter);
 
-        // 🔽 Подключаем ViewModel и подписываемся на LiveData
-        ExpenseViewModel viewModel = new ViewModelProvider(this).get(ExpenseViewModel.class);
+        // ✅ Используем ViewModelFactory с репозиторием из приложения
+        ExpenseViewModel viewModel = new ViewModelProvider(
+                this,
+                new ExpenseViewModelFactory(((MoneyMindApp) getApplication()).getRepository())
+        ).get(ExpenseViewModel.class);
+
         viewModel.getExpenses().observe(this, adapter::setExpenseList);
 
-        // 🔽 FAB: кнопка добавления расхода
         findViewById(R.id.fabAddExpense).setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
             startActivity(intent);
