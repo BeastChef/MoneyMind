@@ -9,6 +9,7 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven("https://jitpack.io") // 👈 Добавили сюда
     }
 }
 
@@ -17,8 +18,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://jitpack.io") // 👈 И сюда тоже
     }
-
 }
 
 rootProject.name = "MoneyMind"

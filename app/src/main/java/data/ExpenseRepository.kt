@@ -1,7 +1,7 @@
 package com.example.moneymind.data
 
+import androidx.lifecycle.LiveData
 import kotlinx.coroutines.flow.Flow
-import com.example.moneymind.data.ExpenseDao
 
 class ExpenseRepository(private val expenseDao: ExpenseDao) {
 
@@ -13,5 +13,9 @@ class ExpenseRepository(private val expenseDao: ExpenseDao) {
 
     suspend fun delete(expense: Expense) {
         expenseDao.delete(expense)
+    }
+
+    fun getCategoryTotals(): LiveData<List<CategoryTotal>> {
+        return expenseDao.getCategoryTotals()
     }
 }

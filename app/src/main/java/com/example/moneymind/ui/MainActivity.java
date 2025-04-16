@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +21,7 @@ import com.example.moneymind.MoneyMindApp;
 import com.example.moneymind.R;
 import com.example.moneymind.viewmodel.ExpenseViewModel;
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        // 🔐 Запрос разрешения на уведомления для Android 13+
+        // 🔐 Разрешения для Android 13+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -40,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // Отступы под статус-бар
+        // 🔲 Отступы под системные панели
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -52,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         ExpenseAdapter adapter = new ExpenseAdapter();
         recyclerView.setAdapter(adapter);
+
+        // ✨ Анимация карточек
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.item_animation);
+        LayoutAnimationController controller = new LayoutAnimationController(animation);
+        recyclerView.setLayoutAnimation(controller);
 
         // 🔽 ViewModel + Repository
         ExpenseViewModel viewModel = new ViewModelProvider(
@@ -65,6 +74,20 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.fabAddExpense).setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
             startActivity(intent);
+        });
+
+        // 🧭 Обработка нижней навигации
+        BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_home) {
+                // Уже на главной
+                return true;
+            } else if (itemId == R.id.nav_stats) {
+                startActivity(new Intent(this, StatsActivity.class));
+                return true;
+            }
+            return false;
         });
     }
 }
