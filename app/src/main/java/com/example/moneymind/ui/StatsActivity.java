@@ -41,17 +41,25 @@ public class StatsActivity extends AppCompatActivity {
 
         viewModel.getCategoryTotals().observe(this, categoryTotals -> {
             List<PieEntry> entries = new ArrayList<>();
+            float totalSum = 0f;
+
             for (CategoryTotal item : categoryTotals) {
-                entries.add(new PieEntry((float) item.getTotal(), item.getCategory()));
+                float amount = (float) item.getTotal();
+                totalSum += amount;
+                entries.add(new PieEntry(amount, item.getCategory()));
             }
 
             PieDataSet dataSet = new PieDataSet(entries, "Категории");
             dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-            PieData data = new PieData(dataSet);
-            data.setValueTextSize(14f);
-            data.setValueTextColor(Color.WHITE);
+            dataSet.setSliceSpace(2f);
+            dataSet.setValueTextSize(14f);
+            dataSet.setValueTextColor(Color.WHITE);
 
+            PieData data = new PieData(dataSet);
             pieChart.setData(data);
+
+            // Установим общую сумму в центр круга
+            pieChart.setCenterText("Всего:\n" + totalSum + " ₽");
             pieChart.invalidate(); // обновить диаграмму
         });
     }
@@ -59,7 +67,7 @@ public class StatsActivity extends AppCompatActivity {
     private void setupPieChart() {
         pieChart.setUsePercentValues(true);
         pieChart.setEntryLabelColor(Color.BLACK);
-        pieChart.setCenterText("Категории расходов");
+        pieChart.setEntryLabelTextSize(12f);
         pieChart.setCenterTextSize(18f);
         pieChart.setHoleRadius(40f);
         pieChart.setTransparentCircleRadius(45f);

@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home) {
-                // Уже на главной
                 return true;
             } else if (itemId == R.id.nav_stats) {
                 startActivity(new Intent(this, StatsActivity.class));

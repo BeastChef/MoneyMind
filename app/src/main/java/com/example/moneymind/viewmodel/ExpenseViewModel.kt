@@ -8,31 +8,22 @@ import kotlinx.coroutines.launch
 
 class ExpenseViewModel(private val repository: ExpenseRepository) : ViewModel() {
 
-    private val allExpenses: LiveData<List<Expense>> = repository.allExpenses.asLiveData()
+    // Все расходы
+    val allExpenses: LiveData<List<Expense>> = repository.allExpenses.asLiveData()
+
+    // Статистика по категориям
+    private val _categoryTotals: LiveData<List<CategoryTotal>> = repository.getCategoryTotals()
 
     fun getExpenses(): LiveData<List<Expense>> = allExpenses
 
-    fun insert(expense: Expense) = viewModelScope.launch {
-        repository.insert(expense)
-    }
-
-    fun delete(expense: Expense) = viewModelScope.launch {
-        repository.delete(expense)
-    }
-}
-
-class ExpenseViewModel(private val repository: ExpenseRepository) : ViewModel() {
-
-    val allExpenses: LiveData<List<Expense>> = repository.allExpenses.asLiveData()
-
-    private val _categoryTotals: LiveData<List<CategoryTotal>> = repository.getCategoryTotals()
-
     fun getCategoryTotals(): LiveData<List<CategoryTotal>> = _categoryTotals
 
+    // Добавить расход
     fun insert(expense: Expense) = viewModelScope.launch {
         repository.insert(expense)
     }
 
+    // Удалить расход
     fun delete(expense: Expense) = viewModelScope.launch {
         repository.delete(expense)
     }

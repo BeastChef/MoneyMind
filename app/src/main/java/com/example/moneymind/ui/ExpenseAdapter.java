@@ -5,22 +5,32 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.moneymind.R;
+import com.example.moneymind.data.Expense;
 import com.example.moneymind.utils.Utils;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.moneymind.R;
-
 import java.util.ArrayList;
 import java.util.List;
-import com.example.moneymind.data.Expense;
+
 public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder> {
 
     private List<Expense> expenses;
+    private OnExpenseLongClickListener longClickListener;
 
     public ExpenseAdapter() {
         this.expenses = new ArrayList<>();
+    }
+
+    public interface OnExpenseLongClickListener {
+        void onExpenseLongClick(Expense expense);
+    }
+
+    public void setOnExpenseLongClickListener(OnExpenseLongClickListener listener) {
+        this.longClickListener = listener;
     }
 
     public void setExpenseList(@NonNull List<? extends Expense> newExpenses) {
@@ -43,7 +53,14 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         holder.title.setText(expense.getCategory());
         holder.amount.setText("-" + expense.getAmount() + " ₽");
         holder.date.setText(Utils.formatDate(expense.getDate()));
-        holder.icon.setImageResource(R.drawable.ic_baseline_money_24); // после добавления иконки
+        holder.icon.setImageResource(R.drawable.ic_baseline_money_24);
+
+        holder.itemView.setOnLongClickListener(v -> {
+            if (longClickListener != null) {
+                longClickListener.onExpenseLongClick(expense);
+            }
+            return true;
+        });
     }
 
     @Override
