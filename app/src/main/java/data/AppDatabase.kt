@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.moneymind.data.Expense
 
 @Database(entities = [Expense::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
@@ -21,7 +20,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "expense_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration() // 🔥 уничтожит старую БД при изменении схемы
+                    .build()
                 INSTANCE = instance
                 instance
             }

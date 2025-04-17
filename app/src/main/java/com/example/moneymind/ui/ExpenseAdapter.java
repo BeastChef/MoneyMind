@@ -50,7 +50,9 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     @Override
     public void onBindViewHolder(@NonNull ExpenseViewHolder holder, int position) {
         Expense expense = expenses.get(position);
-        holder.title.setText(expense.getCategory());
+
+        holder.title.setText(expense.getNote()); // Название (например, "Молоко")
+        holder.category.setText(expense.getCategory()); // Категория (например, "Еда")
         holder.amount.setText("-" + expense.getAmount() + " ₽");
         holder.date.setText(Utils.formatDate(expense.getDate()));
         holder.icon.setImageResource(R.drawable.ic_baseline_money_24);
@@ -69,12 +71,13 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     }
 
     public static class ExpenseViewHolder extends RecyclerView.ViewHolder {
-        TextView title, amount, date;
+        TextView title, category, amount, date;
         ImageView icon;
 
         public ExpenseViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.expenseTitle);
+            category = itemView.findViewById(R.id.expenseCategory); // ✅ новое поле
             amount = itemView.findViewById(R.id.expenseAmount);
             date = itemView.findViewById(R.id.expenseDate);
             icon = itemView.findViewById(R.id.icon);

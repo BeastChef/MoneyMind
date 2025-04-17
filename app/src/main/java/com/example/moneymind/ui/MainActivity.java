@@ -4,9 +4,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.app.AlertDialog;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneymind.MoneyMindApp;
 import com.example.moneymind.R;
+import com.example.moneymind.data.Expense;
 import com.example.moneymind.viewmodel.ExpenseViewModel;
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -51,6 +57,16 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        // 🔽 Настройка фильтра (Spinner)
+        Spinner filterSpinner = findViewById(R.id.filterSpinner);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.filter_options,
+                android.R.layout.simple_spinner_item
+        );
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterSpinner.setAdapter(spinnerAdapter);
+
         // 🔽 Список расходов
         RecyclerView recyclerView = findViewById(R.id.expensesRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -68,7 +84,39 @@ public class MainActivity extends AppCompatActivity {
                 new ExpenseViewModelFactory(((MoneyMindApp) getApplication()).getRepository())
         ).get(ExpenseViewModel.class);
 
-        viewModel.getExpenses().observe(this, adapter::setExpenseList);
+        // 🧠 Подключаем слушатель выбора фильтра
+        filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0: // Все
+                        viewModel.getExpenses().observe(MainActivity.this, adapter::setExpenseList);
+                        break;
+                    case 1: // За 7 дней
+                        viewModel.getLast7DaysExpenses().observe(MainActivity.this, adapter::setExpenseList);
+                        break;
+                    case 2: // За 30 дней
+                        viewModel.getLast30DaysExpenses().observe(MainActivity.this, adapter::setExpenseList);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        // 🗑️ Обработка долгого нажатия и удаление
+        adapter.setOnExpenseLongClickListener(expense -> {
+            new AlertDialog.Builder(this)
+                    .setTitle("Удалить расход")
+                    .setMessage("Удалить «" + expense.getCategory() + "»?")
+                    .setPositiveButton("Удалить", (dialog, which) -> {
+                        viewModel.delete(expense);
+                    })
+                    .setNegativeButton("Отмена", null)
+                    .show();
+        });
 
         // ➕ FAB: добавить расход
         findViewById(R.id.fabAddExpense).setOnClickListener(v -> {

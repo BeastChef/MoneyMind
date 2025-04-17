@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">MoneyMind</string>
+
+    <!-- Фильтры для расходов -->
+    <string-array name="filter_options">
+        <item>Все</item>
+        <item>Последние 7 дней</item>
+        <item>Последние 30 дней</item>
+    </string-array>
 </resources>

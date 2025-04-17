@@ -7,6 +7,7 @@ appcompat = "1.6.1"
 material = "1.10.0"
 activity = "1.8.0"
 constraintlayout = "2.1.4"
+mpandroidchart = "v3.1.0" # ✅ добавлено
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -17,10 +18,8 @@ material = { group = "com.google.android.material", name = "material", version.r
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+mpandroidchart = { group = "com.github.PhilJay", name = "MPAndroidChart", version.ref = "mpandroidchart" } # ✅ добавлено
 
 [plugins]
 android-application = { id = "com.android.application", version = "8.6.1" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version = "1.9.22" }
-
-
-

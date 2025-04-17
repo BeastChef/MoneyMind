@@ -2,7 +2,6 @@ package com.example.moneymind.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ExpenseDao {
@@ -14,7 +13,10 @@ interface ExpenseDao {
     suspend fun delete(expense: Expense)
 
     @Query("SELECT * FROM expenses ORDER BY date DESC")
-    fun getAllExpenses(): Flow<List<Expense>>
+    fun getAllExpenses(): LiveData<List<Expense>>
+
+    @Query("SELECT * FROM expenses WHERE date >= :fromDate ORDER BY date DESC")
+    fun getExpensesFromDate(fromDate: Long): LiveData<List<Expense>>
 
     @Query("SELECT category, SUM(amount) AS total FROM expenses GROUP BY category")
     fun getCategoryTotals(): LiveData<List<CategoryTotal>>

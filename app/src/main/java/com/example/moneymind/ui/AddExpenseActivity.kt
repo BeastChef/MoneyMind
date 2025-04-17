@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.moneymind.MoneyMindApp
 import com.example.moneymind.R
 import com.example.moneymind.data.Expense
+import com.example.moneymind.utils.CategoryClassifier
 import com.example.moneymind.viewmodel.ExpenseViewModel
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory
 import com.google.android.material.button.MaterialButton
@@ -67,11 +68,13 @@ class AddExpenseActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            val category = CategoryClassifier.classify(title) // 🔥 автоопределение категории
+
             val expense = Expense(
                 amount = amount,
-                category = title,
+                category = category,
                 date = selectedDateMillis,
-                note = null
+                note = title // сохраняем исходный текст как заметку
             )
 
             viewModel.insert(expense)
@@ -79,7 +82,7 @@ class AddExpenseActivity : AppCompatActivity() {
 
             titleInput.text?.clear()
             amountInput.text?.clear()
-            dateInput.setText("")
+            dateInput.setText(formatter.format(System.currentTimeMillis()))
 
             finish()
         }
