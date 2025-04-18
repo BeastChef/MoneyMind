@@ -9,6 +9,9 @@ interface ExpenseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(expense: Expense)
 
+    @Update
+    suspend fun update(expense: Expense) // 🔄 Обновление
+
     @Delete
     suspend fun delete(expense: Expense)
 
@@ -20,4 +23,7 @@ interface ExpenseDao {
 
     @Query("SELECT category, SUM(amount) AS total FROM expenses GROUP BY category")
     fun getCategoryTotals(): LiveData<List<CategoryTotal>>
+
+    @Query("SELECT * FROM expenses WHERE id = :id LIMIT 1")
+    fun getById(id: Int): LiveData<Expense> // 🔍 Получение по ID
 }

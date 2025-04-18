@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        // 🔐 Разрешения для Android 13+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -50,14 +49,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // 🔲 Отступы под системные панели
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        // 🔽 Настройка фильтра (Spinner)
         Spinner filterSpinner = findViewById(R.id.filterSpinner);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(
                 this,
@@ -67,35 +64,31 @@ public class MainActivity extends AppCompatActivity {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterSpinner.setAdapter(spinnerAdapter);
 
-        // 🔽 Список расходов
         RecyclerView recyclerView = findViewById(R.id.expensesRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         ExpenseAdapter adapter = new ExpenseAdapter();
         recyclerView.setAdapter(adapter);
 
-        // ✨ Анимация карточек
         Animation animation = AnimationUtils.loadAnimation(this, R.anim.item_animation);
         LayoutAnimationController controller = new LayoutAnimationController(animation);
         recyclerView.setLayoutAnimation(controller);
 
-        // 🔽 ViewModel + Repository
         ExpenseViewModel viewModel = new ViewModelProvider(
                 this,
                 new ExpenseViewModelFactory(((MoneyMindApp) getApplication()).getRepository())
         ).get(ExpenseViewModel.class);
 
-        // 🧠 Подключаем слушатель выбора фильтра
         filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
-                    case 0: // Все
+                    case 0:
                         viewModel.getExpenses().observe(MainActivity.this, adapter::setExpenseList);
                         break;
-                    case 1: // За 7 дней
+                    case 1:
                         viewModel.getLast7DaysExpenses().observe(MainActivity.this, adapter::setExpenseList);
                         break;
-                    case 2: // За 30 дней
+                    case 2:
                         viewModel.getLast30DaysExpenses().observe(MainActivity.this, adapter::setExpenseList);
                         break;
                 }
@@ -106,7 +99,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 🗑️ Обработка долгого нажатия и удаление
+        // 🔄 Обычный клик — редактирование расхода
+        adapter.setOnExpenseClickListener(expense -> {
+            Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
+            intent.putExtra("expense_id", expense.getId());
+            intent.putExtra("amount", expense.getAmount());
+            intent.putExtra("category", expense.getCategory());
+            intent.putExtra("date", expense.getDate());
+            startActivity(intent);
+        });
+
+        // 🗑️ Долгий клик — удаление
         adapter.setOnExpenseLongClickListener(expense -> {
             new AlertDialog.Builder(this)
                     .setTitle("Удалить расход")
@@ -118,13 +121,11 @@ public class MainActivity extends AppCompatActivity {
                     .show();
         });
 
-        // ➕ FAB: добавить расход
         findViewById(R.id.fabAddExpense).setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
             startActivity(intent);
         });
 
-        // 🧭 Обработка нижней навигации
         BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
         bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();

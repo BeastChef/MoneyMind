@@ -19,12 +19,23 @@ import java.util.List;
 public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder> {
 
     private List<Expense> expenses;
+    private OnExpenseClickListener clickListener;
     private OnExpenseLongClickListener longClickListener;
 
     public ExpenseAdapter() {
         this.expenses = new ArrayList<>();
     }
 
+    // 🔹 Интерфейс для обычного клика
+    public interface OnExpenseClickListener {
+        void onExpenseClick(Expense expense);
+    }
+
+    public void setOnExpenseClickListener(OnExpenseClickListener listener) {
+        this.clickListener = listener;
+    }
+
+    // 🔹 Интерфейс для долгого клика
     public interface OnExpenseLongClickListener {
         void onExpenseLongClick(Expense expense);
     }
@@ -50,13 +61,19 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     @Override
     public void onBindViewHolder(@NonNull ExpenseViewHolder holder, int position) {
         Expense expense = expenses.get(position);
-
-        holder.title.setText(expense.getNote()); // Название (например, "Молоко")
-        holder.category.setText(expense.getCategory()); // Категория (например, "Еда")
+        holder.title.setText(expense.getCategory());
         holder.amount.setText("-" + expense.getAmount() + " ₽");
         holder.date.setText(Utils.formatDate(expense.getDate()));
         holder.icon.setImageResource(R.drawable.ic_baseline_money_24);
 
+        // 🔹 Короткий клик — редактирование
+        holder.itemView.setOnClickListener(v -> {
+            if (clickListener != null) {
+                clickListener.onExpenseClick(expense);
+            }
+        });
+
+        // 🔹 Долгий клик — например, удаление
         holder.itemView.setOnLongClickListener(v -> {
             if (longClickListener != null) {
                 longClickListener.onExpenseLongClick(expense);
@@ -71,13 +88,12 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     }
 
     public static class ExpenseViewHolder extends RecyclerView.ViewHolder {
-        TextView title, category, amount, date;
+        TextView title, amount, date;
         ImageView icon;
 
         public ExpenseViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.expenseTitle);
-            category = itemView.findViewById(R.id.expenseCategory); // ✅ новое поле
             amount = itemView.findViewById(R.id.expenseAmount);
             date = itemView.findViewById(R.id.expenseDate);
             icon = itemView.findViewById(R.id.icon);

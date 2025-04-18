@@ -25,6 +25,7 @@ class AddExpenseActivity : AppCompatActivity() {
     private lateinit var saveButton: MaterialButton
 
     private var selectedDateMillis: Long = System.currentTimeMillis()
+    private var selectedExpenseId: Int? = null
 
     private val viewModel: ExpenseViewModel by viewModels {
         ExpenseViewModelFactory((application as MoneyMindApp).repository)
@@ -43,6 +44,7 @@ class AddExpenseActivity : AppCompatActivity() {
         val formatter = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
         dateInput.setText(formatter.format(calendar.time))
 
+        // Выбор даты
         dateInput.setOnClickListener {
             val listener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                 calendar.set(year, month, dayOfMonth)
@@ -59,6 +61,20 @@ class AddExpenseActivity : AppCompatActivity() {
             ).show()
         }
 
+        // Если редактируем
+        val expenseId = intent.getIntExtra("expense_id", -1)
+        if (expenseId != -1) {
+            selectedExpenseId = expenseId
+            viewModel.getExpenseById(expenseId).observe(this) { expense ->
+                if (expense != null) {
+                    titleInput.setText(expense.note ?: expense.category)
+                    amountInput.setText(expense.amount.toString())
+                    selectedDateMillis = expense.date
+                    dateInput.setText(formatter.format(Date(expense.date)))
+                }
+            }
+        }
+
         saveButton.setOnClickListener {
             val title = titleInput.text.toString().trim()
             val amount = amountInput.text.toString().toDoubleOrNull()
@@ -68,21 +84,23 @@ class AddExpenseActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val category = CategoryClassifier.classify(title) // 🔥 автоопределение категории
+            val category = CategoryClassifier.classify(title)
 
             val expense = Expense(
+                id = selectedExpenseId ?: 0,
                 amount = amount,
                 category = category,
                 date = selectedDateMillis,
-                note = title // сохраняем исходный текст как заметку
+                note = title
             )
 
-            viewModel.insert(expense)
-            Snackbar.make(saveButton, "Расход добавлен", Snackbar.LENGTH_SHORT).show()
-
-            titleInput.text?.clear()
-            amountInput.text?.clear()
-            dateInput.setText(formatter.format(System.currentTimeMillis()))
+            if (selectedExpenseId != null) {
+                viewModel.update(expense)
+                Toast.makeText(this, "Расход обновлён", Toast.LENGTH_SHORT).show()
+            } else {
+                viewModel.insert(expense)
+                Toast.makeText(this, "Расход добавлен", Toast.LENGTH_SHORT).show()
+            }
 
             finish()
         }
