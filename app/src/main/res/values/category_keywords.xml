@@ -1,0 +1,42 @@
+<resources>
+    <!-- 🍞 Еда -->
+    <string-array name="keywords_food_ru">
+        <item>хлеб</item>
+        <item>молоко</item>
+        <item>сыр</item>
+        <item>фрукты</item>
+        <item>овощи</item>
+        <item>йогурт</item>
+        <item>еда</item>
+    </string-array>
+
+    <string-array name="keywords_food_en">
+        <item>bread</item>
+        <item>milk</item>
+        <item>cheese</item>
+        <item>fruit</item>
+        <item>vegetable</item>
+        <item>yogurt</item>
+        <item>food</item>
+    </string-array>
+
+    <!-- 🚇 Транспорт -->
+    <string-array name="keywords_transport_ru">
+        <item>метро</item>
+        <item>бензин</item>
+        <item>проезд</item>
+        <item>автобус</item>
+        <item>такси</item>
+        <item>транспорт</item>
+    </string-array>
+
+    <string-array name="keywords_transport_en">
+        <item>metro</item>
+        <item>gas</item>
+        <item>ticket</item>
+        <item>bus</item>
+        <item>uber</item>
+        <item>taxi</item>
+        <item>transport</item>
+    </string-array>
+</resources>

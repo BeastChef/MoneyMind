@@ -1,22 +1,33 @@
 package com.example.moneymind.utils
 
-object CategoryClassifier {
-    private val categoryMap = mapOf(
-        "еда" to listOf("хлеб", "молоко", "сыр", "фрукты", "овощи", "йогурт"),
-        "транспорт" to listOf("бензин", "метро", "проезд", "автобус", "троллейбус"),
-        "развлечения" to listOf("кино", "игра", "подписка", "музыка"),
-        "одежда" to listOf("футболка", "куртка", "джинсы", "ботинки"),
-        "здоровье" to listOf("аптека", "лекарства", "анальгин", "витамины"),
-        "другое" to listOf()
-    )
+import android.content.Context
+import com.example.moneymind.R
+import java.util.*
 
-    fun classify(name: String): String {
-        val lower = name.lowercase()
-        for ((category, keywords) in categoryMap) {
-            if (keywords.any { lower.contains(it) }) {
-                return category.replaceFirstChar { it.uppercaseChar() }
-            }
+object CategoryClassifier {
+
+    fun classify(context: Context, input: String): String {
+        val text = input.lowercase(Locale.getDefault())
+
+        val locale = Locale.getDefault().language
+        val isRussian = locale == "ru"
+        val isEnglish = locale == "en"
+
+        val foodKeywords = context.resources.getStringArray(
+            if (isRussian) R.array.keywords_food_ru else R.array.keywords_food_en
+        )
+        val transportKeywords = context.resources.getStringArray(
+            if (isRussian) R.array.keywords_transport_ru else R.array.keywords_transport_en
+        )
+
+        return when {
+            containsKeyword(text, foodKeywords) -> if (isRussian) "Еда" else "Food"
+            containsKeyword(text, transportKeywords) -> if (isRussian) "Транспорт" else "Transport"
+            else -> if (isRussian) "Другое" else "Other"
         }
-        return "Другое"
+    }
+
+    private fun containsKeyword(text: String, keywords: Array<String>): Boolean {
+        return keywords.any { keyword -> text.contains(keyword, ignoreCase = true) }
     }
 }

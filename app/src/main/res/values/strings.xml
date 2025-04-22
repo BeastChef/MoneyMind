@@ -1,10 +1,19 @@
 <resources>
     <string name="app_name">MoneyMind</string>
 
-    <!-- Фильтры для расходов -->
+    <!-- Фильтры для главного экрана -->
     <string-array name="filter_options">
         <item>Все</item>
         <item>Последние 7 дней</item>
         <item>Последние 30 дней</item>
+    </string-array>
+
+    <!-- 🔽 Фильтры для экрана статистики -->
+    <string-array name="stats_filter_options">
+        <item>Все</item>
+        <item>7 дней</item>
+        <item>30 дней</item>
+        <item>90 дней</item>
+        <item>365 дней</item>
     </string-array>
 </resources>

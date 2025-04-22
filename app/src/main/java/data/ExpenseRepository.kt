@@ -7,27 +7,37 @@ class ExpenseRepository(private val expenseDao: ExpenseDao) {
     // Все расходы
     val allExpenses: LiveData<List<Expense>> = expenseDao.getAllExpenses()
 
-    // Получить расходы с определённой даты
+    // Расходы с определённой даты (для фильтрации по 7/30 дням)
     fun getExpensesFromDate(fromDate: Long): LiveData<List<Expense>> {
         return expenseDao.getExpensesFromDate(fromDate)
     }
 
-    // Получить категории с суммами
+    // Суммы по категориям (все расходы)
     fun getCategoryTotals(): LiveData<List<CategoryTotal>> {
         return expenseDao.getCategoryTotals()
     }
 
-    // Получить один расход по ID
+    // Суммы по категориям за последние N дней
+    fun getCategoryTotalsFromDate(fromDate: Long): LiveData<List<CategoryTotal>> {
+        return expenseDao.getCategoryTotalsFromDate(fromDate)
+    }
+
+    // Получение одного расхода по ID
     fun getExpenseById(id: Int): LiveData<Expense> {
         return expenseDao.getById(id)
     }
 
-    // Добавить новый расход
+    // ✅ Расходы по конкретной категории
+    fun getExpensesByCategory(category: String): LiveData<List<Expense>> {
+        return expenseDao.getExpensesByCategory(category)
+    }
+
+    // Добавить расход
     suspend fun insert(expense: Expense) {
         expenseDao.insert(expense)
     }
 
-    // Обновить существующий расход
+    // Обновить расход
     suspend fun update(expense: Expense) {
         expenseDao.update(expense)
     }

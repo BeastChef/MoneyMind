@@ -6,8 +6,9 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "expenses")
 data class Expense(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val amount: Double,             // сумма
+    val title: String,              // 🆕 Название товара или услуги
+    val amount: Double,            // сумма
     val category: String,          // категория (автокатегория)
-    val note: String? = null,      // примечание (введённое пользователем, например "молоко")
-    val date: Long                 // дата в миллисекундах (удобно для сортировки)
+    val note: String? = null,      // примечание
+    val date: Long                 // дата
 )

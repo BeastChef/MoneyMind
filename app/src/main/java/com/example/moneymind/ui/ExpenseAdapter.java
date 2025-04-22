@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.example.moneymind.R;
 import com.example.moneymind.data.Expense;
+import com.example.moneymind.utils.CategoryColorHelper;
 import com.example.moneymind.utils.Utils;
 
 import androidx.annotation.NonNull;
@@ -26,7 +27,6 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         this.expenses = new ArrayList<>();
     }
 
-    // 🔹 Интерфейс для обычного клика
     public interface OnExpenseClickListener {
         void onExpenseClick(Expense expense);
     }
@@ -35,7 +35,6 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         this.clickListener = listener;
     }
 
-    // 🔹 Интерфейс для долгого клика
     public interface OnExpenseLongClickListener {
         void onExpenseLongClick(Expense expense);
     }
@@ -61,19 +60,20 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     @Override
     public void onBindViewHolder(@NonNull ExpenseViewHolder holder, int position) {
         Expense expense = expenses.get(position);
-        holder.title.setText(expense.getCategory());
+
+        holder.title.setText(expense.getNote() != null ? expense.getNote() : expense.getCategory());
+        holder.category.setText(expense.getCategory());
+        holder.category.setTextColor(CategoryColorHelper.getColorForCategory(expense.getCategory())); // ✅ цвет
         holder.amount.setText("-" + expense.getAmount() + " ₽");
         holder.date.setText(Utils.formatDate(expense.getDate()));
         holder.icon.setImageResource(R.drawable.ic_baseline_money_24);
 
-        // 🔹 Короткий клик — редактирование
         holder.itemView.setOnClickListener(v -> {
             if (clickListener != null) {
                 clickListener.onExpenseClick(expense);
             }
         });
 
-        // 🔹 Долгий клик — например, удаление
         holder.itemView.setOnLongClickListener(v -> {
             if (longClickListener != null) {
                 longClickListener.onExpenseLongClick(expense);
@@ -88,12 +88,13 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     }
 
     public static class ExpenseViewHolder extends RecyclerView.ViewHolder {
-        TextView title, amount, date;
+        TextView title, category, amount, date;
         ImageView icon;
 
         public ExpenseViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.expenseTitle);
+            category = itemView.findViewById(R.id.expenseCategory);
             amount = itemView.findViewById(R.id.expenseAmount);
             date = itemView.findViewById(R.id.expenseDate);
             icon = itemView.findViewById(R.id.icon);
