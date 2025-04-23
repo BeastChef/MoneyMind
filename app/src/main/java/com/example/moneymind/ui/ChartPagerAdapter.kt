@@ -14,11 +14,13 @@ import com.github.mikephil.charting.utils.ColorTemplate
 
 class ChartPagerAdapter(
     private val context: Context,
-    private val onCategoryClick: (String) -> Unit // 💡 добавлен коллбэк
+    private val onCategoryClick: (String) -> Unit
 ) : RecyclerView.Adapter<ChartPagerAdapter.ChartViewHolder>() {
 
     private var data: List<PieEntry> = emptyList()
     private var totalAmount: Float = 0f
+
+    private var pieChartRef: PieChart? = null // 💡 Сохраняем ссылку на круговую диаграмму
 
     fun setChartData(entries: List<PieEntry>, total: Float) {
         data = entries
@@ -26,7 +28,9 @@ class ChartPagerAdapter(
         notifyDataSetChanged()
     }
 
-    override fun getItemCount(): Int = 3 // 0 = Pie, 1 = Bar, 2 = Line
+    fun getPieChart(): PieChart? = pieChartRef // 🔹 Получить текущую круговую диаграмму
+
+    override fun getItemCount(): Int = 3
 
     override fun getItemViewType(position: Int): Int = position
 
@@ -45,7 +49,10 @@ class ChartPagerAdapter(
 
     override fun onBindViewHolder(holder: ChartViewHolder, position: Int) {
         when (val chart = holder.itemView) {
-            is PieChart -> bindPieChart(chart)
+            is PieChart -> {
+                pieChartRef = chart // 💾 Сохраняем при биндинге
+                bindPieChart(chart)
+            }
             is BarChart -> bindBarChart(chart)
             is LineChart -> bindLineChart(chart)
         }
@@ -99,7 +106,6 @@ class ChartPagerAdapter(
 
         barChart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
         barChart.xAxis.granularity = 1f
-        barChart.xAxis.setDrawLabels(true)
         barChart.axisLeft.axisMinimum = 0f
         barChart.description.text = "Столбчатая диаграмма"
         barChart.invalidate()

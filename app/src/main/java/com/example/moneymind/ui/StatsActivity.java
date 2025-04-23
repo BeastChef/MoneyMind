@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -20,7 +21,11 @@ import com.example.moneymind.data.Expense;
 import com.example.moneymind.ui.charts.ChartPagerAdapter;
 import com.example.moneymind.viewmodel.ExpenseViewModel;
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -35,6 +40,7 @@ public class StatsActivity extends AppCompatActivity {
     private ChartPagerAdapter chartPagerAdapter;
     private TabLayout chartTabLayout;
     private LiveData<List<Expense>> currentExpenses;
+    private Observer<List<Expense>> expenseObserver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,17 +72,19 @@ public class StatsActivity extends AppCompatActivity {
                             .show();
                 });
             }
+            return null;
         });
 
         chartViewPager.setAdapter(chartPagerAdapter);
 
-        new TabLayoutMediator(chartTabLayout, chartViewPager,
-                (tab, position) -> tab.setText(
-                        position == 0 ? "Круговая" :
-                                position == 1 ? "Столбцы" :
-                                        position == 2 ? "Биржевая" :
-                                                "График"
-                )).attach();
+        new TabLayoutMediator(chartTabLayout, chartViewPager, (tab, position) -> {
+            switch (position) {
+                case 0: tab.setText("Круговая"); break;
+                case 1: tab.setText("Столбцы"); break;
+                case 2: tab.setText("Биржевая"); break;
+                default: tab.setText("График"); break;
+            }
+        }).attach();
 
         viewModel = new ViewModelProvider(
                 this,
@@ -119,6 +127,7 @@ public class StatsActivity extends AppCompatActivity {
                         selectedData = viewModel.getLast365DaysCategoryTotals();
                         selectedExpenses = viewModel.getLast365DaysExpenses();
                         break;
+                    case 0:
                     default:
                         selectedData = viewModel.getCategoryTotals();
                         selectedExpenses = viewModel.getExpenses();
@@ -136,7 +145,17 @@ public class StatsActivity extends AppCompatActivity {
     }
 
     private void observeAndRender(@NonNull LiveData<List<CategoryTotal>> data, @NonNull LiveData<List<Expense>> expenses) {
-        this.currentExpenses = expenses;
+        if (currentExpenses != null && expenseObserver != null) {
+            currentExpenses.removeObserver(expenseObserver);
+        }
+
+        currentExpenses = expenses;
+
+        expenseObserver = expensesList -> {
+            // можно использовать для логики в будущем
+        };
+
+        currentExpenses.observe(this, expenseObserver);
 
         data.observe(this, categoryTotals -> {
             List<PieEntry> entries = new ArrayList<>();
@@ -148,7 +167,19 @@ public class StatsActivity extends AppCompatActivity {
                 entries.add(new PieEntry(amount, item.getCategory()));
             }
 
+            PieDataSet dataSet = new PieDataSet(entries, "Категории");
+            dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+            dataSet.setValueTextSize(14f);
+            dataSet.setSliceSpace(3f);
+
+            PieData pieData = new PieData(dataSet);
+
+            // Анимация и отображение
             chartPagerAdapter.setChartData(entries, totalSum);
+            chartPagerAdapter.getPieChart().setData(pieData);
+            chartPagerAdapter.getPieChart().setCenterText("Всего:\n" + totalSum + " ₽");
+            chartPagerAdapter.getPieChart().animateY(1000);
+            chartPagerAdapter.getPieChart().invalidate();
         });
     }
 }
