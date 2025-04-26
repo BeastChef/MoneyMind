@@ -4,45 +4,70 @@ import androidx.lifecycle.LiveData
 
 class ExpenseRepository(private val expenseDao: ExpenseDao) {
 
-    // Все расходы
+    // 🔹 Все записи (доходы и расходы)
     val allExpenses: LiveData<List<Expense>> = expenseDao.getAllExpenses()
 
-    // Расходы с определённой даты (для фильтрации по 7/30 дням)
+    // 🔹 Только расходы
+    val allExpensesOnly: LiveData<List<Expense>> = expenseDao.getAllExpensesOnly()
+
+    // 🔹 Только доходы
+    val allIncomes: LiveData<List<Expense>> = expenseDao.getAllIncomes()
+    fun getAllFromDate(fromDate: Long): LiveData<List<Expense>> {
+        return expenseDao.getAllTransactionsFromDate(fromDate)
+    }
+
+
+    // 🔽 Все типы (доходы и расходы) по дате
     fun getExpensesFromDate(fromDate: Long): LiveData<List<Expense>> {
         return expenseDao.getExpensesFromDate(fromDate)
     }
 
-    // Суммы по категориям (все расходы)
+    // 🔽 Только расходы по дате
+    fun getExpensesFromDateOnly(fromDate: Long): LiveData<List<Expense>> {
+        return expenseDao.getExpensesFromDateOnly(fromDate)
+    }
+
+    // 🔽 Только доходы по дате
+    fun getIncomesFromDate(fromDate: Long): LiveData<List<Expense>> {
+        return expenseDao.getIncomesFromDate(fromDate)
+    }
+
+    // 🔽 Категории — все
     fun getCategoryTotals(): LiveData<List<CategoryTotal>> {
         return expenseDao.getCategoryTotals()
     }
 
-    // Суммы по категориям за последние N дней
-    fun getCategoryTotalsFromDate(fromDate: Long): LiveData<List<CategoryTotal>> {
-        return expenseDao.getCategoryTotalsFromDate(fromDate)
+    // 🔽 Категории — только расходы
+    fun getCategoryTotalsOnly(): LiveData<List<CategoryTotal>> {
+        return expenseDao.getCategoryTotalsOnly()
     }
 
-    // Получение одного расхода по ID
+    // 🔽 Категории — только расходы по дате
+    fun getCategoryTotalsFromDateOnly(fromDate: Long): LiveData<List<CategoryTotal>> {
+        return expenseDao.getCategoryTotalsFromDateOnly(fromDate)
+    }
+
+    // 🔍 Один по ID
     fun getExpenseById(id: Int): LiveData<Expense> {
         return expenseDao.getById(id)
     }
 
-    // ✅ Расходы по конкретной категории
+    // 🔍 Все по категории
     fun getExpensesByCategory(category: String): LiveData<List<Expense>> {
         return expenseDao.getExpensesByCategory(category)
     }
 
-    // Добавить расход
+    // 💾 Добавить
     suspend fun insert(expense: Expense) {
         expenseDao.insert(expense)
     }
 
-    // Обновить расход
+    // ♻️ Обновить
     suspend fun update(expense: Expense) {
         expenseDao.update(expense)
     }
 
-    // Удалить расход
+    // ❌ Удалить
     suspend fun delete(expense: Expense) {
         expenseDao.delete(expense)
     }

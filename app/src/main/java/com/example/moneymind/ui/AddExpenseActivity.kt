@@ -26,6 +26,7 @@ class AddExpenseActivity : AppCompatActivity() {
 
     private var selectedDateMillis: Long = System.currentTimeMillis()
     private var selectedExpenseId: Int? = null
+    private var selectedType: String = "expense"
 
     private val viewModel: ExpenseViewModel by viewModels {
         ExpenseViewModelFactory((application as MoneyMindApp).repository)
@@ -43,6 +44,9 @@ class AddExpenseActivity : AppCompatActivity() {
         val calendar = Calendar.getInstance()
         val formatter = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
         dateInput.setText(formatter.format(calendar.time))
+
+        // Устанавливаем тип из интента
+        selectedType = if (intent.getBooleanExtra("is_income", false)) "income" else "expense"
 
         dateInput.setOnClickListener {
             val listener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
@@ -69,6 +73,7 @@ class AddExpenseActivity : AppCompatActivity() {
                     amountInput.setText(expense.amount.toString())
                     selectedDateMillis = expense.date
                     dateInput.setText(formatter.format(Date(expense.date)))
+                    selectedType = expense.type // 🆗 при редактировании сохраняем тип
                 }
             }
         }
@@ -86,19 +91,20 @@ class AddExpenseActivity : AppCompatActivity() {
 
             val expense = Expense(
                 id = selectedExpenseId ?: 0,
-                title = title, // ✅ новое поле
+                title = title,
                 amount = amount,
                 category = category,
                 date = selectedDateMillis,
-                note = null // 👈 или можешь сохранить доп. примечание, если будет отдельное поле
+                note = null,
+                type = selectedType
             )
 
             if (selectedExpenseId != null) {
                 viewModel.update(expense)
-                Snackbar.make(saveButton, "Расход обновлён", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(saveButton, "Запись обновлена", Snackbar.LENGTH_SHORT).show()
             } else {
                 viewModel.insert(expense)
-                Snackbar.make(saveButton, "Расход добавлен", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(saveButton, "Запись добавлена", Snackbar.LENGTH_SHORT).show()
             }
 
             finish()

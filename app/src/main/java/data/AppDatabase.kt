@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Expense::class], version = 1, exportSchema = false)
+@Database(entities = [Expense::class], version = 2, exportSchema = false) // ✅ увеличили версию
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun expenseDao(): ExpenseDao
@@ -21,7 +21,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "expense_database"
                 )
-                    .fallbackToDestructiveMigration() // 🔥 уничтожит старую БД при изменении схемы
+                    .fallbackToDestructiveMigration() // 🧨 удалит старую БД при изменении схемы
                     .build()
                 INSTANCE = instance
                 instance

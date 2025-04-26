@@ -1,34 +1,41 @@
 package com.example.moneymind.ui.charts
 
 import android.content.Context
+import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.moneymind.data.Expense
 import com.github.mikephil.charting.charts.*
-import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.github.mikephil.charting.utils.ColorTemplate
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.math.abs
 
 class ChartPagerAdapter(
     private val context: Context,
     private val onCategoryClick: (String) -> Unit
 ) : RecyclerView.Adapter<ChartPagerAdapter.ChartViewHolder>() {
 
-    private var data: List<PieEntry> = emptyList()
-    private var totalAmount: Float = 0f
+    private var pieData: List<PieEntry> = emptyList()
+    private var expenseData: List<Expense> = emptyList()
+    private var summaryMode: Boolean = false
 
-    private var pieChartRef: PieChart? = null // 💡 Сохраняем ссылку на круговую диаграмму
-
-    fun setChartData(entries: List<PieEntry>, total: Float) {
-        data = entries
-        totalAmount = total
+    fun setChartData(entries: List<PieEntry>) {
+        pieData = entries
         notifyDataSetChanged()
     }
 
-    fun getPieChart(): PieChart? = pieChartRef // 🔹 Получить текущую круговую диаграмму
+    fun setExpenses(expenses: List<Expense>, isSummaryMode: Boolean = false) {
+        expenseData = expenses.sortedBy { it.date }
+        summaryMode = isSummaryMode
+        notifyDataSetChanged()
+    }
 
     override fun getItemCount(): Int = 3
 
@@ -49,10 +56,7 @@ class ChartPagerAdapter(
 
     override fun onBindViewHolder(holder: ChartViewHolder, position: Int) {
         when (val chart = holder.itemView) {
-            is PieChart -> {
-                pieChartRef = chart // 💾 Сохраняем при биндинге
-                bindPieChart(chart)
-            }
+            is PieChart -> bindPieChart(chart)
             is BarChart -> bindBarChart(chart)
             is LineChart -> bindLineChart(chart)
         }
@@ -61,19 +65,22 @@ class ChartPagerAdapter(
     class ChartViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
     private fun bindPieChart(pieChart: PieChart) {
-        val dataSet = PieDataSet(data, "Категории")
+        val dataSet = PieDataSet(pieData, "Категории")
         dataSet.setColors(ColorTemplate.MATERIAL_COLORS.toList())
         dataSet.valueTextSize = 14f
-        dataSet.valueTextColor = android.graphics.Color.WHITE
+        dataSet.valueTextColor = Color.WHITE
 
         pieChart.data = PieData(dataSet)
         pieChart.setUsePercentValues(true)
         pieChart.setEntryLabelTextSize(12f)
-        pieChart.setEntryLabelColor(android.graphics.Color.BLACK)
-        pieChart.setCenterText("Всего\n$totalAmount ₽")
+        pieChart.setEntryLabelColor(Color.BLACK)
+        pieChart.centerText = "Расходы/Доходы"
         pieChart.setCenterTextSize(18f)
         pieChart.setHoleRadius(40f)
         pieChart.setTransparentCircleRadius(45f)
+
+        pieChart.description.isEnabled = false
+        pieChart.legend.isEnabled = false
 
         pieChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
@@ -81,48 +88,131 @@ class ChartPagerAdapter(
                     onCategoryClick(e.label)
                 }
             }
-
             override fun onNothingSelected() {}
         })
 
-        val desc = Description()
-        desc.text = "Круговая диаграмма"
-        pieChart.description = desc
+        pieChart.animateY(800)
         pieChart.invalidate()
     }
 
     private fun bindBarChart(barChart: BarChart) {
-        val entries = data.mapIndexed { index, pieEntry ->
-            BarEntry(index.toFloat(), pieEntry.value)
+        val (entries, labels) = prepareBarChartData()
+
+        val dataSet = BarDataSet(entries, "Дни").apply {
+            colors = entries.map { if (it.y >= 0) Color.GREEN else Color.RED }
+            valueTextSize = 12f
+            valueTextColor = Color.BLACK
         }
-        val labels = data.map { it.label }
 
-        val dataSet = BarDataSet(entries, "Категории")
-        dataSet.setColors(ColorTemplate.COLORFUL_COLORS.toList())
-        dataSet.valueTextSize = 14f
+        barChart.data = BarData(dataSet).apply { barWidth = 0.8f }
+        barChart.setFitBars(true)
 
-        val barData = BarData(dataSet)
-        barChart.data = barData
+        setupChartBase(barChart, labels)
 
-        barChart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
-        barChart.xAxis.granularity = 1f
-        barChart.axisLeft.axisMinimum = 0f
-        barChart.description.text = "Столбчатая диаграмма"
+        barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                val index = e?.x?.toInt() ?: return
+                if (index in labels.indices) {
+                    onCategoryClick(labels[index])
+                }
+            }
+            override fun onNothingSelected() {}
+        })
+
+        barChart.animateY(800)
         barChart.invalidate()
     }
 
     private fun bindLineChart(lineChart: LineChart) {
-        val entries = data.mapIndexed { index, pieEntry ->
-            Entry(index.toFloat(), pieEntry.value)
-        }
-        val dataSet = LineDataSet(entries, "Категории")
-        dataSet.setColors(ColorTemplate.MATERIAL_COLORS.toList())
-        dataSet.setCircleColor(android.graphics.Color.BLACK)
-        dataSet.valueTextSize = 14f
+        val (entries, labels) = prepareLineChartData()
 
-        val lineData = LineData(dataSet)
-        lineChart.data = lineData
-        lineChart.description.text = "Биржевая диаграмма"
+        val dataSet = LineDataSet(entries, "Дни").apply {
+            color = ColorTemplate.getHoloBlue()
+            setCircleColor(ColorTemplate.getHoloBlue())
+            lineWidth = 2f
+            circleRadius = 4f
+            valueTextSize = 12f
+        }
+
+        lineChart.data = LineData(dataSet)
+
+        setupChartBase(lineChart, labels)
+
+        lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                val index = e?.x?.toInt() ?: return
+                if (index in labels.indices) {
+                    onCategoryClick(labels[index])
+                }
+            }
+            override fun onNothingSelected() {}
+        })
+
+        lineChart.animateX(800)
         lineChart.invalidate()
+    }
+
+    private fun prepareBarChartData(): Pair<List<BarEntry>, List<String>> {
+        val dateSums = aggregateData()
+        val sortedDates = dateSums.keys.sortedBy { parseDate(it) }
+        val entries = sortedDates.mapIndexed { index, date -> BarEntry(index.toFloat(), dateSums[date] ?: 0f) }
+        val labels = sortedDates
+        return Pair(entries, labels)
+    }
+
+    private fun prepareLineChartData(): Pair<List<Entry>, List<String>> {
+        val dateSums = aggregateData()
+        val sortedDates = dateSums.keys.sortedBy { parseDate(it) }
+        val entries = sortedDates.mapIndexed { index, date -> Entry(index.toFloat(), dateSums[date] ?: 0f) }
+        val labels = sortedDates
+        return Pair(entries, labels)
+    }
+
+    private fun aggregateData(): Map<String, Float> {
+        val dateSums = mutableMapOf<String, Float>()
+        for (expense in expenseData) {
+            val date = expense.getShortDate()
+            val value = when {
+                summaryMode -> if (expense.type == "income") expense.amount.toFloat() else -expense.amount.toFloat()
+                else -> abs(expense.amount.toFloat())
+            }
+            dateSums[date] = (dateSums[date] ?: 0f) + value
+        }
+        return dateSums
+    }
+
+    private fun setupChartBase(chart: BarLineChartBase<*>, labels: List<String>) {
+        chart.xAxis.apply {
+            valueFormatter = IndexAxisValueFormatter(labels)
+            position = XAxis.XAxisPosition.BOTTOM
+            granularity = 1f
+            setDrawGridLines(false)
+            labelRotationAngle = 45f
+        }
+
+        chart.axisLeft.apply {
+            axisMinimum = -findMaxY()
+            axisMaximum = findMaxY()
+            setDrawGridLines(true)
+        }
+
+        chart.axisRight.isEnabled = false
+        chart.legend.isEnabled = false
+        chart.description.isEnabled = false
+        chart.setScaleEnabled(false)
+        chart.setPinchZoom(false)
+    }
+
+    private fun findMaxY(): Float {
+        return (expenseData.maxOfOrNull { abs(it.amount.toFloat()) } ?: 0f) * 1.2f
+    }
+
+    private fun Expense.getShortDate(): String {
+        val sdf = SimpleDateFormat("dd MMM", Locale.getDefault())
+        return sdf.format(Date(this.date))
+    }
+
+    private fun parseDate(dateStr: String): Date {
+        return SimpleDateFormat("dd MMM", Locale.getDefault()).parse(dateStr) ?: Date()
     }
 }

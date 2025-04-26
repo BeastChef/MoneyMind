@@ -1,5 +1,6 @@
 package com.example.moneymind.ui;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import com.example.moneymind.utils.CategoryColorHelper;
 import com.example.moneymind.utils.Utils;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -60,11 +62,22 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     @Override
     public void onBindViewHolder(@NonNull ExpenseViewHolder holder, int position) {
         Expense expense = expenses.get(position);
+        Context context = holder.itemView.getContext();
 
         holder.title.setText(expense.getNote() != null ? expense.getNote() : expense.getCategory());
         holder.category.setText(expense.getCategory());
-        holder.category.setTextColor(CategoryColorHelper.getColorForCategory(expense.getCategory())); // ✅ цвет
-        holder.amount.setText("-" + expense.getAmount() + " ₽");
+        holder.category.setTextColor(CategoryColorHelper.getColorForCategory(expense.getCategory()));
+
+        // ✅ Вместо isIncome — проверка по type
+        boolean isIncome = "income".equalsIgnoreCase(expense.getType());
+        double amount = expense.getAmount();
+
+        String formatted = (isIncome ? "+ " : "- ") + amount + " ₽";
+        int color = ContextCompat.getColor(context, isIncome ? R.color.income_color : R.color.expense_color);
+
+        holder.amount.setText(formatted);
+        holder.amount.setTextColor(color);
+
         holder.date.setText(Utils.formatDate(expense.getDate()));
         holder.icon.setImageResource(R.drawable.ic_baseline_money_24);
 

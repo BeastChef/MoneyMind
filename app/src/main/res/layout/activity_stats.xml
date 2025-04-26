@@ -2,9 +2,11 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/statsRoot"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.StatsActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -19,20 +21,52 @@
             android:layout_margin="16dp"
             android:padding="8dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="TouchTargetSizeCheck"/>
 
-        <!-- 🔽 TabLayout для переключения графиков -->
+        <!-- 🔽 Фильтр по типу: Свести / Доходы / Расходы -->
+        <RadioGroup
+            android:id="@+id/statsTypeGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/statsFilterSpinner"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <RadioButton
+                android:id="@+id/statsTypeAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Свести"
+                android:checked="true"/>
+
+            <RadioButton
+                android:id="@+id/statsTypeIncomes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Доходы"/>
+
+            <RadioButton
+                android:id="@+id/statsTypeExpenses"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Расходы"/>
+        </RadioGroup>
+
+        <!-- 🔽 TabLayout для переключения между типами графиков -->
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/chartTabLayout"
-            android:contentDescription="Навигация по графикам"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             app:tabIndicatorColor="@color/md_theme_primary"
             app:tabSelectedTextColor="@color/md_theme_primary"
             app:tabTextColor="@android:color/darker_gray"
             app:tabMode="fixed"
             app:tabGravity="fill"
-            app:layout_constraintTop_toBottomOf="@id/statsFilterSpinner"
+            app:layout_constraintTop_toBottomOf="@id/statsTypeGroup"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -45,5 +79,19 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- ✅ FAB: Вернуться назад -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabBackToMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:src="@android:drawable/ic_menu_revert"
+            android:contentDescription="@string/back_to_main"
+            app:tint="@android:color/white"
+            app:backgroundTint="@color/md_theme_primary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

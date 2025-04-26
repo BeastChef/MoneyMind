@@ -13,6 +13,8 @@
     <color name="md_theme_dark_surface">#1E1E1E</color>
     <color name="md_theme_dark_error">#CF6679</color>
     <color name="md_theme_dark_onBackground">#FFFFFF</color>
+    <color name="income_color">#4CAF50</color> <!-- Зелёный -->
+    <color name="expense_color">#F44336</color> <!-- Красный -->
 
     <!-- Добавленный белый цвет -->
     <color name="white">#FFFFFF</color>

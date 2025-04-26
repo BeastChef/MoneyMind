@@ -8,12 +8,11 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
-    <!-- Контент -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- ✅ Spinner с высотой 48dp (исправление Touch target size too small) -->
+        <!-- 🔽 Фильтр по периоду -->
         <Spinner
             android:id="@+id/filterSpinner"
             android:layout_width="wrap_content"
@@ -23,7 +22,52 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="TouchTargetSizeCheck" />
 
-        <!-- ✅ RecyclerView с правильными constraints -->
+        <!-- 🔽 Фильтр по типу: Все / Расходы / Доходы -->
+        <RadioGroup
+            android:id="@+id/typeFilterGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/filterSpinner"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <RadioButton
+                android:id="@+id/filterAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Все"
+                android:checked="true"/>
+
+            <RadioButton
+                android:id="@+id/filterExpenses"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Расходы" />
+
+            <RadioButton
+                android:id="@+id/filterIncomes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Доходы" />
+        </RadioGroup>
+
+        <!-- ✅ Текущий баланс -->
+        <TextView
+            android:id="@+id/balanceText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Баланс: 0 ₽"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:padding="8dp"
+            app:layout_constraintTop_toBottomOf="@id/typeFilterGroup"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- 🔽 Список записей -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/expensesRecyclerView"
             android:layout_width="0dp"
@@ -31,13 +75,13 @@
             android:clipToPadding="false"
             android:padding="16dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@id/filterSpinner"
+            app:layout_constraintTop_toBottomOf="@id/balanceText"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- FAB по центру -->
+    <!-- 🔽 Кнопка добавления -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddExpense"
         android:layout_width="wrap_content"
@@ -49,7 +93,7 @@
         app:backgroundTint="?attr/colorPrimary"
         app:tint="@android:color/white" />
 
-    <!-- Нижняя навигация -->
+    <!-- 🔽 Нижняя навигация -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"

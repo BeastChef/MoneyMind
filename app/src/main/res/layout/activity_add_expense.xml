@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Материальный стиль с полями ввода и кнопкой -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="24dp"
+    android:fillViewport="true"
     android:background="?android:colorBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        android:paddingBottom="24dp">
 
-        <!-- Название траты -->
+        <!-- Название -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -23,7 +24,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputTitle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Сумма -->
@@ -55,13 +57,15 @@
                 android:clickable="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Кнопка "Сохранить" -->
+
+
+        <!-- Кнопка сохранить -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Сохранить"
             android:layout_marginTop="24dp"
-            style="?attr/materialButtonOutlinedStyle" />
+            style="@style/Widget.MaterialComponents.Button" />
     </LinearLayout>
 </ScrollView>

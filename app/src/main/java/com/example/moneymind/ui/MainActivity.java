@@ -10,14 +10,17 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.app.AlertDialog;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,9 +32,21 @@ import com.example.moneymind.viewmodel.ExpenseViewModel;
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 101;
+
+    private ExpenseViewModel viewModel;
+    private ExpenseAdapter adapter;
+    private Spinner filterSpinner;
+    private RadioGroup typeFilterGroup;
+
+    private TextView balanceText;
+
+    private int selectedDateFilter = 0;
+    private int selectedTypeFilter = R.id.filterAll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +70,25 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        Spinner filterSpinner = findViewById(R.id.filterSpinner);
+        filterSpinner = findViewById(R.id.filterSpinner);
+        typeFilterGroup = findViewById(R.id.typeFilterGroup);
+        balanceText = findViewById(R.id.balanceText); // 🆕 для баланса
+
+        RecyclerView recyclerView = findViewById(R.id.expensesRecyclerView);
+        adapter = new ExpenseAdapter();
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.item_animation);
+        LayoutAnimationController controller = new LayoutAnimationController(animation);
+        recyclerView.setLayoutAnimation(controller);
+
+        viewModel = new ViewModelProvider(
+                this,
+                new ExpenseViewModelFactory(((MoneyMindApp) getApplication()).getRepository())
+        ).get(ExpenseViewModel.class);
+
+        // 📆 Фильтр по дате
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(
                 this,
                 R.array.filter_options,
@@ -64,78 +97,120 @@ public class MainActivity extends AppCompatActivity {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterSpinner.setAdapter(spinnerAdapter);
 
-        RecyclerView recyclerView = findViewById(R.id.expensesRecyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        ExpenseAdapter adapter = new ExpenseAdapter();
-        recyclerView.setAdapter(adapter);
-
-        Animation animation = AnimationUtils.loadAnimation(this, R.anim.item_animation);
-        LayoutAnimationController controller = new LayoutAnimationController(animation);
-        recyclerView.setLayoutAnimation(controller);
-
-        ExpenseViewModel viewModel = new ViewModelProvider(
-                this,
-                new ExpenseViewModelFactory(((MoneyMindApp) getApplication()).getRepository())
-        ).get(ExpenseViewModel.class);
-
         filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        viewModel.getExpenses().observe(MainActivity.this, adapter::setExpenseList);
-                        break;
-                    case 1:
-                        viewModel.getLast7DaysExpenses().observe(MainActivity.this, adapter::setExpenseList);
-                        break;
-                    case 2:
-                        viewModel.getLast30DaysExpenses().observe(MainActivity.this, adapter::setExpenseList);
-                        break;
-                }
+            @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedDateFilter = position;
+                updateFilteredData();
             }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        // 🔄 Обычный клик — редактирование расхода
+        // 💰 Фильтр по типу (доходы/расходы/все)
+        typeFilterGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            selectedTypeFilter = checkedId;
+            updateFilteredData();
+        });
+
         adapter.setOnExpenseClickListener(expense -> {
             Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
             intent.putExtra("expense_id", expense.getId());
-            intent.putExtra("amount", expense.getAmount());
-            intent.putExtra("category", expense.getCategory());
-            intent.putExtra("date", expense.getDate());
             startActivity(intent);
         });
 
-        // 🗑️ Долгий клик — удаление
         adapter.setOnExpenseLongClickListener(expense -> {
             new AlertDialog.Builder(this)
-                    .setTitle("Удалить расход")
+                    .setTitle("Удалить запись")
                     .setMessage("Удалить «" + expense.getCategory() + "»?")
-                    .setPositiveButton("Удалить", (dialog, which) -> {
-                        viewModel.delete(expense);
-                    })
+                    .setPositiveButton("Удалить", (dialog, which) -> viewModel.delete(expense))
                     .setNegativeButton("Отмена", null)
                     .show();
         });
 
         findViewById(R.id.fabAddExpense).setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
-            startActivity(intent);
+            String[] options = {"Добавить расход", "Добавить доход"};
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Что добавить?")
+                    .setItems(options, (dialog, which) -> {
+                        Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
+                        intent.putExtra("is_income", which == 1);
+                        startActivity(intent);
+                    })
+                    .show();
         });
 
         BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
         bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
-            if (itemId == R.id.nav_home) {
-                return true;
-            } else if (itemId == R.id.nav_stats) {
+            if (itemId == R.id.nav_home) return true;
+            if (itemId == R.id.nav_stats) {
                 startActivity(new Intent(this, StatsActivity.class));
                 return true;
             }
             return false;
         });
+
+        updateFilteredData();
+    }
+
+    private void updateFilteredData() {
+        LiveData<List<Expense>> data;
+
+        boolean isExpenseOnly = selectedTypeFilter == R.id.filterExpenses;
+        boolean isIncomeOnly = selectedTypeFilter == R.id.filterIncomes;
+
+        switch (selectedDateFilter) {
+            case 1:
+                if (isExpenseOnly) {
+                    data = viewModel.getLast7DaysExpensesOnly();
+                } else if (isIncomeOnly) {
+                    data = viewModel.getLast7DaysIncomes();
+                } else {
+                    // 🔄 ВСЁ (доходы + расходы)
+                    data = viewModel.getLast7DaysAll();
+                }
+                break;
+
+            case 2:
+                if (isExpenseOnly) {
+                    data = viewModel.getLast30DaysExpensesOnly();
+                } else if (isIncomeOnly) {
+                    data = viewModel.getLast30DaysIncomes();
+                } else {
+                    // 🔄 ВСЁ (доходы + расходы)
+                    data = viewModel.getLast30DaysAll();
+                }
+                break;
+
+            default:
+                if (isExpenseOnly) {
+                    data = viewModel.getAllExpensesOnly();
+                } else if (isIncomeOnly) {
+                    data = viewModel.getAllIncomes();
+                } else {
+                    // 🔄 ВСЁ (доходы + расходы)
+                    data = viewModel.getAllExpenses();  // это все транзакции: доходы + расходы
+                }
+                break;
+        }
+
+        data.observe(this, expenses -> {
+            adapter.setExpenseList(expenses);
+            updateBalanceInfo(expenses);
+        });
+    }
+
+    // 💡 Подсчёт баланса
+    private void updateBalanceInfo(List<Expense> expenses) {
+        double income = 0;
+        double expense = 0;
+
+        for (Expense e : expenses) {
+            if (e.getType().equals("income")) income += e.getAmount();
+            else expense += e.getAmount();
+        }
+
+        double balance = income - expense;
+        String result = "Доход: " + income + " ₽   Расход: " + expense + " ₽   Баланс: " + balance + " ₽";
+        balanceText.setText(result);
     }
 }
