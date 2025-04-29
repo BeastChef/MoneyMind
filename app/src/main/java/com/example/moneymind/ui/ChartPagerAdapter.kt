@@ -25,15 +25,17 @@ class ChartPagerAdapter(
     private var pieData: List<PieEntry> = emptyList()
     private var expenseData: List<Expense> = emptyList()
     private var summaryMode: Boolean = false
+    private var selectedStatsType: Int = 0
 
     fun setChartData(entries: List<PieEntry>) {
         pieData = entries
         notifyDataSetChanged()
     }
 
-    fun setExpenses(expenses: List<Expense>, isSummaryMode: Boolean = false) {
+    fun setExpenses(expenses: List<Expense>, isSummaryMode: Boolean, statsType: Int) {
         expenseData = expenses.sortedBy { it.date }
         summaryMode = isSummaryMode
+        selectedStatsType = statsType
         notifyDataSetChanged()
     }
 
@@ -96,9 +98,9 @@ class ChartPagerAdapter(
     }
 
     private fun bindBarChart(barChart: BarChart) {
-        val (entries, labels) = prepareBarChartData()
+        val (entries, labels) = prepareChartData()
 
-        val dataSet = BarDataSet(entries, "Дни").apply {
+        val dataSet = BarDataSet(entries, "Баланс по дням").apply {
             colors = entries.map { if (it.y >= 0) Color.GREEN else Color.RED }
             valueTextSize = 12f
             valueTextColor = Color.BLACK
@@ -124,9 +126,11 @@ class ChartPagerAdapter(
     }
 
     private fun bindLineChart(lineChart: LineChart) {
-        val (entries, labels) = prepareLineChartData()
+        val (barEntries, labels) = prepareChartData()
 
-        val dataSet = LineDataSet(entries, "Дни").apply {
+        val entries = barEntries.map { Entry(it.x, it.y) } // конвертация!
+
+        val dataSet = LineDataSet(entries, "Баланс по дням").apply {
             color = ColorTemplate.getHoloBlue()
             setCircleColor(ColorTemplate.getHoloBlue())
             lineWidth = 2f
@@ -152,33 +156,31 @@ class ChartPagerAdapter(
         lineChart.invalidate()
     }
 
-    private fun prepareBarChartData(): Pair<List<BarEntry>, List<String>> {
-        val dateSums = aggregateData()
-        val sortedDates = dateSums.keys.sortedBy { parseDate(it) }
-        val entries = sortedDates.mapIndexed { index, date -> BarEntry(index.toFloat(), dateSums[date] ?: 0f) }
-        val labels = sortedDates
-        return Pair(entries, labels)
-    }
+    private fun prepareChartData(): Pair<List<BarEntry>, List<String>> {
+        val dateChanges = mutableMapOf<String, Float>()
 
-    private fun prepareLineChartData(): Pair<List<Entry>, List<String>> {
-        val dateSums = aggregateData()
-        val sortedDates = dateSums.keys.sortedBy { parseDate(it) }
-        val entries = sortedDates.mapIndexed { index, date -> Entry(index.toFloat(), dateSums[date] ?: 0f) }
-        val labels = sortedDates
-        return Pair(entries, labels)
-    }
-
-    private fun aggregateData(): Map<String, Float> {
-        val dateSums = mutableMapOf<String, Float>()
         for (expense in expenseData) {
             val date = expense.getShortDate()
-            val value = when {
-                summaryMode -> if (expense.type == "income") expense.amount.toFloat() else -expense.amount.toFloat()
-                else -> abs(expense.amount.toFloat())
+            val amount = expense.amount.toFloat()
+            if (expense.type == "income") {
+                dateChanges[date] = (dateChanges[date] ?: 0f) + amount
+            } else if (expense.type == "expense") {
+                dateChanges[date] = (dateChanges[date] ?: 0f) - amount
             }
-            dateSums[date] = (dateSums[date] ?: 0f) + value
         }
-        return dateSums
+
+        val sortedDates = dateChanges.keys.sortedBy { parseDate(it) }
+        val entries = mutableListOf<BarEntry>()
+        val labels = mutableListOf<String>()
+
+        var cumulativeSum = 0f
+        sortedDates.forEachIndexed { index, date ->
+            cumulativeSum += dateChanges[date] ?: 0f
+            entries.add(BarEntry(index.toFloat(), cumulativeSum))
+            labels.add(date)
+        }
+
+        return Pair(entries, labels)
     }
 
     private fun setupChartBase(chart: BarLineChartBase<*>, labels: List<String>) {
@@ -204,7 +206,8 @@ class ChartPagerAdapter(
     }
 
     private fun findMaxY(): Float {
-        return (expenseData.maxOfOrNull { abs(it.amount.toFloat()) } ?: 0f) * 1.2f
+        val balances = prepareChartData().first.map { abs(it.y) }
+        return (balances.maxOrNull() ?: 0f) * 1.2f
     }
 
     private fun Expense.getShortDate(): String {

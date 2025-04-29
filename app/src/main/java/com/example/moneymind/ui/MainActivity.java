@@ -42,9 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private ExpenseAdapter adapter;
     private Spinner filterSpinner;
     private RadioGroup typeFilterGroup;
-
     private TextView balanceText;
-
     private int selectedDateFilter = 0;
     private int selectedTypeFilter = R.id.filterAll;
 
@@ -72,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
         filterSpinner = findViewById(R.id.filterSpinner);
         typeFilterGroup = findViewById(R.id.typeFilterGroup);
-        balanceText = findViewById(R.id.balanceText); // 🆕 для баланса
+        balanceText = findViewById(R.id.balanceText);
 
         RecyclerView recyclerView = findViewById(R.id.expensesRecyclerView);
         adapter = new ExpenseAdapter();
@@ -88,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
                 new ExpenseViewModelFactory(((MoneyMindApp) getApplication()).getRepository())
         ).get(ExpenseViewModel.class);
 
-        // 📆 Фильтр по дате
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(
                 this,
                 R.array.filter_options,
@@ -98,14 +95,16 @@ public class MainActivity extends AppCompatActivity {
         filterSpinner.setAdapter(spinnerAdapter);
 
         filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedDateFilter = position;
                 updateFilteredData();
             }
-            @Override public void onNothingSelected(AdapterView<?> parent) {}
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        // 💰 Фильтр по типу (доходы/расходы/все)
         typeFilterGroup.setOnCheckedChangeListener((group, checkedId) -> {
             selectedTypeFilter = checkedId;
             updateFilteredData();
@@ -126,14 +125,19 @@ public class MainActivity extends AppCompatActivity {
                     .show();
         });
 
+        // 🆕 Обновлённая кнопка "Добавить"
         findViewById(R.id.fabAddExpense).setOnClickListener(v -> {
             String[] options = {"Добавить расход", "Добавить доход"};
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("Что добавить?")
                     .setItems(options, (dialog, which) -> {
-                        Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
-                        intent.putExtra("is_income", which == 1);
-                        startActivity(intent);
+                        if (which == 0) {
+                            // ➡ Переход на экран выбора категории расхода
+                            startActivity(new Intent(MainActivity.this, ChooseExpenseCategoryActivity.class));
+                        } else {
+                            // ➡ Переход на экран выбора категории дохода
+                            startActivity(new Intent(MainActivity.this, ChooseIncomeCategoryActivity.class));
+                        }
                     })
                     .show();
         });
@@ -165,7 +169,6 @@ public class MainActivity extends AppCompatActivity {
                 } else if (isIncomeOnly) {
                     data = viewModel.getLast7DaysIncomes();
                 } else {
-                    // 🔄 ВСЁ (доходы + расходы)
                     data = viewModel.getLast7DaysAll();
                 }
                 break;
@@ -176,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
                 } else if (isIncomeOnly) {
                     data = viewModel.getLast30DaysIncomes();
                 } else {
-                    // 🔄 ВСЁ (доходы + расходы)
                     data = viewModel.getLast30DaysAll();
                 }
                 break;
@@ -187,8 +189,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (isIncomeOnly) {
                     data = viewModel.getAllIncomes();
                 } else {
-                    // 🔄 ВСЁ (доходы + расходы)
-                    data = viewModel.getAllExpenses();  // это все транзакции: доходы + расходы
+                    data = viewModel.getAllExpenses();
                 }
                 break;
         }
@@ -199,7 +200,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // 💡 Подсчёт баланса
     private void updateBalanceInfo(List<Expense> expenses) {
         double income = 0;
         double expense = 0;

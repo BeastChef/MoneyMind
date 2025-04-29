@@ -5,10 +5,15 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Expense::class], version = 2, exportSchema = false) // ✅ увеличили версию
+@Database(
+    entities = [Expense::class, Category::class], // ✅ Expense и Category
+    version = 2, // ✅ версия БД увеличена до 2
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun expenseDao(): ExpenseDao
+    abstract fun categoryDao(): CategoryDao
 
     companion object {
         @Volatile
@@ -19,9 +24,9 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "expense_database"
+                    "expense_database" // Имя файла базы данных
                 )
-                    .fallbackToDestructiveMigration() // 🧨 удалит старую БД при изменении схемы
+                    .fallbackToDestructiveMigration() // ✅ если изменится схема — пересоздать БД
                     .build()
                 INSTANCE = instance
                 instance

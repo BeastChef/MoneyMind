@@ -1,4 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- Название приложения -->
     <string name="app_name">MoneyMind</string>
 
     <!-- 🔽 Фильтры для главного экрана -->
@@ -10,16 +13,42 @@
 
     <!-- 🔽 Фильтры для экрана статистики -->
     <string-array name="stats_filter_options">
-        <item>все</item>
         <item>7 дней</item>
         <item>30 дней</item>
-        <item>90 дней</item>
-        <item>365 дней</item>
     </string-array>
 
-    <!-- ✅ Строка для кнопки "Назад на главный экран" -->
-    <string name="back_to_main">Вернуться на главный экран</string>
+    <!-- ✅ Строки для радиокнопок выбора типа данных -->
+    <string name="filter_all">Свести</string>
+    <string name="filter_incomes">Доходы</string>
+    <string name="filter_expenses">Расходы</string>
 
-    <!-- 🧩 Строка для описания вкладок графиков (contentDescription) -->
+    <!-- ✅ Строки для вкладок графиков -->
+    <string name="tab_pie_chart">Круговая</string>
+    <string name="tab_bar_chart">Столбцы</string>
+    <string name="tab_line_chart">Биржевая</string>
+
+    <!-- ✅ Подписи для кнопок -->
+    <string name="back_to_main">Вернуться на главный экран</string>
+    <string name="pick_period">Выбрать период</string>
+
+    <!-- ✅ Прочие подписи -->
     <string name="chart_tabs">Навигация по графикам</string>
+    <string name="select_period_title">Выберите период</string>
+    <string name="no_data_for_selected_day">Нет данных за этот день</string>
+
+    <!-- ✅ Категории расходов -->
+    <string name="category_food">Еда</string>
+    <string name="category_transport">Транспорт</string>
+    <string name="category_medical">Медицина</string>
+    <string name="category_home">Жильё</string>
+    <string name="category_entertainment">Развлечения</string>
+    <string name="category_shopping">Покупки</string>
+    <string name="category_other">Другое</string>
+
+    <!-- ✅ Категории доходов -->
+    <string name="category_salary">Зарплата</string>
+    <string name="category_investments">Инвестиции</string>
+    <string name="category_gift">Подарки</string>
+    <string name="category_other_income">Другое (доход)</string>
+
 </resources>

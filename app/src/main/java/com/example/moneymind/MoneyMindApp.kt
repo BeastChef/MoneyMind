@@ -3,6 +3,7 @@ package com.example.moneymind
 import android.app.Application
 import androidx.work.*
 import com.example.moneymind.data.AppDatabase
+import com.example.moneymind.data.CategoryRepository
 import com.example.moneymind.data.ExpenseRepository
 import com.example.moneymind.worker.ReminderWorker
 import java.util.*
@@ -16,6 +17,10 @@ class MoneyMindApp : Application() {
 
     val repository: ExpenseRepository by lazy {
         ExpenseRepository(database.expenseDao())
+    }
+
+    val categoryRepository: CategoryRepository by lazy {
+        CategoryRepository(database.categoryDao()) // ✅ Добавили репозиторий категорий
     }
 
     override fun onCreate() {

@@ -20,12 +20,14 @@ import com.example.moneymind.data.Expense;
 import com.example.moneymind.ui.charts.ChartPagerAdapter;
 import com.example.moneymind.viewmodel.ExpenseViewModel;
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -37,14 +39,17 @@ public class StatsActivity extends AppCompatActivity {
     private ViewPager2 chartViewPager;
     private TabLayout chartTabLayout;
     private FloatingActionButton fabBack;
+    private FloatingActionButton fabPickDate;
     private ChartPagerAdapter chartPagerAdapter;
 
     private int selectedStatsType = R.id.statsTypeAll;
-    private int selectedStatsPeriod = 0;
-
+    private int selectedPeriod = 0; // 0 = 7 дней, 1 = 30 дней
     private ExpenseViewModel viewModel;
     private LiveData<List<Expense>> currentExpenses;
     private Observer<List<Expense>> expenseObserver;
+
+    private long customStartDate = 0;
+    private long customEndDate = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +58,9 @@ public class StatsActivity extends AppCompatActivity {
 
         initViews();
         setupChartPager();
-        setupSpinnerAndFilters();
-        setupFab();
+        setupActions();
+        setupSpinner();
+        updateStats(); // сразу по умолчанию 7 дней
     }
 
     private void initViews() {
@@ -63,6 +69,7 @@ public class StatsActivity extends AppCompatActivity {
         chartViewPager = findViewById(R.id.chartViewPager);
         chartTabLayout = findViewById(R.id.chartTabLayout);
         fabBack = findViewById(R.id.fabBackToMain);
+        fabPickDate = findViewById(R.id.fabPickDate);
 
         viewModel = new ViewModelProvider(
                 this,
@@ -86,11 +93,21 @@ public class StatsActivity extends AppCompatActivity {
         }).attach();
     }
 
-    private void setupSpinnerAndFilters() {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+    private void setupActions() {
+        fabBack.setOnClickListener(v -> finish());
+        fabPickDate.setOnClickListener(v -> openDatePicker());
+
+        statsTypeGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            selectedStatsType = checkedId;
+            updateStats();
+        });
+    }
+
+    private void setupSpinner() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
-                R.array.stats_filter_options,
-                android.R.layout.simple_spinner_item
+                android.R.layout.simple_spinner_item,
+                new String[]{"7 дней", "30 дней"}
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         statsFilterSpinner.setAdapter(adapter);
@@ -98,52 +115,48 @@ public class StatsActivity extends AppCompatActivity {
         statsFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedStatsPeriod = position;
+                selectedPeriod = position;
+                customStartDate = 0; // сброс кастомного выбора
+                customEndDate = 0;
                 updateStats();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
-
-        statsTypeGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            selectedStatsType = checkedId;
-            updateStats();
-        });
-
-        updateStats(); // сразу загрузить данные
     }
 
-    private void setupFab() {
-        fabBack.setOnClickListener(v -> finish());
+    private void openDatePicker() {
+        MaterialDatePicker.Builder<androidx.core.util.Pair<Long, Long>> builder =
+                MaterialDatePicker.Builder.dateRangePicker();
+        builder.setTitleText("Выберите период");
+
+        MaterialDatePicker<?> picker = builder.build();
+        picker.show(getSupportFragmentManager(), picker.toString());
+
+        picker.addOnPositiveButtonClickListener(selection -> {
+            if (selection instanceof androidx.core.util.Pair) {
+                androidx.core.util.Pair<Long, Long> range = (androidx.core.util.Pair<Long, Long>) selection;
+                customStartDate = range.first;
+                customEndDate = range.second;
+                updateStats();
+            }
+        });
     }
 
     private void updateStats() {
-        LiveData<List<Expense>> selectedExpenses = getSelectedExpenses();
-        observeExpenses(selectedExpenses);
-    }
+        LiveData<List<Expense>> selectedExpenses;
 
-    private LiveData<List<Expense>> getSelectedExpenses() {
-        boolean isIncome = selectedStatsType == R.id.statsTypeIncomes;
-        boolean isExpense = selectedStatsType == R.id.statsTypeExpenses;
-
-        switch (selectedStatsPeriod) {
-            case 1: return isIncome ? viewModel.getLast7DaysIncomes()
-                    : isExpense ? viewModel.getLast7DaysExpensesOnly()
-                    : viewModel.getLast7DaysExpenses();
-            case 2: return isIncome ? viewModel.getLast30DaysIncomes()
-                    : isExpense ? viewModel.getLast30DaysExpensesOnly()
-                    : viewModel.getLast30DaysExpenses();
-            case 3: return isIncome ? viewModel.getLast90DaysIncomes()
-                    : isExpense ? viewModel.getLast90DaysExpensesOnly()
-                    : viewModel.getLast90DaysExpenses();
-            case 4: return isIncome ? viewModel.getLast365DaysIncomes()
-                    : isExpense ? viewModel.getLast365DaysExpensesOnly()
-                    : viewModel.getLast365DaysExpenses();
-            default: return isIncome ? viewModel.getAllIncomes()
-                    : isExpense ? viewModel.getAllExpensesOnly()
-                    : viewModel.getExpenses();
+        if (customStartDate != 0 && customEndDate != 0) {
+            selectedExpenses = viewModel.getExpensesBetween(customStartDate, customEndDate);
+        } else {
+            long now = System.currentTimeMillis();
+            long daysAgo = selectedPeriod == 0 ? 7 : 30;
+            long fromDate = now - daysAgo * 24L * 60 * 60 * 1000;
+            selectedExpenses = viewModel.getExpensesBetween(fromDate, now);
         }
+
+        observeExpenses(selectedExpenses);
     }
 
     private void observeExpenses(LiveData<List<Expense>> expensesLiveData) {
@@ -151,14 +164,12 @@ public class StatsActivity extends AppCompatActivity {
             currentExpenses.removeObserver(expenseObserver);
         }
 
-        if (expensesLiveData == null) return;
-
         currentExpenses = expensesLiveData;
 
         expenseObserver = expenses -> {
             if (expenses != null) {
                 boolean isSummaryMode = (selectedStatsType == R.id.statsTypeAll);
-                chartPagerAdapter.setExpenses(expenses, isSummaryMode);
+                chartPagerAdapter.setExpenses(expenses, isSummaryMode, selectedStatsType);
             }
         };
 
