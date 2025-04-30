@@ -6,24 +6,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moneymind.R
-import com.example.moneymind.ui.adapters.CategoryIconAdapter
 import com.example.moneymind.ui.AddExpenseActivity
+import com.example.moneymind.ui.category.CategoryIconAdapter
+import com.example.moneymind.ui.category.CategoryItem
 
 class ChooseExpenseCategoryActivity : AppCompatActivity() {
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: CategoryIconAdapter
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_choose_category)
+        setContentView(R.layout.activity_choose_expense_category)
 
-        recyclerView = findViewById(R.id.categoryRecyclerView)
+        val recyclerView = findViewById<RecyclerView>(R.id.categoryRecyclerView)
         recyclerView.layoutManager = GridLayoutManager(this, 3)
 
-        adapter = CategoryIconAdapter(getExpenseCategories()) { category ->
+        val adapter = CategoryIconAdapter(getExpenseCategories()) { category ->
             val intent = Intent(this, AddExpenseActivity::class.java)
-            intent.putExtra("selected_category", category)
+            intent.putExtra("selected_category", category.name)
             intent.putExtra("is_income", false)
             startActivity(intent)
             finish()
@@ -32,9 +30,17 @@ class ChooseExpenseCategoryActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
     }
 
-    private fun getExpenseCategories(): List<String> {
+    private fun getExpenseCategories(): List<CategoryItem> {
         return listOf(
-            "Еда", "Транспорт", "Жильё", "Медицина", "Развлечения", "Путешествия", "Покупки", "Спорт", "Другое"
+            CategoryItem("Еда", R.drawable.ic_food),
+            CategoryItem("Транспорт", R.drawable.ic_transport),
+            CategoryItem("Жильё", R.drawable.ic_myhome),
+            CategoryItem("Медицина", R.drawable.ic_medical),
+            CategoryItem("Развлечения", R.drawable.ic_entertainment),
+            CategoryItem("Путешествия", R.drawable.ic_travel),
+            CategoryItem("Покупки", R.drawable.ic_shopping),
+            CategoryItem("Спорт", R.drawable.ic_sport),
+            CategoryItem("Другое", R.drawable.ic_other)
         )
     }
 }

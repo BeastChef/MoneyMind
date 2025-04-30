@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.moneymind.databinding.ActivityChooseCategoryBinding
-import com.example.moneymind.model.CategoryItem
+import com.example.moneymind.ui.category.CategoryItem
 
 class ChooseCategoryActivity : AppCompatActivity() {
 
@@ -20,17 +20,19 @@ class ChooseCategoryActivity : AppCompatActivity() {
 
         val categories = if (isIncome) {
             listOf(
-                CategoryItem("Зарплата", "ic_salary"),
-                CategoryItem("Дивиденды", "ic_dividends"),
-                CategoryItem("Подарки", "ic_gift")
+                CategoryItem("Зарплата", R.drawable.ic_salary),
+                CategoryItem("Дивиденды", R.drawable.ic_investments),
+                CategoryItem("Подарки", R.drawable.ic_gift)
             )
         } else {
             listOf(
-                CategoryItem("Еда", "ic_food"),
-                CategoryItem("Транспорт", "ic_transport"),
-                CategoryItem("Медицина", "ic_medical"),
-                CategoryItem("Развлечения", "ic_entertainment"),
-                CategoryItem("Жильё", "ic_home")
+                CategoryItem("Еда", R.drawable.ic_food),
+                CategoryItem("Транспорт", R.drawable.ic_transport),
+                CategoryItem("Медицина", R.drawable.ic_medical),
+                CategoryItem("Развлечения", R.drawable.ic_entertainment),
+                CategoryItem("Жильё", R.drawable.ic_home),
+                CategoryItem("Покупки", R.drawable.ic_shopping),
+                CategoryItem("Другое", R.drawable.ic_other)
             )
         }
 

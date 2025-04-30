@@ -6,8 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moneymind.R
-import com.example.moneymind.ui.adapters.CategoryIconAdapter
 import com.example.moneymind.ui.AddExpenseActivity
+import com.example.moneymind.ui.category.CategoryIconAdapter
+import com.example.moneymind.ui.category.CategoryItem
 
 class ChooseIncomeCategoryActivity : AppCompatActivity() {
 
@@ -21,9 +22,9 @@ class ChooseIncomeCategoryActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.categoryRecyclerView)
         recyclerView.layoutManager = GridLayoutManager(this, 3)
 
-        adapter = CategoryIconAdapter(getIncomeCategories()) { category ->
+        adapter = CategoryIconAdapter(getIncomeCategories()) { category: CategoryItem ->
             val intent = Intent(this, AddExpenseActivity::class.java)
-            intent.putExtra("selected_category", category)
+            intent.putExtra("selected_category", category.name)
             intent.putExtra("is_income", true)
             startActivity(intent)
             finish()
@@ -32,9 +33,12 @@ class ChooseIncomeCategoryActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
     }
 
-    private fun getIncomeCategories(): List<String> {
+    private fun getIncomeCategories(): List<CategoryItem> {
         return listOf(
-            "Зарплата", "Дивиденды", "Подарки", "Бонусы", "Продажи", "Другое"
+            CategoryItem("Зарплата", R.drawable.ic_salary),
+            CategoryItem("Инвестиции", R.drawable.ic_investments),
+            CategoryItem("Подарки", R.drawable.ic_gift),
+            CategoryItem("Другое", R.drawable.ic_other_income)
         )
     }
 }
