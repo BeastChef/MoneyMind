@@ -15,6 +15,31 @@
         android:gravity="center_horizontal"
         android:paddingBottom="24dp">
 
+        <!-- 🆕 Выбранная категория (иконка + текст) -->
+        <LinearLayout
+            android:id="@+id/selectedCategoryLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:padding="8dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/selectedCategoryIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="Иконка категории" />
+
+            <TextView
+                android:id="@+id/selectedCategoryText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Категория"
+                android:textSize="16sp" />
+        </LinearLayout>
+
         <!-- Название -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -57,8 +82,6 @@
                 android:clickable="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
-
-
         <!-- Кнопка сохранить -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveButton"
@@ -67,5 +90,6 @@
             android:text="Сохранить"
             android:layout_marginTop="24dp"
             style="@style/Widget.MaterialComponents.Button" />
+
     </LinearLayout>
 </ScrollView>

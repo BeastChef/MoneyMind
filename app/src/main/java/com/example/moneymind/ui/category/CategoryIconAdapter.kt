@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moneymind.R
 import com.example.moneymind.databinding.ItemCategoryIconBinding
+import com.example.moneymind.model.CategoryItem
 
 class CategoryIconAdapter(
     private val categories: List<CategoryItem>,
@@ -39,8 +40,3 @@ class CategoryIconAdapter(
     override fun getItemCount() = categories.size
 }
 
-// 🔵 Класс для представления категории с иконкой
-data class CategoryItem(
-    val name: String,
-    val iconResId: Int
-)

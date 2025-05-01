@@ -93,19 +93,6 @@
         app:backgroundTint="?attr/colorPrimary"
         app:tint="@android:color/white" />
 
-    <!-- 🔽 Кнопка добавления категории (новая!) -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAddCategory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="96dp"
-        android:contentDescription="Добавить категорию"
-        app:srcCompat="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/teal_700"
-        app:tint="@android:color/white" />
-
     <!-- 🔽 Нижняя навигация -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"

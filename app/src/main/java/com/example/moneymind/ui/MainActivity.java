@@ -30,6 +30,7 @@ import com.example.moneymind.R;
 import com.example.moneymind.data.Expense;
 import com.example.moneymind.viewmodel.ExpenseViewModel;
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory;
+import com.example.moneymind.ui.choose.ChooseCategoryActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
@@ -37,6 +38,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 101;
+    private static final int REQUEST_CHOOSE_CATEGORY = 1001;
 
     private ExpenseViewModel viewModel;
     private ExpenseAdapter adapter;
@@ -125,19 +127,15 @@ public class MainActivity extends AppCompatActivity {
                     .show();
         });
 
-        // 🆕 Обновлённая кнопка "Добавить"
+        // 🆕 Кнопка "Добавить" — выбор: доход или расход
         findViewById(R.id.fabAddExpense).setOnClickListener(v -> {
             String[] options = {"Добавить расход", "Добавить доход"};
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("Что добавить?")
                     .setItems(options, (dialog, which) -> {
-                        if (which == 0) {
-                            // ➡ Переход на экран выбора категории расхода
-                            startActivity(new Intent(MainActivity.this, ChooseExpenseCategoryActivity.class));
-                        } else {
-                            // ➡ Переход на экран выбора категории дохода
-                            startActivity(new Intent(MainActivity.this, ChooseIncomeCategoryActivity.class));
-                        }
+                        Intent intent = new Intent(MainActivity.this, ChooseCategoryActivity.class);
+                        intent.putExtra("is_income", which == 1);
+                        startActivityForResult(intent, REQUEST_CHOOSE_CATEGORY);
                     })
                     .show();
         });
@@ -164,34 +162,19 @@ public class MainActivity extends AppCompatActivity {
 
         switch (selectedDateFilter) {
             case 1:
-                if (isExpenseOnly) {
-                    data = viewModel.getLast7DaysExpensesOnly();
-                } else if (isIncomeOnly) {
-                    data = viewModel.getLast7DaysIncomes();
-                } else {
-                    data = viewModel.getLast7DaysAll();
-                }
+                data = isExpenseOnly ? viewModel.getLast7DaysExpensesOnly()
+                        : isIncomeOnly ? viewModel.getLast7DaysIncomes()
+                        : viewModel.getLast7DaysAll();
                 break;
-
             case 2:
-                if (isExpenseOnly) {
-                    data = viewModel.getLast30DaysExpensesOnly();
-                } else if (isIncomeOnly) {
-                    data = viewModel.getLast30DaysIncomes();
-                } else {
-                    data = viewModel.getLast30DaysAll();
-                }
+                data = isExpenseOnly ? viewModel.getLast30DaysExpensesOnly()
+                        : isIncomeOnly ? viewModel.getLast30DaysIncomes()
+                        : viewModel.getLast30DaysAll();
                 break;
-
             default:
-                if (isExpenseOnly) {
-                    data = viewModel.getAllExpensesOnly();
-                } else if (isIncomeOnly) {
-                    data = viewModel.getAllIncomes();
-                } else {
-                    data = viewModel.getAllExpenses();
-                }
-                break;
+                data = isExpenseOnly ? viewModel.getAllExpensesOnly()
+                        : isIncomeOnly ? viewModel.getAllIncomes()
+                        : viewModel.getAllExpenses();
         }
 
         data.observe(this, expenses -> {
@@ -205,12 +188,28 @@ public class MainActivity extends AppCompatActivity {
         double expense = 0;
 
         for (Expense e : expenses) {
-            if (e.getType().equals("income")) income += e.getAmount();
+            if ("income".equals(e.getType())) income += e.getAmount();
             else expense += e.getAmount();
         }
 
         double balance = income - expense;
         String result = "Доход: " + income + " ₽   Расход: " + expense + " ₽   Баланс: " + balance + " ₽";
         balanceText.setText(result);
+    }
+
+    // ✅ Обработка результата из ChooseCategoryActivity
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CHOOSE_CATEGORY && resultCode == RESULT_OK && data != null) {
+            String selectedCategory = data.getStringExtra("selected_category");
+            boolean isIncome = data.getBooleanExtra("is_income", false);
+
+            Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
+            intent.putExtra("selected_category", selectedCategory);
+            intent.putExtra("is_income", isIncome);
+            startActivity(intent);
+        }
     }
 }
