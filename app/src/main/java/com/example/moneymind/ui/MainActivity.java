@@ -1,7 +1,9 @@
 package com.example.moneymind.ui;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -12,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.app.AlertDialog;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -34,6 +35,7 @@ import com.example.moneymind.ui.choose.ChooseCategoryActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -120,22 +122,32 @@ public class MainActivity extends AppCompatActivity {
 
         adapter.setOnExpenseLongClickListener(expense -> {
             new AlertDialog.Builder(this)
-                    .setTitle("Удалить запись")
+                    .setTitle(getString(R.string.delete_record))
                     .setMessage("Удалить «" + expense.getCategory() + "»?")
-                    .setPositiveButton("Удалить", (dialog, which) -> viewModel.delete(expense))
-                    .setNegativeButton("Отмена", null)
+                    .setPositiveButton(getString(R.string.delete_record), (dialog, which) -> viewModel.delete(expense))
+                    .setNegativeButton(getString(R.string.cancel), null)
                     .show();
         });
 
-        // 🆕 Кнопка "Добавить" — выбор: доход или расход
         findViewById(R.id.fabAddExpense).setOnClickListener(v -> {
-            String[] options = {"Добавить расход", "Добавить доход"};
+            String[] options = {getString(R.string.add_expense), getString(R.string.add_income)};
             new AlertDialog.Builder(MainActivity.this)
-                    .setTitle("Что добавить?")
+                    .setTitle(getString(R.string.choose_category))
                     .setItems(options, (dialog, which) -> {
                         Intent intent = new Intent(MainActivity.this, ChooseCategoryActivity.class);
                         intent.putExtra("is_income", which == 1);
                         startActivityForResult(intent, REQUEST_CHOOSE_CATEGORY);
+                    })
+                    .show();
+        });
+
+        findViewById(R.id.fabLanguage).setOnClickListener(v -> {
+            String[] languages = {"Русский", "English", "中文", "العربية", "Español", "Français", "Deutsch", "Türkçe", "Italiano", "日本語", "한국어"};
+            String[] codes = {"ru", "en", "zh", "ar", "es", "fr", "de", "tr", "it", "ja", "ko"};
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Выберите язык")
+                    .setItems(languages, (dialog, which) -> {
+                        setLocale(codes[which]);
                     })
                     .show();
         });
@@ -193,11 +205,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         double balance = income - expense;
-        String result = "Доход: " + income + " ₽   Расход: " + expense + " ₽   Баланс: " + balance + " ₽";
+        String result = getString(R.string.filter_incomes) + ": " + income + " ₽   " +
+                getString(R.string.filter_expenses) + ": " + expense + " ₽   " +
+                "Баланс: " + balance + " ₽";
         balanceText.setText(result);
     }
 
-    // ✅ Обработка результата из ChooseCategoryActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -211,5 +224,19 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("is_income", isIncome);
             startActivity(intent);
         }
+    }
+
+    private void setLocale(String langCode) {
+        Locale newLocale = new Locale(langCode);
+        Locale.setDefault(newLocale);
+
+        Configuration config = new Configuration();
+        config.setLocale(newLocale);
+        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
+
+        // Перезапуск активити
+        Intent refresh = new Intent(this, MainActivity.class);
+        finish();
+        startActivity(refresh);
     }
 }

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
+    <!-- Nombre de la aplicación -->
+    <string name="app_name">MoneyMind</string>
+
+    <!-- Filtros para la pantalla principal -->
+    <string-array name="filter_options">
+        <item>Todos</item>
+        <item>Últimos 7 días</item>
+        <item>Últimos 30 días</item>
+    </string-array>
+
+    <!-- Filtros para estadísticas -->
+    <string-array name="stats_filter_options">
+        <item>7 días</item>
+        <item>30 días</item>
+    </string-array>
+
+    <!-- Botones de filtro -->
+    <string name="filter_all">Todos</string>
+    <string name="filter_incomes">Ingresos</string>
+    <string name="filter_expenses">Gastos</string>
+
+    <!-- Pestañas de gráficos -->
+    <string name="tab_pie_chart">Circular</string>
+    <string name="tab_bar_chart">Barras</string>
+    <string name="tab_line_chart">Línea</string>
+
+    <!-- Botones -->
+    <string name="back_to_main">Volver a la pantalla principal</string>
+    <string name="pick_period">Seleccionar período</string>
+    <string name="add_income">Agregar ingreso</string>
+    <string name="add_expense">Agregar gasto</string>
+    <string name="choose_category">Elegir categoría</string>
+    <string name="edit_record">Editar registro</string>
+    <string name="delete_record">Eliminar registro</string>
+    <string name="record_deleted">Registro eliminado</string>
+    <string name="cancel">Cancelar</string>
+    <string name="save">Guardar</string>
+
+    <!-- Otros -->
+    <string name="chart_tabs">Navegación de gráficos</string>
+    <string name="select_period_title">Selecciona un período</string>
+    <string name="no_data_for_selected_day">Sin datos para este día</string>
+
+    <!-- Categorías de gasto -->
+    <string name="category_food">Comida</string>
+    <string name="category_transport">Transporte</string>
+    <string name="category_medical">Salud</string>
+    <string name="category_home">Hogar</string>
+    <string name="category_entertainment">Entretenimiento</string>
+    <string name="category_shopping">Compras</string>
+    <string name="category_other">Otro</string>
+
+    <!-- Categorías de ingreso -->
+    <string name="category_salary">Salario</string>
+    <string name="category_investments">Inversiones</string>
+    <string name="category_gift">Regalos</string>
+    <string name="category_other_income">Otro (ingreso)</string>
+
+</resources>

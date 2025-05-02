@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- 🔽 Фильтр по периоду -->
         <Spinner
             android:id="@+id/filterSpinner"
             android:layout_width="wrap_content"
@@ -22,7 +21,6 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="TouchTargetSizeCheck" />
 
-        <!-- 🔽 Фильтр по типу: Все / Расходы / Доходы -->
         <RadioGroup
             android:id="@+id/typeFilterGroup"
             android:layout_width="wrap_content"
@@ -37,23 +35,22 @@
                 android:id="@+id/filterAll"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Все"
+                android:text="@string/filter_all"
                 android:checked="true"/>
 
             <RadioButton
                 android:id="@+id/filterExpenses"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Расходы" />
+                android:text="@string/filter_expenses" />
 
             <RadioButton
                 android:id="@+id/filterIncomes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Доходы" />
+                android:text="@string/filter_incomes" />
         </RadioGroup>
 
-        <!-- ✅ Текущий баланс -->
         <TextView
             android:id="@+id/balanceText"
             android:layout_width="0dp"
@@ -67,7 +64,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- 🔽 Список записей -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/expensesRecyclerView"
             android:layout_width="0dp"
@@ -81,19 +77,30 @@
             app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- 🔽 Кнопка добавления расхода или дохода -->
+    <!-- 🌍 Кнопка смены языка -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabLanguage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/choose_language"
+        android:src="@drawable/ic_language"
+        app:backgroundTint="?attr/colorPrimary"
+        app:tint="@android:color/white" />
+
+    <!-- ➕ Кнопка добавления -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddExpense"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:contentDescription="Добавить расход"
+        android:contentDescription="@string/add_expense"
         android:src="@android:drawable/ic_input_add"
         app:backgroundTint="?attr/colorPrimary"
         app:tint="@android:color/white" />
 
-    <!-- 🔽 Нижняя навигация -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
@@ -102,5 +109,4 @@
         android:backgroundTint="@color/white"
         app:menu="@menu/bottom_nav_menu"
         app:labelVisibilityMode="labeled" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
+    <!-- اسم التطبيق -->
+    <string name="app_name">مايند المال</string>
+
+    <!-- خيارات التصفية للشاشة الرئيسية -->
+    <string-array name="filter_options">
+        <item>الكل</item>
+        <item>آخر 7 أيام</item>
+        <item>آخر 30 يومًا</item>
+    </string-array>
+
+    <!-- خيارات التصفية لصفحة الإحصائيات -->
+    <string-array name="stats_filter_options">
+        <item>7 أيام</item>
+        <item>30 يومًا</item>
+    </string-array>
+
+    <!-- فلاتر نوع البيانات -->
+    <string name="filter_all">الكل</string>
+    <string name="filter_incomes">الإيرادات</string>
+    <string name="filter_expenses">المصروفات</string>
+
+    <!-- علامات تبويب الرسوم البيانية -->
+    <string name="tab_pie_chart">دائري</string>
+    <string name="tab_bar_chart">أعمدة</string>
+    <string name="tab_line_chart">خط</string>
+
+    <!-- تسميات الأزرار -->
+    <string name="back_to_main">العودة إلى الصفحة الرئيسية</string>
+    <string name="pick_period">اختر الفترة</string>
+    <string name="add_income">إضافة إيراد</string>
+    <string name="add_expense">إضافة مصروف</string>
+    <string name="choose_category">اختر فئة</string>
+    <string name="edit_record">تعديل السجل</string>
+    <string name="delete_record">حذف السجل</string>
+    <string name="record_deleted">تم حذف السجل</string>
+    <string name="cancel">إلغاء</string>
+    <string name="save">حفظ</string>
+
+    <!-- تسميات إضافية -->
+    <string name="chart_tabs">التنقل بين الرسوم البيانية</string>
+    <string name="select_period_title">اختر الفترة</string>
+    <string name="no_data_for_selected_day">لا توجد بيانات لهذا اليوم</string>
+
+    <!-- فئات النفقات -->
+    <string name="category_food">طعام</string>
+    <string name="category_transport">المواصلات</string>
+    <string name="category_medical">الصحة</string>
+    <string name="category_home">السكن</string>
+    <string name="category_entertainment">الترفيه</string>
+    <string name="category_shopping">التسوق</string>
+    <string name="category_other">أخرى</string>
+
+    <!-- فئات الإيرادات -->
+    <string name="category_salary">الراتب</string>
+    <string name="category_investments">الاستثمارات</string>
+    <string name="category_gift">الهدايا</string>
+    <string name="category_other_income">أخرى (دخل)</string>
+
+</resources>

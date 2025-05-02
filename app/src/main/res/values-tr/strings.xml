@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
+    <!-- Uygulama Adı -->
+    <string name="app_name">MoneyMind</string>
+
+    <!-- Ana ekran için filtreler -->
+    <string-array name="filter_options">
+        <item>Tümü</item>
+        <item>Son 7 gün</item>
+        <item>Son 30 gün</item>
+    </string-array>
+
+    <!-- İstatistik ekranı filtreleri -->
+    <string-array name="stats_filter_options">
+        <item>7 gün</item>
+        <item>30 gün</item>
+    </string-array>
+
+    <!-- Veri türü seçim düğmeleri -->
+    <string name="filter_all">Tümü</string>
+    <string name="filter_incomes">Gelirler</string>
+    <string name="filter_expenses">Giderler</string>
+
+    <!-- Grafik sekmeleri -->
+    <string name="tab_pie_chart">Pasta</string>
+    <string name="tab_bar_chart">Çubuk</string>
+    <string name="tab_line_chart">Çizgi</string>
+
+    <!-- Düğme etiketleri -->
+    <string name="back_to_main">Ana ekrana dön</string>
+    <string name="pick_period">Dönem seç</string>
+    <string name="add_income">Gelir ekle</string>
+    <string name="add_expense">Gider ekle</string>
+    <string name="choose_category">Kategori seç</string>
+    <string name="edit_record">Kaydı düzenle</string>
+    <string name="delete_record">Kaydı sil</string>
+    <string name="record_deleted">Kayıt silindi</string>
+    <string name="cancel">İptal</string>
+    <string name="save">Kaydet</string>
+
+    <!-- Diğer etiketler -->
+    <string name="chart_tabs">Grafik sekmeleri</string>
+    <string name="select_period_title">Dönem seçin</string>
+    <string name="no_data_for_selected_day">Bu gün için veri yok</string>
+
+    <!-- Gider kategorileri -->
+    <string name="category_food">Yemek</string>
+    <string name="category_transport">Ulaşım</string>
+    <string name="category_medical">Sağlık</string>
+    <string name="category_home">Ev</string>
+    <string name="category_entertainment">Eğlence</string>
+    <string name="category_shopping">Alışveriş</string>
+    <string name="category_other">Diğer</string>
+
+    <!-- Gelir kategorileri -->
+    <string name="category_salary">Maaş</string>
+    <string name="category_investments">Yatırımlar</string>
+    <string name="category_gift">Hediye</string>
+    <string name="category_other_income">Diğer (gelir)</string>
+
+</resources>

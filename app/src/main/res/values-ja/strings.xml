@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
+    <!-- アプリ名 -->
+    <string name="app_name">MoneyMind</string>
+
+    <!-- ホーム画面のフィルター -->
+    <string-array name="filter_options">
+        <item>すべて</item>
+        <item>直近7日間</item>
+        <item>直近30日間</item>
+    </string-array>
+
+    <!-- 統計画面のフィルター -->
+    <string-array name="stats_filter_options">
+        <item>7日間</item>
+        <item>30日間</item>
+    </string-array>
+
+    <!-- 種類フィルター -->
+    <string name="filter_all">すべて</string>
+    <string name="filter_incomes">収入</string>
+    <string name="filter_expenses">支出</string>
+
+    <!-- グラフのタブ -->
+    <string name="tab_pie_chart">円グラフ</string>
+    <string name="tab_bar_chart">棒グラフ</string>
+    <string name="tab_line_chart">折れ線</string>
+
+    <!-- ボタン -->
+    <string name="back_to_main">ホームに戻る</string>
+    <string name="pick_period">期間を選択</string>
+    <string name="add_income">収入を追加</string>
+    <string name="add_expense">支出を追加</string>
+    <string name="choose_category">カテゴリを選択</string>
+    <string name="edit_record">記録を編集</string>
+    <string name="delete_record">記録を削除</string>
+    <string name="record_deleted">記録が削除されました</string>
+    <string name="cancel">キャンセル</string>
+    <string name="save">保存</string>
+
+    <!-- その他 -->
+    <string name="chart_tabs">グラフのナビゲーション</string>
+    <string name="select_period_title">期間を選んでください</string>
+    <string name="no_data_for_selected_day">この日のデータはありません</string>
+
+    <!-- 支出カテゴリ -->
+    <string name="category_food">食費</string>
+    <string name="category_transport">交通</string>
+    <string name="category_medical">医療</string>
+    <string name="category_home">住居</string>
+    <string name="category_entertainment">娯楽</string>
+    <string name="category_shopping">買い物</string>
+    <string name="category_other">その他</string>
+
+    <!-- 収入カテゴリ -->
+    <string name="category_salary">給料</string>
+    <string name="category_investments">投資</string>
+    <string name="category_gift">ギフト</string>
+    <string name="category_other_income">その他（収入）</string>
+
+</resources>

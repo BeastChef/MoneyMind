@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
+    <!-- App name -->
+    <string name="app_name">MoneyMind</string>
+
+    <!-- Filters for main screen -->
+    <string-array name="filter_options">
+        <item>All</item>
+        <item>Last 7 days</item>
+        <item>Last 30 days</item>
+    </string-array>
+
+    <!-- Filters for stats screen -->
+    <string-array name="stats_filter_options">
+        <item>7 days</item>
+        <item>30 days</item>
+    </string-array>
+
+    <!-- Filter radio buttons -->
+    <string name="filter_all">All</string>
+    <string name="filter_incomes">Income</string>
+    <string name="filter_expenses">Expenses</string>
+
+    <!-- Chart tabs -->
+    <string name="tab_pie_chart">Pie</string>
+    <string name="tab_bar_chart">Bar</string>
+    <string name="tab_line_chart">Line</string>
+
+    <!-- Buttons -->
+    <string name="back_to_main">Back to main screen</string>
+    <string name="pick_period">Pick a period</string>
+    <string name="add_income">Add Income</string>
+    <string name="add_expense">Add Expense</string>
+    <string name="choose_category">Choose Category</string>
+    <string name="edit_record">Edit Record</string>
+    <string name="delete_record">Delete Record</string>
+    <string name="record_deleted">Record Deleted</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+
+    <!-- Other labels -->
+    <string name="chart_tabs">Chart Navigation</string>
+    <string name="select_period_title">Select a period</string>
+    <string name="no_data_for_selected_day">No data for this day</string>
+
+    <!-- Expense categories -->
+    <string name="category_food">Food</string>
+    <string name="category_transport">Transport</string>
+    <string name="category_medical">Medical</string>
+    <string name="category_home">Home</string>
+    <string name="category_entertainment">Entertainment</string>
+    <string name="category_shopping">Shopping</string>
+    <string name="category_other">Other</string>
+
+    <!-- Income categories -->
+    <string name="category_salary">Salary</string>
+    <string name="category_investments">Investments</string>
+    <string name="category_gift">Gifts</string>
+    <string name="category_other_income">Other (income)</string>
+
+</resources>

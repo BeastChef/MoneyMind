@@ -30,6 +30,14 @@
     <!-- ✅ Подписи для кнопок -->
     <string name="back_to_main">Вернуться на главный экран</string>
     <string name="pick_period">Выбрать период</string>
+    <string name="add_income">Добавить доход</string>
+    <string name="add_expense">Добавить расход</string>
+    <string name="choose_category">Выберите категорию</string>
+    <string name="edit_record">Редактировать запись</string>
+    <string name="delete_record">Удалить запись</string>
+    <string name="record_deleted">Запись удалена</string>
+    <string name="cancel">Отмена</string>
+    <string name="save">Сохранить</string>
 
     <!-- ✅ Прочие подписи -->
     <string name="chart_tabs">Навигация по графикам</string>
@@ -50,5 +58,37 @@
     <string name="category_investments">Инвестиции</string>
     <string name="category_gift">Подарки</string>
     <string name="category_other_income">Другое (доход)</string>
+
+    <!-- ✅ Перевод: выбор языка -->
+    <string name="choose_language">Выбрать язык</string>
+    <string name="language_dialog_title">Выберите язык</string>
+
+    <string-array name="language_names">
+        <item>Русский</item>
+        <item>English</item>
+        <item>中文</item>
+        <item>العربية</item>
+        <item>Español</item>
+        <item>Français</item>
+        <item>Deutsch</item>
+        <item>Türkçe</item>
+        <item>Italiano</item>
+        <item>日本語</item>
+        <item>한국어</item>
+    </string-array>
+
+    <string-array name="language_codes">
+        <item>ru</item>
+        <item>en</item>
+        <item>zh</item>
+        <item>ar</item>
+        <item>es</item>
+        <item>fr</item>
+        <item>de</item>
+        <item>tr</item>
+        <item>it</item>
+        <item>ja</item>
+        <item>ko</item>
+    </string-array>
 
 </resources>

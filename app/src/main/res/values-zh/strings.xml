@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
+    <!-- 应用名称 -->
+    <string name="app_name">MoneyMind</string>
+
+    <!-- 主屏幕过滤器 -->
+    <string-array name="filter_options">
+        <item>全部</item>
+        <item>最近7天</item>
+        <item>最近30天</item>
+    </string-array>
+
+    <!-- 统计屏幕过滤器 -->
+    <string-array name="stats_filter_options">
+        <item>7天</item>
+        <item>30天</item>
+    </string-array>
+
+    <!-- 数据类型选择 -->
+    <string name="filter_all">全部</string>
+    <string name="filter_incomes">收入</string>
+    <string name="filter_expenses">支出</string>
+
+    <!-- 图表标签 -->
+    <string name="tab_pie_chart">饼图</string>
+    <string name="tab_bar_chart">柱状图</string>
+    <string name="tab_line_chart">折线图</string>
+
+    <!-- 按钮标签 -->
+    <string name="back_to_main">返回主页</string>
+    <string name="pick_period">选择时间段</string>
+    <string name="add_income">添加收入</string>
+    <string name="add_expense">添加支出</string>
+    <string name="choose_category">选择类别</string>
+    <string name="edit_record">编辑记录</string>
+    <string name="delete_record">删除记录</string>
+    <string name="record_deleted">记录已删除</string>
+    <string name="cancel">取消</string>
+    <string name="save">保存</string>
+
+    <!-- 其他标签 -->
+    <string name="chart_tabs">图表导航</string>
+    <string name="select_period_title">选择时间段</string>
+    <string name="no_data_for_selected_day">该日期无数据</string>
+
+    <!-- 支出类别 -->
+    <string name="category_food">餐饮</string>
+    <string name="category_transport">交通</string>
+    <string name="category_medical">医疗</string>
+    <string name="category_home">住房</string>
+    <string name="category_entertainment">娱乐</string>
+    <string name="category_shopping">购物</string>
+    <string name="category_other">其他</string>
+
+    <!-- 收入类别 -->
+    <string name="category_salary">工资</string>
+    <string name="category_investments">投资</string>
+    <string name="category_gift">礼物</string>
+    <string name="category_other_income">其他（收入）</string>
+
+</resources>
