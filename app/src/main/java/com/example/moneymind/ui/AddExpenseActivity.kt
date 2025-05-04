@@ -2,21 +2,26 @@ package com.example.moneymind.ui
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.view.ViewGroup
+import android.widget.*
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.moneymind.MoneyMindApp
 import com.example.moneymind.R
 import com.example.moneymind.data.Expense
+import com.example.moneymind.data.AppDatabase
+import com.example.moneymind.model.CustomCategoryEntity
 import com.example.moneymind.utils.CategoryClassifier
 import com.example.moneymind.viewmodel.ExpenseViewModel
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -60,7 +65,6 @@ class AddExpenseActivity : AppCompatActivity() {
         selectedType = if (intent.getBooleanExtra("is_income", false)) "income" else "expense"
         selectedCategory = intent.getStringExtra("selected_category")
 
-        // Отображение иконки и текста категории (если выбрана)
         val iconMap = mapOf(
             "Зарплата" to R.drawable.ic_salary,
             "Дивиденды" to R.drawable.ic_investments,
@@ -110,7 +114,6 @@ class AddExpenseActivity : AppCompatActivity() {
                     selectedType = expense.type
                     selectedCategory = expense.category
 
-                    // Показать при редактировании
                     categoryText.text = selectedCategory
                     val iconRes = iconMap[selectedCategory] ?: R.drawable.ic_default_category
                     categoryIcon.setImageResource(iconRes)
@@ -150,5 +153,57 @@ class AddExpenseActivity : AppCompatActivity() {
 
             finish()
         }
+    }
+
+    private fun showAddCategoryDialog(isIncome: Boolean) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_category, null)
+        val editTextName = dialogView.findViewById<EditText>(R.id.editTextCategoryName)
+        val gridView = dialogView.findViewById<GridView>(R.id.iconGridView)
+
+        val iconResIds = resources.obtainTypedArray(R.array.category_icons)
+        val icons = (0 until iconResIds.length()).map { iconResIds.getResourceId(it, 0) }
+        iconResIds.recycle()
+
+        var selectedIcon = icons.first()
+
+        gridView.adapter = object : BaseAdapter() {
+            override fun getCount() = icons.size
+            override fun getItem(position: Int) = icons[position]
+            override fun getItemId(position: Int) = position.toLong()
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+                val imageView = ImageView(this@AddExpenseActivity)
+                imageView.setImageResource(icons[position])
+                imageView.layoutParams = AbsListView.LayoutParams(100, 100)
+                imageView.setPadding(8, 8, 8, 8)
+                return imageView
+            }
+        }
+
+        gridView.setOnItemClickListener { _, _, position, _ ->
+            selectedIcon = icons[position]
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Новая категория")
+            .setView(dialogView)
+            .setPositiveButton("Добавить") { _, _ ->
+                val name = editTextName.text.toString()
+                if (name.isNotBlank()) {
+                    val category = CustomCategoryEntity(
+                        name = name,
+                        iconResId = selectedIcon,
+                        isIncome = isIncome
+                    )
+                    lifecycleScope.launch {
+                        AppDatabase.getDatabase(applicationContext)
+                            .customCategoryDao()
+                            .insert(category)
+                    }
+                } else {
+                    Toast.makeText(this, "Введите название", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
     }
 }

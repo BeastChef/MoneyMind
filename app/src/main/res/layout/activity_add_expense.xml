@@ -40,6 +40,14 @@
                 android:textSize="16sp" />
         </LinearLayout>
 
+        <!-- 🆕 Кнопка Добавить категорию -->
+        <Button
+            android:id="@+id/btnAddCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Добавить категорию"
+            android:layout_marginBottom="16dp" />
+
         <!-- Название -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"

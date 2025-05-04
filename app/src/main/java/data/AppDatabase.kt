@@ -4,16 +4,20 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.moneymind.data.Category
+import com.example.moneymind.data.Expense
+import com.example.moneymind.model.CustomCategoryEntity
 
 @Database(
-    entities = [Expense::class, Category::class], // ✅ Expense и Category
-    version = 2, // ✅ версия БД увеличена до 2
+    entities = [Expense::class, Category::class, CustomCategoryEntity::class], // 👈 добавили CustomCategoryEntity
+    version = 3, // 👈 увеличили версию БД до 3
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun expenseDao(): ExpenseDao
     abstract fun categoryDao(): CategoryDao
+    abstract fun customCategoryDao(): CustomCategoryDao // 👈 добавили DAO
 
     companion object {
         @Volatile
@@ -24,9 +28,9 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "expense_database" // Имя файла базы данных
+                    "expense_database"
                 )
-                    .fallbackToDestructiveMigration() // ✅ если изменится схема — пересоздать БД
+                    .fallbackToDestructiveMigration() // 👈 сбрасывает БД при обновлении схемы
                     .build()
                 INSTANCE = instance
                 instance

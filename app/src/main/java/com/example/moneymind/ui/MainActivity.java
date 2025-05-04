@@ -142,8 +142,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.fabLanguage).setOnClickListener(v -> {
-            String[] languages = {"Русский", "English", "中文", "العربية", "Español", "Français", "Deutsch", "Türkçe", "Italiano", "日本語", "한국어"};
-            String[] codes = {"ru", "en", "zh", "ar", "es", "fr", "de", "tr", "it", "ja", "ko"};
+            String[] languages = {"Русский", "English", "中文", "العربية", "Español", "Deutsch", "Türkçe", "Italiano", "日本語", "한국어"};
+            String[] codes = {"ru", "en", "zh", "ar", "es","de", "tr", "it", "ja", "ko"};
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("Выберите язык")
                     .setItems(languages, (dialog, which) -> {

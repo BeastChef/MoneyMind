@@ -21,6 +21,18 @@
             android:inputType="textCapSentences" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- Иконка -->
+    <ImageView
+        android:id="@+id/iconImageView"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_category_default"
+        android:contentDescription="Выбрать иконку"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless" />
+
     <!-- Кнопка сохранить -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/saveCategoryButton"
