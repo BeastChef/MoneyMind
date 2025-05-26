@@ -21,4 +21,20 @@ class CategoryRepository(private val categoryDao: CategoryDao) {
     suspend fun getCategoryById(id: Int): Category? {
         return categoryDao.getById(id)
     }
+    suspend fun insertAll(categories: List<Category>) {
+        categories.forEach { insert(it) }
+    }
+
+    // 🔹 Получить только расходные категории
+    fun getExpenseCategories(): LiveData<List<Category>> {
+        return categoryDao.getExpenseCategories()
+    }
+
+    // 🔹 Получить только доходные категории
+    fun getIncomeCategories(): LiveData<List<Category>> {
+        return categoryDao.getIncomeCategories()
+    }
+    fun getCategoriesByType(isIncome: Boolean): LiveData<List<Category>> {
+        return categoryDao.getCategoriesByType(isIncome)
+    }
 }

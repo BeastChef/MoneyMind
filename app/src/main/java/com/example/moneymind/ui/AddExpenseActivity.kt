@@ -31,7 +31,6 @@ class AddExpenseActivity : AppCompatActivity() {
     private lateinit var amountInput: TextInputEditText
     private lateinit var dateInput: TextInputEditText
     private lateinit var saveButton: MaterialButton
-
     private lateinit var categoryLayout: View
     private lateinit var categoryIcon: ImageView
     private lateinit var categoryText: TextView
@@ -53,7 +52,6 @@ class AddExpenseActivity : AppCompatActivity() {
         amountInput = findViewById(R.id.inputAmount)
         dateInput = findViewById(R.id.inputDate)
         saveButton = findViewById(R.id.saveButton)
-
         categoryLayout = findViewById(R.id.selectedCategoryLayout)
         categoryIcon = findViewById(R.id.selectedCategoryIcon)
         categoryText = findViewById(R.id.selectedCategoryText)
@@ -65,24 +63,11 @@ class AddExpenseActivity : AppCompatActivity() {
         selectedType = if (intent.getBooleanExtra("is_income", false)) "income" else "expense"
         selectedCategory = intent.getStringExtra("selected_category")
 
-        val iconMap = mapOf(
-            "Зарплата" to R.drawable.ic_salary,
-            "Дивиденды" to R.drawable.ic_investments,
-            "Подарки" to R.drawable.ic_gift,
-            "Другое" to R.drawable.ic_other_income,
-            "Еда" to R.drawable.ic_food,
-            "Транспорт" to R.drawable.ic_transport,
-            "Медицина" to R.drawable.ic_medical,
-            "Развлечения" to R.drawable.ic_entertainment,
-            "Жильё" to R.drawable.ic_myhome,
-            "Покупки" to R.drawable.ic_shopping,
-            "Другое" to R.drawable.ic_other
-        )
-
+        // Обновление UI с иконкой
         selectedCategory?.let { name ->
             categoryText.text = name
-            val iconRes = iconMap[name] ?: R.drawable.ic_default_category
-            categoryIcon.setImageResource(iconRes)
+            val iconRes = resources.getIdentifier("ic_${name.lowercase()}", "drawable", packageName)
+            categoryIcon.setImageResource(if (iconRes != 0) iconRes else R.drawable.ic_default_category)
             categoryLayout.visibility = View.VISIBLE
         }
 
@@ -113,10 +98,9 @@ class AddExpenseActivity : AppCompatActivity() {
                     dateInput.setText(formatter.format(Date(expense.date)))
                     selectedType = expense.type
                     selectedCategory = expense.category
-
                     categoryText.text = selectedCategory
-                    val iconRes = iconMap[selectedCategory] ?: R.drawable.ic_default_category
-                    categoryIcon.setImageResource(iconRes)
+                    val iconRes = resources.getIdentifier("ic_${selectedCategory?.lowercase()}", "drawable", packageName)
+                    categoryIcon.setImageResource(if (iconRes != 0) iconRes else R.drawable.ic_default_category)
                     categoryLayout.visibility = View.VISIBLE
                 }
             }
@@ -140,7 +124,7 @@ class AddExpenseActivity : AppCompatActivity() {
                 category = category,
                 date = selectedDateMillis,
                 note = null,
-                type = selectedType
+                type = selectedType // ✅ важно: сохранит как доход, если доход
             )
 
             if (selectedExpenseId != null) {
@@ -155,12 +139,13 @@ class AddExpenseActivity : AppCompatActivity() {
         }
     }
 
+    // Можно вызвать при нажатии на "Добавить свою категорию"
     private fun showAddCategoryDialog(isIncome: Boolean) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_category, null)
         val editTextName = dialogView.findViewById<EditText>(R.id.editTextCategoryName)
         val gridView = dialogView.findViewById<GridView>(R.id.iconGridView)
 
-        val iconResIds = resources.obtainTypedArray(R.array.category_icons)
+        val iconResIds = resources.obtainTypedArray(R.array.icon_res_ids)
         val icons = (0 until iconResIds.length()).map { iconResIds.getResourceId(it, 0) }
         iconResIds.recycle()
 
@@ -195,9 +180,7 @@ class AddExpenseActivity : AppCompatActivity() {
                         isIncome = isIncome
                     )
                     lifecycleScope.launch {
-                        AppDatabase.getDatabase(applicationContext)
-                            .customCategoryDao()
-                            .insert(category)
+                        AppDatabase.getDatabase(applicationContext).customCategoryDao().insert(category)
                     }
                 } else {
                     Toast.makeText(this, "Введите название", Toast.LENGTH_SHORT).show()

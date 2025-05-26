@@ -91,4 +91,7 @@
         <item>ko</item>
     </string-array>
 
+    <!-- 🛠️ Добавлено для item_category.xml -->
+    <string name="icon">Иконка</string>
+
 </resources>

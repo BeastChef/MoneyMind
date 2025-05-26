@@ -1,25 +1,39 @@
 package com.example.moneymind.ui
 
 import android.app.AlertDialog
-import android.content.Intent
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.Toast
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.moneymind.R
 import com.example.moneymind.data.AppDatabase
-import com.example.moneymind.model.CustomCategoryEntity
+import com.example.moneymind.data.Category
+import com.example.moneymind.data.CategoryRepository
+import com.example.moneymind.viewmodel.CategoryViewModel
+import com.example.moneymind.viewmodel.CategoryViewModelFactory
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.launch
 
 class AddCustomCategoryActivity : AppCompatActivity() {
 
     private lateinit var inputCategoryName: TextInputEditText
     private lateinit var saveButton: MaterialButton
     private lateinit var selectedIconView: ImageView
+    private lateinit var layout: LinearLayout
 
-    private var selectedIconResId: Int = R.drawable.ic_category_default // Значение по умолчанию
+    private var selectedIconResId: Int = R.drawable.ic_category_default
+
+    // Получаем ViewModel через фабрику
+    private val categoryViewModel: CategoryViewModel by lazy {
+        val dao = AppDatabase.getDatabase(applicationContext).categoryDao()
+        val repository = CategoryRepository(dao)
+        ViewModelProvider(this, CategoryViewModelFactory(repository))[CategoryViewModel::class.java]
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,55 +41,82 @@ class AddCustomCategoryActivity : AppCompatActivity() {
 
         inputCategoryName = findViewById(R.id.inputCategoryName)
         saveButton = findViewById(R.id.saveCategoryButton)
+        layout = findViewById(R.id.addCategoryLayout)
 
-        // Добавим отображение и выбор иконки
+        // Добавляем иконку в layout
         selectedIconView = ImageView(this).apply {
             setImageResource(selectedIconResId)
-            layoutParams = android.widget.LinearLayout.LayoutParams(200, 200)
+            layoutParams = LinearLayout.LayoutParams(200, 200)
             setOnClickListener {
-                showIconPickerDialog()
+                showIconGridDialog()
             }
         }
+        layout.addView(selectedIconView, 1)
 
-        val layout = findViewById<android.widget.LinearLayout>(R.id.addCategoryLayout)
-        layout.addView(selectedIconView, 1) // Вставляем иконку после поля ввода
-
+        // Обработка кнопки "Сохранить"
         saveButton.setOnClickListener {
-            val categoryName = inputCategoryName.text.toString().trim()
-            if (categoryName.isNotEmpty()) {
-                saveCustomCategory(categoryName)
+            val name = inputCategoryName.text.toString().trim()
+            if (name.isNotEmpty()) {
+                saveCustomCategory(name)
             } else {
                 Toast.makeText(this, "Введите название категории", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun showIconPickerDialog() {
-        val iconNames = resources.getStringArray(R.array.icon_names)
-        val iconResIds = resources.obtainTypedArray(R.array.icon_res_ids)
+    private fun showIconGridDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_icon_grid, null)
+        val gridView = dialogView.findViewById<GridView>(R.id.iconGridView)
 
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, iconNames)
+        val iconResArray = resources.obtainTypedArray(R.array.icon_res_ids)
+        val icons = (0 until iconResArray.length()).map { iconResArray.getResourceId(it, 0) }
+        iconResArray.recycle()
+
+        var tempSelected = selectedIconResId
+
+        val adapter = object : BaseAdapter() {
+            override fun getCount() = icons.size
+            override fun getItem(position: Int) = icons[position]
+            override fun getItemId(position: Int) = position.toLong()
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+                return ImageView(this@AddCustomCategoryActivity).apply {
+                    setImageResource(icons[position])
+                    layoutParams = AbsListView.LayoutParams(150, 150)
+                    setPadding(12, 12, 12, 12)
+                }
+            }
+        }
+
+        gridView.adapter = adapter
+        gridView.setOnItemClickListener { _, _, position, _ ->
+            tempSelected = icons[position]
+        }
 
         AlertDialog.Builder(this)
             .setTitle("Выберите иконку")
-            .setAdapter(adapter) { _, which ->
-                selectedIconResId = iconResIds.getResourceId(which, R.drawable.ic_category_default)
+            .setView(dialogView)
+            .setPositiveButton("Выбрать") { _, _ ->
+                selectedIconResId = tempSelected
                 selectedIconView.setImageResource(selectedIconResId)
             }
             .setNegativeButton("Отмена", null)
             .show()
-
-        iconResIds.recycle()
     }
 
     private fun saveCustomCategory(name: String) {
-        val category = CustomCategoryEntity(name = name, iconResId = selectedIconResId)
+        val isIncome = intent.getStringExtra("CATEGORY_TYPE") == "income"
 
-        val db = AppDatabase.getDatabase(this)
-        db.customCategoryDao().insert(category)
+        val category = Category(
+            name = name,
+            iconResId = selectedIconResId,
+            isIncome = isIncome
+        )
 
-        Toast.makeText(this, "Категория добавлена", Toast.LENGTH_SHORT).show()
-        setResult(RESULT_OK, Intent()) // Можно обновить список в вызывающей активности
-        finish()
+        lifecycleScope.launch {
+            categoryViewModel.insert(category)
+            Toast.makeText(this@AddCustomCategoryActivity, "Категория добавлена", Toast.LENGTH_SHORT).show()
+            setResult(RESULT_OK)
+            finish()
+        }
     }
 }

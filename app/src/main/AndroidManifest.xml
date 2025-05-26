@@ -16,12 +16,7 @@
         android:theme="@style/Theme.MoneyMind"
         tools:targetApi="31">
 
-        <activity android:name=".ui.StatsActivity" />
-        <activity android:name=".ui.AddExpenseActivity" />
-
-        <!-- ✅ ВАЖНО: добавляем эту активность -->
-        <activity android:name=".ui.choose.ChooseCategoryActivity" />
-
+        <!-- Главное окно -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">
@@ -30,6 +25,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Остальные активити -->
+        <activity android:name=".ui.StatsActivity" />
+        <activity android:name=".ui.AddExpenseActivity" />
+        <activity android:name=".ui.AddCustomCategoryActivity" />
+        <activity android:name=".ui.ChooseExpenseCategoryActivity" />
+        <activity android:name=".ui.ChooseIncomeCategoryActivity" />
+
+        <!-- Если есть активити, которые ещё нужны -->
+        <!-- <activity android:name=".ui.choose.ChooseCategoryActivity" /> -->
     </application>
 
 </manifest>

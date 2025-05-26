@@ -23,6 +23,15 @@ class CategoryViewModel(private val repository: CategoryRepository) : ViewModel(
     suspend fun getCategoryById(id: Int): Category? {
         return repository.getCategoryById(id)
     }
+
+    // ✅ Новый метод для получения категорий по типу доход/расход
+    fun getCategories(isIncome: Boolean): LiveData<List<Category>> {
+        return if (isIncome) {
+            repository.getIncomeCategories()
+        } else {
+            repository.getExpenseCategories()
+        }
+    }
 }
 
 class CategoryViewModelFactory(private val repository: CategoryRepository) : ViewModelProvider.Factory {

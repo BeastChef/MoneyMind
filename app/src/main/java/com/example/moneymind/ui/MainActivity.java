@@ -1,6 +1,7 @@
 package com.example.moneymind.ui;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -15,7 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-
+import com.example.moneymind.data.Category;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -28,14 +29,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneymind.MoneyMindApp;
 import com.example.moneymind.R;
+import com.example.moneymind.data.AppDatabase;
+import com.example.moneymind.data.CategoryDao;
+import com.example.moneymind.data.CategoryRepository;
 import com.example.moneymind.data.Expense;
+import com.example.moneymind.utils.DefaultCategoriesProvider;
 import com.example.moneymind.viewmodel.ExpenseViewModel;
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory;
-import com.example.moneymind.ui.choose.ChooseCategoryActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        // 👇 Добавляем дефолтные категории, если их нет
+        insertDefaultsIfEmpty(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
@@ -134,8 +142,12 @@ public class MainActivity extends AppCompatActivity {
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle(getString(R.string.choose_category))
                     .setItems(options, (dialog, which) -> {
-                        Intent intent = new Intent(MainActivity.this, ChooseCategoryActivity.class);
-                        intent.putExtra("is_income", which == 1);
+                        Intent intent;
+                        if (which == 1) {
+                            intent = new Intent(MainActivity.this, ChooseIncomeCategoryActivity.class);
+                        } else {
+                            intent = new Intent(MainActivity.this, ChooseExpenseCategoryActivity.class);
+                        }
                         startActivityForResult(intent, REQUEST_CHOOSE_CATEGORY);
                     })
                     .show();
@@ -143,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(R.id.fabLanguage).setOnClickListener(v -> {
             String[] languages = {"Русский", "English", "中文", "العربية", "Español", "Deutsch", "Türkçe", "Italiano", "日本語", "한국어"};
-            String[] codes = {"ru", "en", "zh", "ar", "es","de", "tr", "it", "ja", "ko"};
+            String[] codes = {"ru", "en", "zh", "ar", "es", "de", "tr", "it", "ja", "ko"};
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("Выберите язык")
                     .setItems(languages, (dialog, which) -> {
@@ -216,14 +228,25 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CHOOSE_CATEGORY && resultCode == RESULT_OK && data != null) {
-            String selectedCategory = data.getStringExtra("selected_category");
-            boolean isIncome = data.getBooleanExtra("is_income", false);
+            int categoryId = data.getIntExtra("selected_category_id", -1);
+            if (categoryId != -1) {
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    Category category = AppDatabase.getDatabase(getApplicationContext()).categoryDao().getByIdSync(categoryId);
+                    if (category != null) {
+                        final String categoryName = category.getName();
+                        final boolean isIncome = category.isIncome();
 
-            Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
-            intent.putExtra("selected_category", selectedCategory);
-            intent.putExtra("is_income", isIncome);
-            startActivity(intent);
+                        runOnUiThread(() -> {
+                            Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
+                            intent.putExtra("selected_category", categoryName);
+                            intent.putExtra("is_income", isIncome);
+                            startActivity(intent);
+                        });
+                    }
+                });
+            }
         }
+
     }
 
     private void setLocale(String langCode) {
@@ -234,9 +257,23 @@ public class MainActivity extends AppCompatActivity {
         config.setLocale(newLocale);
         getResources().updateConfiguration(config, getResources().getDisplayMetrics());
 
-        // Перезапуск активити
         Intent refresh = new Intent(this, MainActivity.class);
         finish();
         startActivity(refresh);
+    }
+
+    // ✅ Метод для вставки дефолтных категорий
+    private void insertDefaultsIfEmpty(Context context) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            AppDatabase db = AppDatabase.getDatabase(context);
+            CategoryDao dao = db.categoryDao();
+
+            if (dao.getAllNow().isEmpty()) {
+                CategoryRepository repository = new CategoryRepository(dao);
+                DefaultCategoriesProvider.INSTANCE.getDefaultExpenseCategories();
+                DefaultCategoriesProvider.INSTANCE.getDefaultIncomeCategories();
+
+            }
+        });
     }
 }
