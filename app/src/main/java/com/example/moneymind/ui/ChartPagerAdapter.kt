@@ -1,10 +1,13 @@
 package com.example.moneymind.ui.charts
 
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.example.moneymind.R
 import com.example.moneymind.data.Expense
 import com.github.mikephil.charting.charts.*
 import com.github.mikephil.charting.components.XAxis
@@ -12,7 +15,6 @@ import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
-import com.github.mikephil.charting.utils.ColorTemplate
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.abs
@@ -22,15 +24,40 @@ class ChartPagerAdapter(
     private val onCategoryClick: (String) -> Unit
 ) : RecyclerView.Adapter<ChartPagerAdapter.ChartViewHolder>() {
 
-    private var pieData: List<PieEntry> = emptyList()
     private var expenseData: List<Expense> = emptyList()
     private var summaryMode: Boolean = false
     private var selectedStatsType: Int = 0
 
-    fun setChartData(entries: List<PieEntry>) {
-        pieData = entries
-        notifyDataSetChanged()
-    }
+    private val incomeColors = listOf(
+        Color.parseColor("#4CAF50"), Color.parseColor("#2196F3"), Color.parseColor("#9C27B0"),
+        Color.parseColor("#00BCD4"), Color.parseColor("#8BC34A"), Color.parseColor("#03A9F4"),
+        Color.parseColor("#673AB7"), Color.parseColor("#009688"), Color.parseColor("#AED581"),
+        Color.parseColor("#64B5F6"), Color.parseColor("#9575CD"), Color.parseColor("#81C784"),
+        Color.parseColor("#7986CB"), Color.parseColor("#4DB6AC"), Color.parseColor("#1DE9B6")
+    )
+
+    private val expenseColors = listOf(
+        Color.parseColor("#E91E63"), // розовый
+        Color.parseColor("#9C27B0"), // фиолетовый
+        Color.parseColor("#3F51B5"), // синий
+        Color.parseColor("#FFEB3B"), // жёлтый
+        Color.parseColor("#795548"), // коричневый
+        Color.parseColor("#607D8B"), // сизый
+        Color.parseColor("#BA68C8"), // светло-фиолетовый
+        Color.parseColor("#7986CB"), // светло-синий
+        Color.parseColor("#FFD54F"), // светло-жёлтый
+        Color.parseColor("#A1887F"), // серо-коричневый
+        Color.parseColor("#90A4AE"), // светло-сизый
+        Color.parseColor("#CE93D8"), // сиреневый
+        Color.parseColor("#F8BBD0"), // светло-розовый
+        Color.parseColor("#D1C4E9"), // лавандовый
+        Color.parseColor("#BCAAA4"),  // светло-коричневый
+        Color.parseColor("#F44336"), Color.parseColor("#FF9800"), Color.parseColor("#FF5722"),
+        Color.parseColor("#FFC107"), Color.parseColor("#E91E63"), Color.parseColor("#FF7043"),
+        Color.parseColor("#FF8A65"), Color.parseColor("#D32F2F"), Color.parseColor("#F06292"),
+        Color.parseColor("#FFB300"), Color.parseColor("#FF5252"), Color.parseColor("#F9A825"),
+        Color.parseColor("#F50057"), Color.parseColor("#FFA726"), Color.parseColor("#E64A19")
+    )
 
     fun setExpenses(expenses: List<Expense>, isSummaryMode: Boolean, statsType: Int) {
         expenseData = expenses.sortedBy { it.date }
@@ -58,7 +85,7 @@ class ChartPagerAdapter(
 
     override fun onBindViewHolder(holder: ChartViewHolder, position: Int) {
         when (val chart = holder.itemView) {
-            is PieChart -> bindPieChart(chart)
+            is PieChart -> setupPieChart(chart)
             is BarChart -> bindBarChart(chart)
             is LineChart -> bindLineChart(chart)
         }
@@ -66,42 +93,20 @@ class ChartPagerAdapter(
 
     class ChartViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
-    private fun bindPieChart(pieChart: PieChart) {
-        val dataSet = PieDataSet(pieData, "Категории")
-        dataSet.setColors(ColorTemplate.MATERIAL_COLORS.toList())
-        dataSet.valueTextSize = 14f
-        dataSet.valueTextColor = Color.WHITE
-
-        pieChart.data = PieData(dataSet)
-        pieChart.setUsePercentValues(true)
-        pieChart.setEntryLabelTextSize(12f)
-        pieChart.setEntryLabelColor(Color.BLACK)
-        pieChart.centerText = "Расходы/Доходы"
-        pieChart.setCenterTextSize(18f)
-        pieChart.setHoleRadius(40f)
-        pieChart.setTransparentCircleRadius(45f)
-
-        pieChart.description.isEnabled = false
-        pieChart.legend.isEnabled = false
-
-        pieChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
-            override fun onValueSelected(e: Entry?, h: Highlight?) {
-                if (e is PieEntry) {
-                    onCategoryClick(e.label)
-                }
-            }
-            override fun onNothingSelected() {}
-        })
-
-        pieChart.animateY(800)
-        pieChart.invalidate()
-    }
-
     private fun bindBarChart(barChart: BarChart) {
         val (entries, labels) = prepareChartData()
 
         val dataSet = BarDataSet(entries, "Баланс по дням").apply {
-            colors = entries.map { if (it.y >= 0) Color.GREEN else Color.RED }
+            colors = entries.map {
+                when (selectedStatsType) {
+                    R.id.statsTypeIncomes -> ContextCompat.getColor(context, R.color.income_color_strong)
+                    R.id.statsTypeExpenses -> ContextCompat.getColor(context, R.color.expense_color_orange)
+                    else -> if (it.y >= 0)
+                        ContextCompat.getColor(context, R.color.income_color_strong)
+                    else
+                        ContextCompat.getColor(context, R.color.expense_color_orange)
+                }
+            }
             valueTextSize = 12f
             valueTextColor = Color.BLACK
         }
@@ -118,6 +123,7 @@ class ChartPagerAdapter(
                     onCategoryClick(labels[index])
                 }
             }
+
             override fun onNothingSelected() {}
         })
 
@@ -127,12 +133,17 @@ class ChartPagerAdapter(
 
     private fun bindLineChart(lineChart: LineChart) {
         val (barEntries, labels) = prepareChartData()
+        val entries = barEntries.map { Entry(it.x, it.y) }
 
-        val entries = barEntries.map { Entry(it.x, it.y) } // конвертация!
+        val lineColor = when (selectedStatsType) {
+            R.id.statsTypeIncomes -> ContextCompat.getColor(context, R.color.income_color_strong)
+            R.id.statsTypeExpenses -> ContextCompat.getColor(context, R.color.expense_color_orange)
+            else -> Color.BLUE
+        }
 
         val dataSet = LineDataSet(entries, "Баланс по дням").apply {
-            color = ColorTemplate.getHoloBlue()
-            setCircleColor(ColorTemplate.getHoloBlue())
+            color = lineColor
+            setCircleColor(lineColor)
             lineWidth = 2f
             circleRadius = 4f
             valueTextSize = 12f
@@ -149,11 +160,111 @@ class ChartPagerAdapter(
                     onCategoryClick(labels[index])
                 }
             }
+
             override fun onNothingSelected() {}
         })
 
         lineChart.animateX(800)
         lineChart.invalidate()
+    }
+
+    private fun setupPieChart(chart: PieChart) {
+        val entries = mutableListOf<PieEntry>()
+        val labels = mutableListOf<String>()
+
+        when (selectedStatsType) {
+            R.id.statsTypeAll -> {
+                val incomeTotal = expenseData.filter { it.type == "income" }.sumOf { it.amount.toDouble() }.toFloat()
+                val expenseTotal = expenseData.filter { it.type == "expense" }.sumOf { it.amount.toDouble() }.toFloat()
+
+                if (incomeTotal > 0f) entries.add(PieEntry(incomeTotal, "Доходы"))
+                if (expenseTotal > 0f) entries.add(PieEntry(expenseTotal, "Расходы"))
+
+                labels.addAll(listOf("Доходы", "Расходы"))
+
+                val colors = listOf(
+                    ContextCompat.getColor(context, R.color.income_color_strong),
+                    ContextCompat.getColor(context, R.color.expense_color_orange)
+                )
+
+                applyPieChart(chart, entries, labels, colors, "Финансы", expenseData, true)
+                return
+            }
+
+            R.id.statsTypeIncomes, R.id.statsTypeExpenses -> {
+                val isIncome = selectedStatsType == R.id.statsTypeIncomes
+                val filtered = expenseData.filter { it.type == if (isIncome) "income" else "expense" }
+                val grouped = filtered.groupBy { it.category }
+                    .mapValues { entry -> entry.value.sumOf { it.amount.toDouble() }.toFloat() }
+
+                grouped.forEach { (category, sum) ->
+                    if (sum > 0f) {
+                        entries.add(PieEntry(sum, category))
+                        labels.add(category)
+                    }
+                }
+
+                val baseColors = if (isIncome) incomeColors else expenseColors
+                val adjustedColors = List(entries.size) { i -> baseColors[i % baseColors.size] }
+
+                applyPieChart(chart, entries, labels, adjustedColors, if (isIncome) "Доходы" else "Расходы", filtered, false)
+            }
+        }
+    }
+    private fun applyPieChart(
+        chart: PieChart,
+        entries: List<PieEntry>,
+        labels: List<String>,
+        colors: List<Int>,
+        centerText: String,
+        dataSource: List<Expense>,
+        summaryMode: Boolean
+    ) {
+        val dataSet = PieDataSet(entries, "")
+        dataSet.colors = colors
+        dataSet.valueTextSize = 14f
+        dataSet.valueTextColor = Color.BLACK
+
+        val data = PieData(dataSet)
+        chart.data = data
+        chart.centerText = centerText
+        chart.setEntryLabelColor(Color.DKGRAY)
+        chart.description.isEnabled = false
+        chart.legend.isEnabled = false
+        chart.setUsePercentValues(true)
+        chart.setCenterTextSize(18f)
+        chart.setHoleRadius(40f)
+        chart.setTransparentCircleRadius(45f)
+
+        chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                val index = h?.x?.toInt() ?: return
+                val label = labels.getOrNull(index) ?: return
+
+                val filtered = if (summaryMode) {
+                    val type = if (label == "Доходы") "income" else "expense"
+                    dataSource.filter { it.type == type }
+                } else {
+                    dataSource.filter { it.category == label }
+                }
+
+                val details = filtered.map {
+                    val sign = if (it.type == "income") "+ " else "- "
+                    "• ${it.title} — $sign${it.amount} ₽"
+                }
+
+                AlertDialog.Builder(context)
+                    .setTitle(label)
+                    .setMessage(details.joinToString("\n").ifEmpty { "Нет данных" })
+                    .setPositiveButton("ОК", null)
+                    .show()
+            }
+
+            override fun onNothingSelected() {}
+        })
+
+        chart.animateY(800)
+        chart.invalidate()
     }
 
     private fun prepareChartData(): Pair<List<BarEntry>, List<String>> {
@@ -162,10 +273,19 @@ class ChartPagerAdapter(
         for (expense in expenseData) {
             val date = expense.getShortDate()
             val amount = expense.amount.toFloat()
-            if (expense.type == "income") {
-                dateChanges[date] = (dateChanges[date] ?: 0f) + amount
-            } else if (expense.type == "expense") {
-                dateChanges[date] = (dateChanges[date] ?: 0f) - amount
+
+            when (selectedStatsType) {
+                R.id.statsTypeIncomes -> if (expense.type == "income")
+                    dateChanges[date] = (dateChanges[date] ?: 0f) + amount
+                R.id.statsTypeExpenses -> if (expense.type == "expense")
+                    dateChanges[date] = (dateChanges[date] ?: 0f) - amount
+                else -> {
+                    if (expense.type == "income") {
+                        dateChanges[date] = (dateChanges[date] ?: 0f) + amount
+                    } else if (expense.type == "expense") {
+                        dateChanges[date] = (dateChanges[date] ?: 0f) - amount
+                    }
+                }
             }
         }
 

@@ -24,8 +24,11 @@
     <color name="teal_200">#03DAC5</color>
     <color name="teal_700">#018786</color>
 
-    <!-- ✅ Новые цвета для доходов и расходов -->
-    <color name="income_color">#4CAF50</color> <!-- Зеленый для доходов -->
-    <color name="expense_color">#F44336</color> <!-- Красный для расходов -->
+    <!-- ✅ Цвета для графиков -->
+    <color name="income_color">#4CAF50</color> <!-- Зелёный для текста -->
+    <color name="expense_color">#F44336</color> <!-- Красный для текста -->
+
+    <color name="income_color_strong">#4CAF50</color> <!-- Для графика -->
+    <color name="expense_color_orange">#FFA726</color> <!-- Для графика -->
 
 </resources>
