@@ -16,9 +16,10 @@
         android:theme="@style/Theme.MoneyMind"
         tools:targetApi="31">
 
-        <!-- Главное окно -->
+        <!-- 🌟 Splash Activity — главная -->
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".SplashActivity"
+            android:theme="@style/Theme.MoneyMind.Fullscreen"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,15 +27,19 @@
             </intent-filter>
         </activity>
 
-        <!-- Остальные активити -->
+        <!-- Главное окно -->
+        <activity android:name=".ui.MainActivity" />
+
+        <!-- Остальные активности -->
         <activity android:name=".ui.StatsActivity" />
         <activity android:name=".ui.AddExpenseActivity" />
         <activity android:name=".ui.AddCustomCategoryActivity" />
         <activity android:name=".ui.ChooseExpenseCategoryActivity" />
         <activity android:name=".ui.ChooseIncomeCategoryActivity" />
 
-        <!-- Если есть активити, которые ещё нужны -->
+        <!-- При необходимости -->
         <!-- <activity android:name=".ui.choose.ChooseCategoryActivity" /> -->
+
     </application>
 
 </manifest>

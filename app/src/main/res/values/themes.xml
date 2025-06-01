@@ -12,5 +12,18 @@
         <!-- Поведение -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
         <item name="android:navigationBarColor" tools:targetApi="l">?attr/colorPrimary</item>
+
+        <!-- Отключение SplashScreen API на Android 12+ -->
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@null</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@null</item>
+        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="31">@null</item>
+    </style>
+
+    <!-- 🎯 Splash Screen Theme -->
+    <style name="Theme.MoneyMind.Fullscreen" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/md_theme_primary</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 </resources>
