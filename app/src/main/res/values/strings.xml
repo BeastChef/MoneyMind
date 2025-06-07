@@ -22,6 +22,14 @@
     <string name="filter_incomes">Доходы</string>
     <string name="filter_expenses">Расходы</string>
 
+    <string name="statistics">Статистика</string>
+    <string name="settings">Настройки</string>
+    <string name="calendar">Календарь</string>
+    <string name="search">Поиск</string>
+
+    <string name="stats_title">Свести</string>
+
+
     <!-- ✅ Строки для вкладок графиков -->
     <string name="tab_pie_chart">Круговая</string>
     <string name="tab_bar_chart">Столбцы</string>

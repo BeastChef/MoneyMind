@@ -2,112 +2,223 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/statsRoot"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.StatsActivity">
+    android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <!-- 🔝 Верхняя панель -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="Свести"
+        app:titleCentered="true"
+        app:titleTextColor="@color/black"
+        app:menu="@menu/top_app_bar_menu"
+        app:popupTheme="@style/ThemeOverlay.Material3.Light" />
 
-        <!-- 🔽 Фильтр по периоду (7 дней, 30 дней) -->
-        <Spinner
-            android:id="@+id/statsFilterSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:minHeight="48dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:padding="8dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="TouchTargetSizeCheck"
-            android:contentDescription="@string/chart_tabs" />
+    <!-- 📦 Основной контент -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="64dp"
+        android:padding="16dp">
 
-        <!-- 🔽 Фильтр по типу данных -->
-        <RadioGroup
-            android:id="@+id/statsTypeGroup"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@id/statsFilterSpinner"
-            app:layout_constraintStart_toStartOf="parent">
+            android:orientation="vertical">
 
-            <RadioButton
-                android:id="@+id/statsTypeAll"
+            <!-- 🎛️ Фильтры -->
+            <Spinner
+                android:id="@+id/statsFilterSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:paddingHorizontal="8dp"
+                android:contentDescription="Выбор периода: все время, 7 дней, 30 дней"/>
+
+            <RadioGroup
+                android:id="@+id/statsTypeGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/filter_all"
-                android:checked="true" />
+                android:orientation="horizontal">
 
-            <RadioButton
-                android:id="@+id/statsTypeIncomes"
-                android:layout_width="wrap_content"
+                <RadioButton
+                    android:id="@+id/statsTypeAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Все"
+                    android:checked="true" />
+
+                <RadioButton
+                    android:id="@+id/statsTypeIncomes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Доходы" />
+
+                <RadioButton
+                    android:id="@+id/statsTypeExpenses"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Расходы" />
+            </RadioGroup>
+
+            <!-- 🧊 Карточки: Доходы, Расходы, Баланс -->
+            <LinearLayout
+                android:id="@+id/cardsContainer"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/filter_incomes" />
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                android:weightSum="3">
 
-            <RadioButton
-                android:id="@+id/statsTypeExpenses"
-                android:layout_width="wrap_content"
+                <!-- 💰 Доходы -->
+                <LinearLayout
+                    android:id="@+id/cardIncome"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="100dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/card_background"
+                    android:padding="12dp"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Доходы"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:textSize="14sp"/>
+
+                    <TextView
+                        android:id="@+id/textIncome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 ₽"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="8dp"/>
+                </LinearLayout>
+
+                <!-- 💸 Расходы -->
+                <LinearLayout
+                    android:id="@+id/cardExpense"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="100dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/card_background"
+                    android:padding="12dp"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Расходы"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:textSize="14sp"/>
+
+                    <TextView
+                        android:id="@+id/textExpense"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 ₽"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="8dp"/>
+                </LinearLayout>
+
+                <!-- ⚖️ Баланс -->
+                <LinearLayout
+                    android:id="@+id/cardBalance"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="100dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/card_background"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Баланс"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:textSize="14sp"/>
+
+                    <TextView
+                        android:id="@+id/textBalance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 ₽"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="8dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 📊 Графики -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/chartTabLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/filter_expenses" />
-        </RadioGroup>
+                android:contentDescription="Тип графика: круговой, линейный, столбчатый"
+                app:tabMode="fixed"
+                app:tabGravity="fill"
+                app:tabIndicatorColor="@color/brown_wood"
+                app:tabSelectedTextColor="@color/brown_wood"
+                app:tabTextColor="@android:color/darker_gray"/>
 
-        <!-- 🔽 Переключатель типа графика -->
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/chartTabLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:tabIndicatorColor="@color/md_theme_primary"
-            app:tabSelectedTextColor="@color/md_theme_primary"
-            app:tabTextColor="@android:color/darker_gray"
-            app:tabMode="fixed"
-            app:tabGravity="fill"
-            app:layout_constraintTop_toBottomOf="@id/statsTypeGroup"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:contentDescription="@string/chart_tabs" />
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/chartViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:layout_marginTop="8dp"/>
 
-        <!-- 🔽 Сами графики -->
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/chartViewPager"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@id/chartTabLayout"
-            app:layout_constraintBottom_toTopOf="@+id/fabBackToMain"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+        </LinearLayout>
+    </ScrollView>
 
-        <!-- ✅ FAB: Назад -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabBackToMain"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:src="@android:drawable/ic_menu_revert"
-            android:contentDescription="@string/back_to_main"
-            app:tint="@android:color/white"
-            app:backgroundTint="@color/md_theme_primary"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+    <!-- 🔘 FAB Назад -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabBackToMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|bottom"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="24dp"
+        android:contentDescription="Назад"
+        android:src="@drawable/ic_back"
+        app:backgroundTint="@color/brown_wood"
+        app:tint="@android:color/white"/>
 
-        <!-- ✅ FAB: Открыть календарь -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabPickDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:src="@android:drawable/ic_menu_month"
-            android:contentDescription="@string/pick_period"
-            app:tint="@android:color/white"
-            app:backgroundTint="@color/teal_200"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- 🔘 FAB Календарь -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabPickDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="24dp"
+        android:contentDescription="Календарь"
+        android:src="@drawable/ic_calendar"
+        app:backgroundTint="@color/brown_wood"
+        app:tint="@android:color/white"/>
+
+    <!-- 🔘 FAB Поиск -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:contentDescription="Поиск"
+        android:src="@drawable/ic_search"
+        app:backgroundTint="@color/brown_wood"
+        app:tint="@android:color/white"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

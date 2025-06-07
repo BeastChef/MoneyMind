@@ -12,8 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.moneymind.MoneyMindApp
 import com.example.moneymind.R
-import com.example.moneymind.data.Expense
 import com.example.moneymind.data.AppDatabase
+import com.example.moneymind.data.Expense
 import com.example.moneymind.model.CustomCategoryEntity
 import com.example.moneymind.utils.CategoryClassifier
 import com.example.moneymind.viewmodel.ExpenseViewModel
@@ -45,6 +45,9 @@ class AddExpenseActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // 🌅 Плавная анимация при запуске
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_expense)
 
@@ -63,7 +66,6 @@ class AddExpenseActivity : AppCompatActivity() {
         selectedType = if (intent.getBooleanExtra("is_income", false)) "income" else "expense"
         selectedCategory = intent.getStringExtra("selected_category")
 
-        // Обновление UI с иконкой
         selectedCategory?.let { name ->
             categoryText.text = name
             val iconRes = resources.getIdentifier("ic_${name.lowercase()}", "drawable", packageName)
@@ -124,7 +126,7 @@ class AddExpenseActivity : AppCompatActivity() {
                 category = category,
                 date = selectedDateMillis,
                 note = null,
-                type = selectedType // ✅ важно: сохранит как доход, если доход
+                type = selectedType
             )
 
             if (selectedExpenseId != null) {
@@ -139,7 +141,6 @@ class AddExpenseActivity : AppCompatActivity() {
         }
     }
 
-    // Можно вызвать при нажатии на "Добавить свою категорию"
     private fun showAddCategoryDialog(isIncome: Boolean) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_category, null)
         val editTextName = dialogView.findViewById<EditText>(R.id.editTextCategoryName)

@@ -1,6 +1,7 @@
 package com.example.moneymind.data
 
 import androidx.lifecycle.LiveData
+import java.util.Calendar
 
 class ExpenseRepository(private val expenseDao: ExpenseDao) {
 
@@ -56,7 +57,32 @@ class ExpenseRepository(private val expenseDao: ExpenseDao) {
         expenseDao.delete(expense)
     }
 
-    // 🔥 Новая функция для диапазона дат (от startDate до endDate)
+    // 🔍 Поиск по названию
+    fun searchExpensesByTitle(query: String): LiveData<List<Expense>> {
+        return expenseDao.searchExpensesByTitle("%$query%")
+    }
+
+    // 📅 Получение расходов по точной дате
+    fun getExpensesByDate(date: Long): LiveData<List<Expense>> {
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = date
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val start = calendar.timeInMillis
+
+        calendar.set(Calendar.HOUR_OF_DAY, 23)
+        calendar.set(Calendar.MINUTE, 59)
+        calendar.set(Calendar.SECOND, 59)
+        calendar.set(Calendar.MILLISECOND, 999)
+        val end = calendar.timeInMillis
+
+        return expenseDao.getExpensesByExactDate(start, end)
+    }
+
+    // 📆 Получение расходов между двумя датами (нужно для графиков)
     fun getExpensesBetweenDates(start: Long, end: Long): LiveData<List<Expense>> {
         return expenseDao.getExpensesBetweenDates(start, end)
     }

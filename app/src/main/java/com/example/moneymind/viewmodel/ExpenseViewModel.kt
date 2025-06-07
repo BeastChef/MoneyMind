@@ -12,20 +12,29 @@ class ExpenseViewModel(private val repository: ExpenseRepository) : ViewModel() 
     val allExpensesOnly: LiveData<List<Expense>> = repository.allExpensesOnly
     val allIncomes: LiveData<List<Expense>> = repository.allIncomes
 
-    private val _categoryTotals: LiveData<List<CategoryTotal>> = repository.getCategoryTotalsOnly()
-    fun getCategoryTotals(): LiveData<List<CategoryTotal>> = _categoryTotals
+    fun getCategoryTotals(): LiveData<List<CategoryTotal>> = repository.getCategoryTotalsOnly()
+    fun getCategoryTotalsOnly(): LiveData<List<CategoryTotal>> = repository.getCategoryTotalsOnly()
 
     fun getExpenses(): LiveData<List<Expense>> = allExpensesOnly
 
-    fun insert(expense: Expense) = viewModelScope.launch { repository.insert(expense) }
-    fun update(expense: Expense) = viewModelScope.launch { repository.update(expense) }
-    fun delete(expense: Expense) = viewModelScope.launch { repository.delete(expense) }
-
-    fun getExpenseById(id: Int): LiveData<Expense> {
-        return repository.getExpenseById(id)
+    fun insert(expense: Expense) = viewModelScope.launch {
+        repository.insert(expense)
     }
 
-    // 🔹 Работа с периодами (7, 30, 90, 365 дней) — оставляем
+    fun update(expense: Expense) = viewModelScope.launch {
+        repository.update(expense)
+    }
+
+    fun delete(expense: Expense) = viewModelScope.launch {
+        repository.delete(expense)
+    }
+
+    fun getExpenseById(id: Int): LiveData<Expense> = repository.getExpenseById(id)
+
+    fun getExpensesByCategory(category: String): LiveData<List<Expense>> =
+        repository.getExpensesByCategory(category)
+
+    // 🔹 Фильтрация по дате (периоды)
     fun getLast7DaysExpenses(): LiveData<List<Expense>> = repository.getAllFromDate(daysAgo(7))
     fun getLast30DaysExpenses(): LiveData<List<Expense>> = repository.getAllFromDate(daysAgo(30))
     fun getLast90DaysExpenses(): LiveData<List<Expense>> = repository.getAllFromDate(daysAgo(90))
@@ -49,14 +58,22 @@ class ExpenseViewModel(private val repository: ExpenseRepository) : ViewModel() 
     fun getLast7DaysAll(): LiveData<List<Expense>> = repository.getExpensesFromDate(daysAgo(7))
     fun getLast30DaysAll(): LiveData<List<Expense>> = repository.getExpensesFromDate(daysAgo(30))
 
-    fun getCategoryTotalsOnly(): LiveData<List<CategoryTotal>> = repository.getCategoryTotalsOnly()
-    fun getExpensesByCategory(category: String): LiveData<List<Expense>> = repository.getExpensesByCategory(category)
-
-    // 🔥 Новая функция для произвольного диапазона дат (для календаря)
-    fun getExpensesBetween(startDate: Long, endDate: Long): LiveData<List<Expense>> {
-        return repository.getExpensesBetweenDates(startDate, endDate)
+    // 🔍 Поиск по названию
+    fun searchExpensesByTitle(query: String): LiveData<List<Expense>> {
+        return repository.searchExpensesByTitle(query)
     }
 
+    // 📆 Поиск по точной дате
+    fun getExpensesByExactDate(dateMillis: Long): LiveData<List<Expense>> {
+        return repository.getExpensesByDate(dateMillis)
+    }
+
+    // ✅ 📆 Поиск между двумя датами — НУЖНО ДЛЯ ГРАФИКОВ
+    fun getExpensesBetween(start: Long, end: Long): LiveData<List<Expense>> {
+        return repository.getExpensesBetweenDates(start, end)
+    }
+
+    // 🔄 Хелпер
     private fun daysAgo(days: Int): Long {
         return System.currentTimeMillis() - days * 24L * 60 * 60 * 1000
     }

@@ -17,6 +17,21 @@
     <color name="md_theme_dark_surface">#1E1E1E</color>
     <color name="md_theme_dark_error">#CF6679</color>
     <color name="md_theme_dark_onBackground">#FFFFFF</color>
+    <color name="wood_brown">#8B5E3C</color> <!-- приятный древесный -->
+    <color name="brown_wood">#A97453</color> <!-- Приятный коричневый -->
+    <color name="metallic_dark">#4A4A4A</color> <!-- Темно-серый металл -->
+    <color name="metallics_dark">#3C3F41</color> <!-- Холодный графит -->
+    <color name="line_separator">#CCCCCC</color> <!-- светло-серый -->
+    <color name="line_gray">#DDDDDD</color>
+    <color name="green_income">#4CAF50</color> <!-- или любой другой зеленый -->
+    <color name="orange_expense">#FF9800</color> <!-- или приятный оранжевый -->
+    <color name="gray_dark">#444444</color>
+
+
+
+
+
+
 
     <!-- Базовые цвета -->
     <color name="white">#FFFFFF</color>

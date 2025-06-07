@@ -56,24 +56,24 @@ dependencies {
     // Kotlin Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
-    // AndroidX
+    // AndroidX Core
     implementation("androidx.core:core-ktx:1.12.0")
     implementation(libs.activity.ktx)
     implementation(libs.appcompat)
-    implementation(libs.material) // через BOM
-    implementation("com.google.android.material:material:1.11.0") // ✅ Явно для MaterialDatePicker
-    implementation(libs.activity)
     implementation(libs.constraintlayout)
+
+    // Material Components (обязательно для BottomAppBar, FAB и NavigationView)
+    implementation("com.google.android.material:material:1.11.0")
 
     // Charts + ViewPager2
     implementation(libs.mpandroidchart)
     implementation(libs.viewpager2)
 
-    // Tests
+    // WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-
-    // WorkManager
-    implementation("androidx.work:work-runtime-ktx:2.9.0")
 }

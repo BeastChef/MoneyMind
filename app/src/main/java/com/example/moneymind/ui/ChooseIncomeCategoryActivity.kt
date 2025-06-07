@@ -18,18 +18,19 @@ import com.example.moneymind.viewmodel.CategoryViewModelFactory
 class ChooseIncomeCategoryActivity : AppCompatActivity() {
 
     private lateinit var adapter: CategoryAdapter
-
-    private val categoryViewModel: CategoryViewModel by lazy {
-        val dao = AppDatabase.getDatabase(applicationContext).categoryDao()
-        val repository = CategoryRepository(dao)
-        val factory = CategoryViewModelFactory(repository)
-        ViewModelProvider(this, factory)[CategoryViewModel::class.java]
-    }
+    private lateinit var categoryViewModel: CategoryViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose_income_category)
 
+        // 🔧 Инициализация ViewModel
+        val dao = AppDatabase.getDatabase(applicationContext).categoryDao()
+        val repository = CategoryRepository(dao)
+        val factory = CategoryViewModelFactory(repository)
+        categoryViewModel = ViewModelProvider(this, factory)[CategoryViewModel::class.java]
+
+        // ➕ Кнопка добавления пользовательской категории
         val addCustomCategoryButton = findViewById<Button>(R.id.btn_add_custom_category)
         addCustomCategoryButton.setOnClickListener {
             val intent = Intent(this, AddCustomCategoryActivity::class.java)
@@ -37,20 +38,23 @@ class ChooseIncomeCategoryActivity : AppCompatActivity() {
             startActivityForResult(intent, 101)
         }
 
+        // 📋 RecyclerView со списком категорий
         val recyclerView = findViewById<RecyclerView>(R.id.categoryRecyclerView)
         adapter = CategoryAdapter { category ->
-            val resultIntent = Intent().apply {
-                putExtra("selected_category_id", category.id)
-                putExtra("is_income", true) // 👈 передаём в AddExpenseActivity
-            }
-            setResult(Activity.RESULT_OK, resultIntent)
-            finish()
+            val intent = Intent(this, AddExpenseActivity::class.java)
+            intent.putExtra("selected_category", category.name)
+            intent.putExtra("is_income", true)
+            startActivity(intent)
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
         observeCategories()
+
+        // ✅ Добавляем анимацию "рассвет"
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
     }
 
     private fun observeCategories() {
