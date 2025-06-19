@@ -21,7 +21,12 @@
     <string name="filter_all">すべて</string>
     <string name="filter_incomes">収入</string>
     <string name="filter_expenses">支出</string>
-
+    <string name="balance">残高</string>
+    <string name="choose_language">言語を変更する</string>
+    <string name="statistics">統計</string>
+    <string name="settings">設定</string>
+    <string name="language_dialog_title">言語を選択</string>
+    <string name="icon">アイコン</string>
     <!-- グラフのタブ -->
     <string name="tab_pie_chart">円グラフ</string>
     <string name="tab_bar_chart">棒グラフ</string>

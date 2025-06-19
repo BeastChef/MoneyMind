@@ -4,12 +4,7 @@
     <!-- Название приложения -->
     <string name="app_name">MoneyMind</string>
 
-    <!-- 🔽 Фильтры для главного экрана -->
-    <string-array name="filter_options">
-        <item>Все</item>
-        <item>Последние 7 дней</item>
-        <item>Последние 30 дней</item>
-    </string-array>
+
 
     <!-- 🔽 Фильтры для экрана статистики -->
     <string-array name="stats_filter_options">
@@ -22,14 +17,6 @@
     <string name="filter_incomes">Доходы</string>
     <string name="filter_expenses">Расходы</string>
 
-    <string name="statistics">Статистика</string>
-    <string name="settings">Настройки</string>
-    <string name="calendar">Календарь</string>
-    <string name="search">Поиск</string>
-
-    <string name="stats_title">Свести</string>
-
-
     <!-- ✅ Строки для вкладок графиков -->
     <string name="tab_pie_chart">Круговая</string>
     <string name="tab_bar_chart">Столбцы</string>
@@ -40,6 +27,8 @@
     <string name="pick_period">Выбрать период</string>
     <string name="add_income">Добавить доход</string>
     <string name="add_expense">Добавить расход</string>
+    <string name="statistics">Статистика</string>
+    <string name="settings">Настройки</string>
     <string name="choose_category">Выберите категорию</string>
     <string name="edit_record">Редактировать запись</string>
     <string name="delete_record">Удалить запись</string>
@@ -66,9 +55,10 @@
     <string name="category_investments">Инвестиции</string>
     <string name="category_gift">Подарки</string>
     <string name="category_other_income">Другое (доход)</string>
+    <string name="balance">Баланс</string>
 
     <!-- ✅ Перевод: выбор языка -->
-    <string name="choose_language">Выбрать язык</string>
+    <string name="choose_language">Сменить язык</string>
     <string name="language_dialog_title">Выберите язык</string>
 
     <string-array name="language_names">

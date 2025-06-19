@@ -35,7 +35,7 @@
         <activity android:name=".ui.AddCustomCategoryActivity" />
         <activity android:name=".ui.ChooseExpenseCategoryActivity" />
         <activity android:name=".ui.ChooseIncomeCategoryActivity" />
-        <activity android:name=".ui.SettingsActivity" />
+
         <activity android:name=".ui.ChooseTypeActivity" />
 
 

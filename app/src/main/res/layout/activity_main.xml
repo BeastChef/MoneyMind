@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawerLayout"
@@ -13,41 +12,56 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- ✅ Верхняя панель -->
+        <!-- Верхняя панель -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
+            style="@style/Widget.Material3.Toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/brown_wood"
-            android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
-            app:title=""
-            app:navigationIconTint="@android:color/white"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/white"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.Material3.Light"
             app:menu="@menu/top_app_bar_menu"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            app:title=""
+            app:titleCentered="false">
 
-        <!-- 🔽 Контейнер контента -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="56dp">
-
+            <!-- Вставляем Spinner внутрь тулбара -->
             <Spinner
                 android:id="@+id/filterSpinner"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:layout_margin="16dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:entries="@array/filter_options"
+                android:spinnerMode="dropdown"
+                android:background="@android:color/transparent"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:theme="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary" />
 
+        </com.google.android.material.appbar.MaterialToolbar>
+
+        <!-- Контейнер -->
+        <LinearLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginTop="?attr/actionBarSize">
+
+
+
+            <!-- Вкладки "Свести / Доходы / Расходы" -->
             <RadioGroup
                 android:id="@+id/typeFilterGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintTop_toBottomOf="@id/filterSpinner"
-                app:layout_constraintStart_toStartOf="parent">
+                android:layout_marginBottom="8dp">
 
                 <RadioButton
                     android:id="@+id/filterAll"
@@ -57,58 +71,61 @@
                     android:checked="true" />
 
                 <RadioButton
-                    android:id="@+id/filterExpenses"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/filter_expenses" />
-
-                <RadioButton
                     android:id="@+id/filterIncomes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/filter_incomes" />
+
+                <RadioButton
+                    android:id="@+id/filterExpenses"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_expenses" />
             </RadioGroup>
 
-            <TextView
-                android:id="@+id/balanceText"
-                android:layout_width="0dp"
+            <!-- Карточки -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Баланс: 0 ₽"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black"
-                android:padding="8dp"
-                app:layout_constraintTop_toBottomOf="@id/typeFilterGroup"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:padding="16dp"
+                android:layout_marginTop="8dp">
 
+                <include layout="@layout/card_income" />
+                <include layout="@layout/card_expense" />
+                <include layout="@layout/card_balance" />
+            </LinearLayout>
+
+            <!-- Список -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/expensesRecyclerView"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:clipToPadding="false"
+                android:layout_weight="1"
                 android:padding="16dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintTop_toBottomOf="@id/balanceText"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:clipToPadding="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            <TextView
+                android:id="@+id/statsTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/statistics"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:layout_marginBottom="8dp"/>
 
-        <!-- 🔽 Декоративная линия -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="96dp"
-            android:background="@color/line_gray" />
+        </LinearLayout>
 
-        <!-- 🔘 Кнопка добавления -->
+        <!-- FAB -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAddExpense"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_gravity="center|bottom"
+            android:layout_gravity="bottom|center"
             android:layout_marginBottom="42dp"
             android:src="@drawable/ic_add"
             android:contentDescription="@string/add_expense"
@@ -117,7 +134,20 @@
             app:fabCustomSize="64dp"
             app:maxImageSize="28dp" />
 
-        <!-- ➕ Блок выбора "Доход / Расход" -->
+        <!-- BottomAppBar -->
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottomAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_gravity="bottom"
+            app:fabAlignmentMode="center"
+            app:fabCradleRoundedCornerRadius="36dp"
+            app:fabCradleVerticalOffset="10dp"
+            app:backgroundTint="@android:color/white"
+            app:elevation="6dp"
+            app:hideOnScroll="false" />
+
+        <!-- Кнопки доход/расход -->
         <LinearLayout
             android:id="@+id/typeSelectionContainer"
             android:layout_width="match_parent"
@@ -153,20 +183,7 @@
                 android:layout_marginStart="8dp" />
         </LinearLayout>
 
-        <!-- ⚓ Нижняя панель -->
-        <com.google.android.material.bottomappbar.BottomAppBar
-            android:id="@+id/bottomAppBar"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_gravity="bottom"
-            app:fabAlignmentMode="center"
-            app:fabCradleRoundedCornerRadius="36dp"
-            app:fabCradleVerticalOffset="10dp"
-            app:backgroundTint="@android:color/white"
-            app:elevation="6dp"
-            app:hideOnScroll="false" />
-
-        <!-- 📊 Статистика -->
+        <!-- Кнопки навигации -->
         <ImageButton
             android:id="@+id/btnStats"
             android:layout_width="48dp"
@@ -180,7 +197,6 @@
             app:tint="@color/metallic_dark"
             android:padding="8dp" />
 
-        <!-- ⚙️ Настройки -->
         <ImageButton
             android:id="@+id/btnSettings"
             android:layout_width="48dp"
@@ -195,7 +211,7 @@
             android:padding="8dp" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <!-- 👉 Navigation Drawer -->
+    <!-- Navigation Drawer -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"
         android:layout_width="300dp"

@@ -21,7 +21,12 @@
     <string name="filter_all">Alle</string>
     <string name="filter_incomes">Einnahmen</string>
     <string name="filter_expenses">Ausgaben</string>
-
+    <string name="balance">Kontostand</string>
+    <string name="choose_language">Sprache ändern</string>
+    <string name="statistics">Statistiken</string>
+    <string name="settings">Einstellungen</string>
+    <string name="language_dialog_title">Sprache wählen</string>
+    <string name="icon">Symbol</string>
     <!-- Diagramm-Tabs -->
     <string name="tab_pie_chart">Kreisdiagramm</string>
     <string name="tab_bar_chart">Balken</string>

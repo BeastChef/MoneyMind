@@ -4,10 +4,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +27,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -39,11 +38,12 @@ public class StatsActivity extends AppCompatActivity {
     private RadioGroup statsTypeGroup;
     private ViewPager2 chartViewPager;
     private TabLayout chartTabLayout;
-    private FloatingActionButton fabBack, fabPickDate, fabSearch;
+    private FloatingActionButton fabBack;
+    private FloatingActionButton fabPickDate;
     private ChartPagerAdapter chartPagerAdapter;
 
     private int selectedStatsType = R.id.statsTypeAll;
-    private int selectedPeriod = 0;
+    private int selectedPeriod = 0; // 0 = 7 дней, 1 = 30 дней
     private ExpenseViewModel viewModel;
     private LiveData<List<Expense>> currentExpenses;
     private Observer<List<Expense>> expenseObserver;
@@ -60,7 +60,7 @@ public class StatsActivity extends AppCompatActivity {
         setupChartPager();
         setupActions();
         setupSpinner();
-        updateStats();
+        updateStats(); // сразу по умолчанию 7 дней
     }
 
     private void initViews() {
@@ -70,7 +70,6 @@ public class StatsActivity extends AppCompatActivity {
         chartTabLayout = findViewById(R.id.chartTabLayout);
         fabBack = findViewById(R.id.fabBackToMain);
         fabPickDate = findViewById(R.id.fabPickDate);
-        fabSearch = findViewById(R.id.fabSearch);
 
         viewModel = new ViewModelProvider(
                 this,
@@ -96,10 +95,7 @@ public class StatsActivity extends AppCompatActivity {
 
     private void setupActions() {
         fabBack.setOnClickListener(v -> finish());
-
         fabPickDate.setOnClickListener(v -> openDatePicker());
-
-        fabSearch.setOnClickListener(v -> showSearchDialog());
 
         statsTypeGroup.setOnCheckedChangeListener((group, checkedId) -> {
             selectedStatsType = checkedId;
@@ -120,7 +116,7 @@ public class StatsActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedPeriod = position;
-                customStartDate = 0;
+                customStartDate = 0; // сброс кастомного выбора
                 customEndDate = 0;
                 updateStats();
             }
@@ -200,36 +196,5 @@ public class StatsActivity extends AppCompatActivity {
                 .setMessage(details.isEmpty() ? "Нет данных за этот день" : String.join("\n", details))
                 .setPositiveButton("ОК", null)
                 .show();
-    }
-
-    private void showSearchDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Поиск по названию");
-
-        final EditText input = new EditText(this);
-        input.setHint("Введите часть названия");
-        builder.setView(input);
-
-        builder.setPositiveButton("Поиск", (dialog, which) -> {
-            String query = input.getText().toString().trim();
-            if (!query.isEmpty()) {
-                performSearch(query);
-            }
-        });
-
-        builder.setNegativeButton("Отмена", (dialog, which) -> dialog.dismiss());
-
-        builder.show();
-    }
-
-    private void performSearch(String query) {
-        viewModel.searchExpensesByTitle(query).observe(this, expenses -> {
-            if (expenses != null && !expenses.isEmpty()) {
-                observeExpenses(new androidx.lifecycle.MutableLiveData<>(expenses));
-                chartPagerAdapter.setExpenses(expenses, selectedStatsType == R.id.statsTypeAll, selectedStatsType);
-            } else {
-                Toast.makeText(this, "Ничего не найдено", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 }

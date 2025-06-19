@@ -21,7 +21,12 @@
     <string name="filter_all">Tutti</string>
     <string name="filter_incomes">Entrate</string>
     <string name="filter_expenses">Uscite</string>
-
+    <string name="balance">Saldo</string>
+    <string name="choose_language">Cambia lingua</string>
+    <string name="statistics">Statistiche</string>
+    <string name="settings">Impostazioni</string>
+    <string name="language_dialog_title">Scegli la lingua</string>
+    <string name="icon">Icona</string>
     <!-- Schede dei grafici -->
     <string name="tab_pie_chart">Torta</string>
     <string name="tab_bar_chart">Barre</string>

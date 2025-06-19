@@ -25,7 +25,15 @@ class MoneyMindApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        scheduleDailyReminder()
+
+        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
+        val lang = prefs.getString("app_lang", "ru") ?: "ru"
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+
+        val config = resources.configuration
+        config.setLocale(locale)
+        resources.updateConfiguration(config, resources.displayMetrics)
     }
 
     private fun scheduleDailyReminder() {

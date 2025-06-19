@@ -21,7 +21,12 @@
     <string name="filter_all">전체</string>
     <string name="filter_incomes">수입</string>
     <string name="filter_expenses">지출</string>
-
+    <string name="balance">잔액</string>
+    <string name="choose_language">언어 변경</string>
+    <string name="statistics">통계</string>
+    <string name="settings">설정</string>
+    <string name="language_dialog_title">언어 선택</string>
+    <string name="icon">아이콘</string>
     <!-- 차트 탭 -->
     <string name="tab_pie_chart">파이</string>
     <string name="tab_bar_chart">막대</string>

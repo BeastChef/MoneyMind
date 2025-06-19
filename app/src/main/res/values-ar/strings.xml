@@ -21,6 +21,12 @@
     <string name="filter_all">الكل</string>
     <string name="filter_incomes">الإيرادات</string>
     <string name="filter_expenses">المصروفات</string>
+    <string name="balance">الرصيد</string>
+    <string name="choose_language">تغيير اللغة</string>
+    <string name="statistics">إحصائيات</string>
+    <string name="settings">إعدادات</string>
+    <string name="language_dialog_title">اختر اللغة</string>
+    <string name="icon">أيقونة</string>
 
     <!-- علامات تبويب الرسوم البيانية -->
     <string name="tab_pie_chart">دائري</string>

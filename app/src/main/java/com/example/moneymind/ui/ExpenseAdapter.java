@@ -45,9 +45,8 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         this.longClickListener = listener;
     }
 
-    public void setExpenseList(@NonNull List<? extends Expense> newExpenses) {
-        this.expenses.clear();
-        this.expenses.addAll(newExpenses);
+    public void setExpenseList(@NonNull List<Expense> newList) {
+        this.expenses = newList;
         notifyDataSetChanged();
     }
 

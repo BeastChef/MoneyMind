@@ -21,7 +21,12 @@
     <string name="filter_all">全部</string>
     <string name="filter_incomes">收入</string>
     <string name="filter_expenses">支出</string>
-
+    <string name="balance">余额</string>
+    <string name="choose_language">更改语言</string>
+    <string name="statistics">统计</string>
+    <string name="settings">设置</string>
+    <string name="language_dialog_title">选择语言</string>
+    <string name="icon">图标</string>
     <!-- 图表标签 -->
     <string name="tab_pie_chart">饼图</string>
     <string name="tab_bar_chart">柱状图</string>

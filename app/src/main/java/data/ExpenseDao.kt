@@ -57,14 +57,15 @@ interface ExpenseDao {
     @Query("SELECT * FROM transactions WHERE date >= :fromDate ORDER BY date DESC")
     fun getAllTransactionsFromDate(fromDate: Long): LiveData<List<Expense>>
 
+    // ✅ Поиск по названию
+    @Query("SELECT * FROM transactions WHERE title LIKE :query ORDER BY date DESC")
+    fun searchByTitle(query: String): LiveData<List<Expense>>
+
+    // ✅ Получить расходы между двумя датами
     @Query("SELECT * FROM transactions WHERE date BETWEEN :start AND :end ORDER BY date ASC")
     fun getExpensesBetweenDates(start: Long, end: Long): LiveData<List<Expense>>
 
-    // 🔍 Поиск по названию
-    @Query("SELECT * FROM transactions WHERE title LIKE :query ORDER BY date DESC")
-    fun searchExpensesByTitle(query: String): LiveData<List<Expense>>
-
-    // 📅 Получить записи по точной дате (с 00:00 до 23:59)
+    // ✅ Получить расходы по одной дате (с 00:00 до 23:59)
     @Query("SELECT * FROM transactions WHERE date BETWEEN :start AND :end ORDER BY date DESC")
-    fun getExpensesByExactDate(start: Long, end: Long): LiveData<List<Expense>>
+    fun getByExactDateRange(start: Long, end: Long): LiveData<List<Expense>>
 }

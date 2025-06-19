@@ -26,7 +26,8 @@
     <color name="green_income">#4CAF50</color> <!-- или любой другой зеленый -->
     <color name="orange_expense">#FF9800</color> <!-- или приятный оранжевый -->
     <color name="gray_dark">#444444</color>
-
+    <color name="brown_balance">#795548</color>
+    <color name="text_secondary">#666666</color>
 
 
 

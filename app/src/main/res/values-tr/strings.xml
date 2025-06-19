@@ -21,7 +21,12 @@
     <string name="filter_all">Tümü</string>
     <string name="filter_incomes">Gelirler</string>
     <string name="filter_expenses">Giderler</string>
-
+    <string name="balance">Bakiye</string>
+    <string name="choose_language">Dili değiştir</string>
+    <string name="statistics">İstatistikler</string>
+    <string name="settings">Ayarlar</string>
+    <string name="language_dialog_title">Dili seç</string>
+    <string name="icon">Simge</string>
     <!-- Grafik sekmeleri -->
     <string name="tab_pie_chart">Pasta</string>
     <string name="tab_bar_chart">Çubuk</string>

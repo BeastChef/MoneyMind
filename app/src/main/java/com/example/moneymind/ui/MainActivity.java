@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
@@ -47,9 +46,7 @@ import com.example.moneymind.viewmodel.ExpenseViewModelFactory;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
@@ -60,12 +57,15 @@ public class MainActivity extends AppCompatActivity {
 
     private ExpenseViewModel viewModel;
     private ExpenseAdapter adapter;
-    private Spinner filterSpinner;
-    private RadioGroup typeFilterGroup;
-    private TextView balanceText;
+
+    private TextView incomeAmountText, expenseAmountText, balanceAmountText;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private LinearLayout typeSelectionContainer;
+    private Button btnChooseIncome, btnChooseExpense;
+    private MaterialToolbar topAppBar;
+    private Spinner filterSpinner;
+    private RadioGroup typeFilterGroup;
 
     private int selectedDateFilter = 0;
     private int selectedTypeFilter = R.id.filterAll;
@@ -93,7 +93,20 @@ public class MainActivity extends AppCompatActivity {
                 new ExpenseViewModelFactory(((MoneyMindApp) getApplication()).getRepository()))
                 .get(ExpenseViewModel.class);
 
-        MaterialToolbar topAppBar = findViewById(R.id.topAppBar);
+        // UI элементы
+        topAppBar = findViewById(R.id.topAppBar);
+        filterSpinner = findViewById(R.id.filterSpinner);
+        typeFilterGroup = findViewById(R.id.typeFilterGroup);
+        incomeAmountText = findViewById(R.id.incomeAmount);
+        expenseAmountText = findViewById(R.id.expenseAmount);
+        balanceAmountText = findViewById(R.id.balanceAmount);
+        drawerLayout = findViewById(R.id.drawerLayout);
+        navigationView = findViewById(R.id.navigationView);
+        typeSelectionContainer = findViewById(R.id.typeSelectionContainer);
+        btnChooseIncome = findViewById(R.id.btnChooseIncome);
+        btnChooseExpense = findViewById(R.id.btnChooseExpense);
+
+        // Тулбар: Календарь + Поиск
         topAppBar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_calendar) {
                 showDatePickerDialog();
@@ -105,22 +118,7 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
 
-        filterSpinner = findViewById(R.id.filterSpinner);
-        typeFilterGroup = findViewById(R.id.typeFilterGroup);
-        balanceText = findViewById(R.id.balanceText);
-        drawerLayout = findViewById(R.id.drawerLayout);
-        navigationView = findViewById(R.id.navigationView);
-        typeSelectionContainer = findViewById(R.id.typeSelectionContainer);
-        Button btnIncome = findViewById(R.id.btnChooseIncome);
-        Button btnExpense = findViewById(R.id.btnChooseExpense);
-
-        RecyclerView recyclerView = findViewById(R.id.expensesRecyclerView);
-        adapter = new ExpenseAdapter();
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutAnimation(new LayoutAnimationController(
-                AnimationUtils.loadAnimation(this, R.anim.item_animation)));
-
+        // Фильтр по периоду
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(
                 this, R.array.filter_options, android.R.layout.simple_spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -134,10 +132,19 @@ public class MainActivity extends AppCompatActivity {
             @Override public void onNothingSelected(AdapterView<?> parent) {}
         });
 
+        // Фильтр по типу (Свести / Доходы / Расходы)
         typeFilterGroup.setOnCheckedChangeListener((group, checkedId) -> {
             selectedTypeFilter = checkedId;
             updateFilteredData();
         });
+
+        // Список расходов
+        RecyclerView recyclerView = findViewById(R.id.expensesRecyclerView);
+        adapter = new ExpenseAdapter();
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutAnimation(new LayoutAnimationController(
+                AnimationUtils.loadAnimation(this, R.anim.item_animation)));
 
         adapter.setOnExpenseClickListener(expense -> {
             Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
@@ -167,13 +174,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnIncome.setOnClickListener(v -> {
+        btnChooseIncome.setOnClickListener(v -> {
             Intent intent = new Intent(this, ChooseIncomeCategoryActivity.class);
             startActivityForResult(intent, REQUEST_CHOOSE_CATEGORY);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         });
 
-        btnExpense.setOnClickListener(v -> {
+        btnChooseExpense.setOnClickListener(v -> {
             Intent intent = new Intent(this, ChooseExpenseCategoryActivity.class);
             startActivityForResult(intent, REQUEST_CHOOSE_CATEGORY);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -187,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
             drawerLayout.openDrawer(GravityCompat.END);
         });
 
+        // Язык
         View navView = navigationView.getHeaderView(0);
         if (navView == null && navigationView.getChildCount() > 0)
             navView = navigationView.getChildAt(0);
@@ -205,6 +213,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        // Свайп вправо
         findViewById(R.id.main).setOnTouchListener(new OnSwipeTouchListener(this) {
             @Override public void onSwipeRight() {
                 startActivity(new Intent(MainActivity.this, StatsActivity.class));
@@ -213,37 +222,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         updateFilteredData();
-    }
-
-    private void showDatePickerDialog() {
-        Calendar cal = Calendar.getInstance();
-        new DatePickerDialog(this, (view, year, month, day) -> {
-            cal.set(year, month, day);
-            long selected = cal.getTimeInMillis();
-            viewModel.getExpensesByExactDate(selected).observe(this, expenses -> {
-                adapter.setExpenseList(expenses);
-                updateBalanceInfo(expenses);
-            });
-        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show();
-    }
-
-    private void showSearchDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_search, null);
-        EditText input = dialogView.findViewById(R.id.editSearchInput);
-        builder.setView(dialogView)
-                .setTitle("Поиск")
-                .setPositiveButton("Найти", (dialog, which) -> {
-                    String query = input.getText().toString().trim();
-                    if (!query.isEmpty()) {
-                        viewModel.searchExpensesByTitle(query).observe(this, expenses -> {
-                            adapter.setExpenseList(expenses);
-                            updateBalanceInfo(expenses);
-                        });
-                    }
-                })
-                .setNegativeButton("Отмена", null)
-                .show();
     }
 
     private void updateFilteredData() {
@@ -270,21 +248,52 @@ public class MainActivity extends AppCompatActivity {
 
         data.observe(this, expenses -> {
             adapter.setExpenseList(expenses);
-            updateBalanceInfo(expenses);
+            updateSummaryCards(expenses);
         });
     }
 
-    private void updateBalanceInfo(List<Expense> expenses) {
+    private void updateSummaryCards(List<Expense> expenses) {
         double income = 0, expense = 0;
         for (Expense e : expenses) {
             if ("income".equals(e.getType())) income += e.getAmount();
             else expense += e.getAmount();
         }
         double balance = income - expense;
-        String result = getString(R.string.filter_incomes) + ": " + income + " ₽   " +
-                getString(R.string.filter_expenses) + ": " + expense + " ₽   " +
-                "Баланс: " + balance + " ₽";
-        balanceText.setText(result);
+
+        incomeAmountText.setText(income + " ₽");
+        expenseAmountText.setText(expense + " ₽");
+        balanceAmountText.setText(balance + " ₽");
+    }
+
+    private void showDatePickerDialog() {
+        Calendar cal = Calendar.getInstance();
+        new DatePickerDialog(this, (view, year, month, day) -> {
+            cal.set(year, month, day);
+            long selected = cal.getTimeInMillis();
+            viewModel.getExpensesByExactDate(selected).observe(this, expenses -> {
+                adapter.setExpenseList(expenses);
+                updateSummaryCards(expenses);
+            });
+        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+    private void showSearchDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_search, null);
+        EditText input = dialogView.findViewById(R.id.editSearchInput);
+        builder.setView(dialogView)
+                .setTitle("Поиск")
+                .setPositiveButton("Найти", (dialog, which) -> {
+                    String query = input.getText().toString().trim();
+                    if (!query.isEmpty()) {
+                        viewModel.searchExpensesByTitle(query).observe(this, expenses -> {
+                            adapter.setExpenseList(expenses);
+                            updateSummaryCards(expenses);
+                        });
+                    }
+                })
+                .setNegativeButton("Отмена", null)
+                .show();
     }
 
     private void setLocale(String langCode) {
