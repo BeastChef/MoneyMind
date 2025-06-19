@@ -25,8 +25,8 @@
     <!-- ✅ Подписи для кнопок -->
     <string name="back_to_main">Вернуться на главный экран</string>
     <string name="pick_period">Выбрать период</string>
-    <string name="add_income">Добавить доход</string>
-    <string name="add_expense">Добавить расход</string>
+    <string name="income">🟢 Доход</string>
+    <string name="expense">🟠 Расход</string>
     <string name="statistics">Статистика</string>
     <string name="settings">Настройки</string>
     <string name="choose_category">Выберите категорию</string>
@@ -58,36 +58,10 @@
     <string name="balance">Баланс</string>
 
     <!-- ✅ Перевод: выбор языка -->
-    <string name="choose_language">Сменить язык</string>
+    <string name="change_language">Сменить язык</string>
     <string name="language_dialog_title">Выберите язык</string>
 
-    <string-array name="language_names">
-        <item>Русский</item>
-        <item>English</item>
-        <item>中文</item>
-        <item>العربية</item>
-        <item>Español</item>
-        <item>Français</item>
-        <item>Deutsch</item>
-        <item>Türkçe</item>
-        <item>Italiano</item>
-        <item>日本語</item>
-        <item>한국어</item>
-    </string-array>
 
-    <string-array name="language_codes">
-        <item>ru</item>
-        <item>en</item>
-        <item>zh</item>
-        <item>ar</item>
-        <item>es</item>
-        <item>fr</item>
-        <item>de</item>
-        <item>tr</item>
-        <item>it</item>
-        <item>ja</item>
-        <item>ko</item>
-    </string-array>
 
     <!-- 🛠️ Добавлено для item_category.xml -->
     <string name="icon">Иконка</string>

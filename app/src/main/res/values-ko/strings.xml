@@ -22,7 +22,7 @@
     <string name="filter_incomes">수입</string>
     <string name="filter_expenses">지출</string>
     <string name="balance">잔액</string>
-    <string name="choose_language">언어 변경</string>
+    <string name="change_language">언어 변경</string>
     <string name="statistics">통계</string>
     <string name="settings">설정</string>
     <string name="language_dialog_title">언어 선택</string>
@@ -35,8 +35,8 @@
     <!-- 버튼 -->
     <string name="back_to_main">메인 화면으로 돌아가기</string>
     <string name="pick_period">기간 선택</string>
-    <string name="add_income">수입 추가</string>
-    <string name="add_expense">지출 추가</string>
+    <string name="income">🟢 소득</string>
+    <string name="expense">🟠 경비</string>
     <string name="choose_category">카테고리 선택</string>
     <string name="edit_record">기록 수정</string>
     <string name="delete_record">기록 삭제</string>

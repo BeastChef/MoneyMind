@@ -203,11 +203,14 @@ public class MainActivity extends AppCompatActivity {
             View btnLang = navView.findViewById(R.id.btnChangeLanguage);
             if (btnLang != null) {
                 btnLang.setOnClickListener(v -> {
-                    String[] langs = {"Русский", "English", "中文", "Español"};
-                    String[] codes = {"ru", "en", "zh", "es"};
+                    String[] langs = getResources().getStringArray(R.array.language_names);
+                    String[] codes = getResources().getStringArray(R.array.language_codes);
+
                     new AlertDialog.Builder(this)
-                            .setTitle("Выберите язык")
-                            .setItems(langs, (dialog, which) -> setLocale(codes[which]))
+                            .setTitle(getString(R.string.language_dialog_title))
+                            .setItems(langs, (dialog, which) -> {
+                                setLocale(codes[which]);
+                            })
                             .show();
                 });
             }

@@ -22,7 +22,7 @@
     <string name="filter_incomes">Gelirler</string>
     <string name="filter_expenses">Giderler</string>
     <string name="balance">Bakiye</string>
-    <string name="choose_language">Dili değiştir</string>
+    <string name="change_language">Dili değiştir</string>
     <string name="statistics">İstatistikler</string>
     <string name="settings">Ayarlar</string>
     <string name="language_dialog_title">Dili seç</string>
@@ -35,8 +35,8 @@
     <!-- Düğme etiketleri -->
     <string name="back_to_main">Ana ekrana dön</string>
     <string name="pick_period">Dönem seç</string>
-    <string name="add_income">Gelir ekle</string>
-    <string name="add_expense">Gider ekle</string>
+    <string name="income">🟢 Gelir</string>
+    <string name="expense">🟠 Giderler</string>
     <string name="choose_category">Kategori seç</string>
     <string name="edit_record">Kaydı düzenle</string>
     <string name="delete_record">Kaydı sil</string>

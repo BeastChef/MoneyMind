@@ -22,7 +22,7 @@
     <string name="filter_incomes">Einnahmen</string>
     <string name="filter_expenses">Ausgaben</string>
     <string name="balance">Kontostand</string>
-    <string name="choose_language">Sprache ändern</string>
+    <string name="change_language">Sprache ändern</string>
     <string name="statistics">Statistiken</string>
     <string name="settings">Einstellungen</string>
     <string name="language_dialog_title">Sprache wählen</string>
@@ -35,8 +35,8 @@
     <!-- Schaltflächen -->
     <string name="back_to_main">Zurück zur Startseite</string>
     <string name="pick_period">Zeitraum auswählen</string>
-    <string name="add_income">Einnahme hinzufügen</string>
-    <string name="add_expense">Ausgabe hinzufügen</string>
+    <string name="income">🟢 Einkommen</string>
+    <string name="expense">🟠 Kosten</string>
     <string name="choose_category">Kategorie wählen</string>
     <string name="edit_record">Eintrag bearbeiten</string>
     <string name="delete_record">Eintrag löschen</string>

@@ -9,7 +9,7 @@
         android:id="@+id/navSettingsTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Настройки"
+        android:text="@string/settings"
         android:textStyle="bold"
         android:textSize="18sp"
         android:paddingBottom="12dp" />
@@ -19,7 +19,7 @@
         android:id="@+id/btnChangeLanguage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Сменить язык" />
+        android:text="@string/change_language" />
 
     <!-- Другие будущие кнопки -->
     <View

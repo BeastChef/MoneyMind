@@ -22,7 +22,7 @@
     <string name="filter_incomes">الإيرادات</string>
     <string name="filter_expenses">المصروفات</string>
     <string name="balance">الرصيد</string>
-    <string name="choose_language">تغيير اللغة</string>
+    <string name="change_language">تغيير اللغة</string>
     <string name="statistics">إحصائيات</string>
     <string name="settings">إعدادات</string>
     <string name="language_dialog_title">اختر اللغة</string>
@@ -36,8 +36,8 @@
     <!-- تسميات الأزرار -->
     <string name="back_to_main">العودة إلى الصفحة الرئيسية</string>
     <string name="pick_period">اختر الفترة</string>
-    <string name="add_income">إضافة إيراد</string>
-    <string name="add_expense">إضافة مصروف</string>
+    <string name="income">🟢 دخل</string>
+    <string name="expense">🟠 نفقات</string>
     <string name="choose_category">اختر فئة</string>
     <string name="edit_record">تعديل السجل</string>
     <string name="delete_record">حذف السجل</string>
