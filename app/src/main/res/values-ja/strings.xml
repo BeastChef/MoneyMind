@@ -43,6 +43,8 @@
     <string name="record_deleted">記録が削除されました</string>
     <string name="cancel">キャンセル</string>
     <string name="save">保存</string>
+    <string name="category_icon">カテゴリアイコン</string>
+    <string name="expense_icon">経費アイコン</string>
 
     <!-- その他 -->
     <string name="chart_tabs">グラフのナビゲーション</string>

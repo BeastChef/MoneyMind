@@ -43,6 +43,8 @@
     <string name="record_deleted">Registro eliminado</string>
     <string name="cancel">Cancelar</string>
     <string name="save">Guardar</string>
+    <string name="category_icon">Icono de categoría</string>
+    <string name="expense_icon">Icono de gastos</string>
 
     <!-- Otros -->
     <string name="chart_tabs">Navegación de gráficos</string>

@@ -39,15 +39,14 @@ class AddExpenseActivity : AppCompatActivity() {
     private var selectedExpenseId: Int? = null
     private var selectedType: String = "expense"
     private var selectedCategory: String? = null
+    private var selectedIconName: String = "ic_money" // ✅ Новая переменная
 
     private val viewModel: ExpenseViewModel by viewModels {
         ExpenseViewModelFactory((application as MoneyMindApp).repository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // 🌅 Плавная анимация при запуске
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_expense)
 
@@ -63,16 +62,20 @@ class AddExpenseActivity : AppCompatActivity() {
         val formatter = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
         dateInput.setText(formatter.format(calendar.time))
 
+        // Получение типа, категории и иконки
         selectedType = if (intent.getBooleanExtra("is_income", false)) "income" else "expense"
         selectedCategory = intent.getStringExtra("selected_category")
+        selectedIconName = intent.getStringExtra("selected_icon") ?: "ic_money" // ✅ Получаем iconName
 
+        // Отображение категории
         selectedCategory?.let { name ->
             categoryText.text = name
-            val iconRes = resources.getIdentifier("ic_${name.lowercase()}", "drawable", packageName)
+            val iconRes = resources.getIdentifier(selectedIconName, "drawable", packageName) // ✅ по имени
             categoryIcon.setImageResource(if (iconRes != 0) iconRes else R.drawable.ic_default_category)
             categoryLayout.visibility = View.VISIBLE
         }
 
+        // Выбор даты
         dateInput.setOnClickListener {
             val listener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                 calendar.set(year, month, dayOfMonth)
@@ -80,15 +83,14 @@ class AddExpenseActivity : AppCompatActivity() {
                 dateInput.setText(formatter.format(calendar.time))
             }
 
-            DatePickerDialog(
-                this,
-                listener,
+            DatePickerDialog(this, listener,
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
             ).show()
         }
 
+        // Редактирование существующей записи
         val expenseId = intent.getIntExtra("expense_id", -1)
         if (expenseId != -1) {
             selectedExpenseId = expenseId
@@ -100,14 +102,16 @@ class AddExpenseActivity : AppCompatActivity() {
                     dateInput.setText(formatter.format(Date(expense.date)))
                     selectedType = expense.type
                     selectedCategory = expense.category
+                    selectedIconName = expense.iconName // ✅
                     categoryText.text = selectedCategory
-                    val iconRes = resources.getIdentifier("ic_${selectedCategory?.lowercase()}", "drawable", packageName)
+                    val iconRes = resources.getIdentifier(selectedIconName, "drawable", packageName)
                     categoryIcon.setImageResource(if (iconRes != 0) iconRes else R.drawable.ic_default_category)
                     categoryLayout.visibility = View.VISIBLE
                 }
             }
         }
 
+        // Кнопка сохранить
         saveButton.setOnClickListener {
             val title = titleInput.text.toString().trim()
             val amount = amountInput.text.toString().toDoubleOrNull()
@@ -126,7 +130,8 @@ class AddExpenseActivity : AppCompatActivity() {
                 category = category,
                 date = selectedDateMillis,
                 note = null,
-                type = selectedType
+                type = selectedType,
+                iconName = selectedIconName // ✅ сохраняем иконку
             )
 
             if (selectedExpenseId != null) {
@@ -175,9 +180,11 @@ class AddExpenseActivity : AppCompatActivity() {
             .setPositiveButton("Добавить") { _, _ ->
                 val name = editTextName.text.toString()
                 if (name.isNotBlank()) {
+                    val iconName = resources.getResourceEntryName(selectedIcon) // ✅ сохраняем имя иконки
                     val category = CustomCategoryEntity(
                         name = name,
                         iconResId = selectedIcon,
+                        iconName = iconName,
                         isIncome = isIncome
                     )
                     lifecycleScope.launch {

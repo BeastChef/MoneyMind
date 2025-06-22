@@ -28,8 +28,21 @@
     <color name="gray_dark">#444444</color>
     <color name="brown_balance">#795548</color>
     <color name="text_secondary">#666666</color>
+    <!-- Доходы (Income) -->
+    <color name="income_blue">#CDE7FF</color>
+    <color name="income_beige">#FFF5E0</color>
+    <color name="income_green">#D6F5E0</color>
+    <color name="income_default">#E0F7FA</color>
 
-
+    <!-- Расходы (Expense) -->
+    <color name="expense_orange">#FFE0B2</color>
+    <color name="expense_yellow">#FFF8DC</color>
+    <color name="expense_pink">#FDE1F4</color>
+    <color name="expense_brown">#D7CCC8</color>
+    <color name="expense_soft_red">#FFCDD2</color>
+    <color name="expense_gray">#EEEEEE</color>
+    <color name="expense_default">#F5F5F5</color>
+    <color name="darker_gray">#666666</color>
 
 
 

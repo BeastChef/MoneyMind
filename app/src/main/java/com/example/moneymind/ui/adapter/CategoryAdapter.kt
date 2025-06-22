@@ -5,11 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moneymind.R
 import com.example.moneymind.data.Category
+import com.example.moneymind.utils.CategoryColorHelper
 
 class CategoryAdapter(
     private val onItemClick: (Category) -> Unit
@@ -33,6 +35,12 @@ class CategoryAdapter(
         fun bind(category: Category) {
             icon.setImageResource(category.iconResId)
             name.text = category.name
+
+            // ✅ Цвет круга по iconName и isIncome
+            val color = CategoryColorHelper.getColorForCategoryKey(category.iconName, category.isIncome)
+            val bgDrawable = DrawableCompat.wrap(icon.background.mutate())
+            DrawableCompat.setTint(bgDrawable, color)
+            icon.background = bgDrawable
 
             itemView.setOnClickListener {
                 onItemClick(category)

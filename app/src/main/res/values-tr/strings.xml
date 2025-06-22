@@ -43,6 +43,8 @@
     <string name="record_deleted">Kayıt silindi</string>
     <string name="cancel">İptal</string>
     <string name="save">Kaydet</string>
+    <string name="category_icon">Kategori simgesi</string>
+    <string name="expense_icon">Gider simgesi</string>
 
     <!-- Diğer etiketler -->
     <string name="chart_tabs">Grafik sekmeleri</string>

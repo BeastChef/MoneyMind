@@ -2,30 +2,49 @@ package com.example.moneymind.utils;
 
 import android.graphics.Color;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class CategoryColorHelper {
 
-    private static final Map<String, Integer> categoryColors = new HashMap<>();
+    private static final List<String> pastelExpenseColors = new ArrayList<>();
+    private static final List<String> pastelIncomeColors = new ArrayList<>();
 
     static {
-        categoryColors.put("Еда", Color.parseColor("#FFA726"));           // оранжевый
-        categoryColors.put("Одежда", Color.parseColor("#42A5F5"));        // синий
-        categoryColors.put("Транспорт", Color.parseColor("#66BB6A"));     // зелёный
-        categoryColors.put("Развлечения", Color.parseColor("#AB47BC"));   // фиолетовый
-        categoryColors.put("Дом", Color.parseColor("#8D6E63"));           // коричневый
-        categoryColors.put("Здоровье", Color.parseColor("#EF5350"));      // красный
-        categoryColors.put("Образование", Color.parseColor("#29B6F6"));   // голубой
-        categoryColors.put("Подарки", Color.parseColor("#FFCA28"));       // жёлтый
-        categoryColors.put("Другое", Color.GRAY);                         // серый
+        // Расходы (без зелёного и синего)
+        pastelExpenseColors.addAll(Arrays.asList(
+                "#FFCDD2", "#F8BBD0", "#E1BEE7", "#D1C4E9", "#FFECB3",
+                "#FFE0B2", "#FFCCBC", "#D7CCC8", "#F0F4C3", "#FFF176",
+                "#FFD54F", "#FFB74D", "#FFAB91", "#FF8A65", "#FF8A80",
+                "#FBE9E7", "#F9FBE7", "#FFF59D", "#F1F8E9", "#FFF9C4"
+        ));
+
+        // Доходы (без красного и оранжевого)
+        pastelIncomeColors.addAll(Arrays.asList(
+                "#BBDEFB", "#C5CAE9", "#B2DFDB", "#C8E6C9", "#DCEDC8",
+                "#E0F2F1", "#E1F5FE", "#B2EBF2", "#D1C4E9", "#CE93D8",
+                "#B39DDB", "#90CAF9", "#80DEEA", "#AED581", "#81C784",
+                "#4DB6AC", "#4DD0E1", "#64B5F6", "#7986CB", "#CFD8DC"
+        ));
+
+        // Удваиваем для надёжного хэш-распределения
+        pastelExpenseColors.addAll(pastelExpenseColors);
+        pastelIncomeColors.addAll(pastelIncomeColors);
     }
 
-    public static int getColorForCategory(String category) {
-        if (categoryColors.containsKey(category)) {
-            return categoryColors.get(category);
-        } else {
-            return Color.DKGRAY; // дефолт
-        }
+    /**
+     * Получает уникальный цвет для категории по ключу (iconName или name)
+     * @param key Ключ категории
+     * @param isIncome true — доход, false — расход
+     */
+    public static int getColorForCategoryKey(String key, boolean isIncome) {
+        if (key == null) return Color.LTGRAY;
+        int index = Math.abs(key.hashCode());
+
+        List<String> palette = isIncome ? pastelIncomeColors : pastelExpenseColors;
+        int colorIndex = index % palette.size();
+
+        return Color.parseColor(palette.get(colorIndex));
     }
 }

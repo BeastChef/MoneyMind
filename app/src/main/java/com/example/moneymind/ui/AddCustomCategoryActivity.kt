@@ -28,7 +28,6 @@ class AddCustomCategoryActivity : AppCompatActivity() {
 
     private var selectedIconResId: Int = R.drawable.ic_category_default
 
-    // Получаем ViewModel через фабрику
     private val categoryViewModel: CategoryViewModel by lazy {
         val dao = AppDatabase.getDatabase(applicationContext).categoryDao()
         val repository = CategoryRepository(dao)
@@ -53,7 +52,7 @@ class AddCustomCategoryActivity : AppCompatActivity() {
         }
         layout.addView(selectedIconView, 1)
 
-        // Обработка кнопки "Сохранить"
+        // Кнопка "Сохранить"
         saveButton.setOnClickListener {
             val name = inputCategoryName.text.toString().trim()
             if (name.isNotEmpty()) {
@@ -105,10 +104,12 @@ class AddCustomCategoryActivity : AppCompatActivity() {
 
     private fun saveCustomCategory(name: String) {
         val isIncome = intent.getStringExtra("CATEGORY_TYPE") == "income"
+        val iconName = resources.getResourceEntryName(selectedIconResId)
 
         val category = Category(
             name = name,
             iconResId = selectedIconResId,
+            iconName = iconName,
             isIncome = isIncome
         )
 

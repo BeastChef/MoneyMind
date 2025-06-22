@@ -43,6 +43,8 @@
     <string name="record_deleted">기록이 삭제되었습니다</string>
     <string name="cancel">취소</string>
     <string name="save">저장</string>
+    <string name="category_icon">카테고리 아이콘</string>
+    <string name="expense_icon">비용 아이콘</string>
 
     <!-- 기타 -->
     <string name="chart_tabs">차트 탐색</string>

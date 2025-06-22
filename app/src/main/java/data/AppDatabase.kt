@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [Expense::class, Category::class, CustomCategoryEntity::class],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -37,21 +37,22 @@ abstract class AppDatabase : RoomDatabase() {
                             super.onCreate(db)
                             CoroutineScope(Dispatchers.IO).launch {
                                 val dao = getDatabase(context).categoryDao()
-                                // Добавляем дефолтные расходные категории
-                                dao.insert(Category(name = "Развлечения", iconResId = R.drawable.ic_entertainment, isIncome = false))
-                                dao.insert(Category(name = "Еда", iconResId = R.drawable.ic_food, isIncome = false))
-                                dao.insert(Category(name = "Подарки", iconResId = R.drawable.ic_gift, isIncome = false))
-                                dao.insert(Category(name = "Медицина", iconResId = R.drawable.ic_medical, isIncome = false))
-                                dao.insert(Category(name = "Дом", iconResId = R.drawable.ic_myhome, isIncome = false))
-                                dao.insert(Category(name = "Шопинг", iconResId = R.drawable.ic_shopping, isIncome = false))
-                                dao.insert(Category(name = "Транспорт", iconResId = R.drawable.ic_transport, isIncome = false))
-                                // Добавляем дефолтные доходные категории
-                                dao.insert(Category(name = "Зарплата", iconResId = R.drawable.ic_salary, isIncome = true))
-                                dao.insert(Category(name = "Инвестиции", iconResId = R.drawable.ic_investments, isIncome = true))
-                                dao.insert(Category(name = "Подарки", iconResId = R.drawable.ic_gift, isIncome = true))
+                                // Расходы
+                                dao.insert(Category(name = "Развлечения", iconName = "ic_entertainment", iconResId = R.drawable.ic_entertainment, isIncome = false))
+                                dao.insert(Category(name = "Еда", iconName = "ic_food", iconResId = R.drawable.ic_food, isIncome = false))
+                                dao.insert(Category(name = "Подарки", iconName = "ic_gift", iconResId = R.drawable.ic_gift, isIncome = false))
+                                dao.insert(Category(name = "Медицина", iconName = "ic_medical", iconResId = R.drawable.ic_medical, isIncome = false))
+                                dao.insert(Category(name = "Дом", iconName = "ic_myhome", iconResId = R.drawable.ic_myhome, isIncome = false))
+                                dao.insert(Category(name = "Шопинг", iconName = "ic_shopping", iconResId = R.drawable.ic_shopping, isIncome = false))
+                                dao.insert(Category(name = "Транспорт", iconName = "ic_transport", iconResId = R.drawable.ic_transport, isIncome = false))
+                                // Доходы
+                                dao.insert(Category(name = "Зарплата", iconName = "ic_salary", iconResId = R.drawable.ic_salary, isIncome = true))
+                                dao.insert(Category(name = "Инвестиции", iconName = "ic_investments", iconResId = R.drawable.ic_investments, isIncome = true))
+                                dao.insert(Category(name = "Подарки", iconName = "ic_gift", iconResId = R.drawable.ic_gift, isIncome = true))
                             }
                         }
                     })
+
                     .build()
                 INSTANCE = instance
                 instance

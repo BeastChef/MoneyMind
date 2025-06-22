@@ -43,6 +43,8 @@
     <string name="record_deleted">Eintrag gelöscht</string>
     <string name="cancel">Abbrechen</string>
     <string name="save">Speichern</string>
+    <string name="category_icon">Kategoriesymbol</string>
+    <string name="expense_icon">Ausgabensymbol</string>
 
     <!-- Sonstiges -->
     <string name="chart_tabs">Diagramm-Navigation</string>

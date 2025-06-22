@@ -1,20 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="16dp">
+    android:layout_margin="8dp"
+    card_view:cardCornerRadius="16dp"
+    card_view:cardElevation="4dp"
+    android:foreground="?attr/selectableItemBackground">
 
-    <ImageView
-        android:id="@+id/category_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:contentDescription="@string/icon" />
-
-    <TextView
-        android:id="@+id/category_name"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:textSize="16sp" />
-</LinearLayout>
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingVertical="16dp"
+        android:paddingHorizontal="8dp"
+        android:background="@android:color/white">
+
+        <!-- Иконка в круге -->
+        <ImageView
+            android:id="@+id/category_icon"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_icon_circle"
+            android:padding="10dp"
+            android:scaleType="centerInside"
+            android:contentDescription="@string/category_icon" />
+
+        <!-- Название категории -->
+        <TextView
+            android:id="@+id/category_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Категория"
+            android:textSize="14sp"
+            android:textColor="#212121"
+            android:gravity="center"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_marginTop="8dp" />
+
+        <!-- Сумма (если есть) -->
+        <TextView
+            android:id="@+id/category_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2 100 ₽"
+            android:textSize="12sp"
+            android:textColor="#757575"
+            android:gravity="center"
+            android:layout_marginTop="2dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

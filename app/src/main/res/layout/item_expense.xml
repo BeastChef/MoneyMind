@@ -1,74 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
-    app:cardBackgroundColor="?attr/colorSurface">
+    card_view:cardCornerRadius="16dp"
+    card_view:cardElevation="4dp"
+    android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingVertical="16dp"
+        android:paddingHorizontal="8dp"
+        android:background="@android:color/white">
 
-        <!-- Иконка категории -->
+        <!-- Иконка в круге -->
         <ImageView
-            android:id="@+id/icon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="12dp"
-            android:src="@android:drawable/ic_menu_info_details"
-            android:contentDescription="Категория"
-            app:tint="?attr/colorPrimary" />
+            android:id="@+id/expense_icon"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_icon_circle"
+            android:padding="10dp"
+            android:scaleType="centerInside"
+            android:contentDescription="@string/expense_icon" />
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <!-- Название расхода -->
+        <TextView
+            android:id="@+id/expense_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <!-- Название расхода -->
-            <TextView
-                android:id="@+id/expenseTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Мясо и мёд"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="16sp" />
-
-            <!-- Категория -->
-            <TextView
-                android:id="@+id/expenseCategory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Еда"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="12sp"
-                android:textStyle="italic" />
-
-            <!-- Дата -->
-            <TextView
-                android:id="@+id/expenseDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="08 апреля 2025"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="12sp" />
-        </LinearLayout>
+            android:text="Название"
+            android:textSize="14sp"
+            android:textColor="#212121"
+            android:gravity="center"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_marginTop="8dp" />
 
         <!-- Сумма -->
         <TextView
-            android:id="@+id/expenseAmount"
+            android:id="@+id/expense_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="-350 ₽"
-            android:textStyle="bold"
-            android:textColor="@android:color/holo_red_dark"
-            android:textSize="16sp" />
+            android:text="-1 200 ₽"
+            android:textSize="12sp"
+            android:textColor="#D32F2F"
+            android:gravity="center"
+            android:layout_marginTop="2dp" />
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

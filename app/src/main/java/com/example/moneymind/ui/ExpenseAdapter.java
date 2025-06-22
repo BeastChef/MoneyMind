@@ -1,6 +1,8 @@
 package com.example.moneymind.ui;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,10 +12,10 @@ import android.widget.TextView;
 import com.example.moneymind.R;
 import com.example.moneymind.data.Expense;
 import com.example.moneymind.utils.CategoryColorHelper;
-import com.example.moneymind.utils.Utils;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -63,33 +65,38 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         Expense expense = expenses.get(position);
         Context context = holder.itemView.getContext();
 
-        holder.title.setText(expense.getNote() != null ? expense.getNote() : expense.getCategory());
-        holder.category.setText(expense.getCategory());
-        holder.category.setTextColor(CategoryColorHelper.getColorForCategory(expense.getCategory()));
+        // Заголовок — либо заметка, либо категория
+        holder.title.setText(expense.getNote() != null && !expense.getNote().isEmpty()
+                ? expense.getNote()
+                : expense.getCategory());
 
-        // ✅ Вместо isIncome — проверка по type
+        // Формат суммы
         boolean isIncome = "income".equalsIgnoreCase(expense.getType());
         double amount = expense.getAmount();
-
         String formatted = (isIncome ? "+ " : "- ") + amount + " ₽";
-        int color = ContextCompat.getColor(context, isIncome ? R.color.income_color : R.color.expense_color);
-
         holder.amount.setText(formatted);
-        holder.amount.setTextColor(color);
 
-        holder.date.setText(Utils.formatDate(expense.getDate()));
+        // Цвет суммы
+        int textColor = ContextCompat.getColor(context,
+                isIncome ? R.color.income_color : R.color.expense_color);
+        holder.amount.setTextColor(textColor);
+
+        // ✅ Цвет круга по типу и имени категории (без зелёного/синего в расходах и т.д.)
+        int color = CategoryColorHelper.getColorForCategoryKey(expense.getCategory(), isIncome);
+        Drawable bg = DrawableCompat.wrap(holder.icon.getBackground().mutate());
+        DrawableCompat.setTint(bg, color);
+        holder.icon.setBackground(bg);
+
+        // Иконка (временно одна)
         holder.icon.setImageResource(R.drawable.ic_baseline_money_24);
 
+        // Клики
         holder.itemView.setOnClickListener(v -> {
-            if (clickListener != null) {
-                clickListener.onExpenseClick(expense);
-            }
+            if (clickListener != null) clickListener.onExpenseClick(expense);
         });
 
         holder.itemView.setOnLongClickListener(v -> {
-            if (longClickListener != null) {
-                longClickListener.onExpenseLongClick(expense);
-            }
+            if (longClickListener != null) longClickListener.onExpenseLongClick(expense);
             return true;
         });
     }
@@ -100,16 +107,14 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     }
 
     public static class ExpenseViewHolder extends RecyclerView.ViewHolder {
-        TextView title, category, amount, date;
+        TextView title, amount;
         ImageView icon;
 
         public ExpenseViewHolder(@NonNull View itemView) {
             super(itemView);
-            title = itemView.findViewById(R.id.expenseTitle);
-            category = itemView.findViewById(R.id.expenseCategory);
-            amount = itemView.findViewById(R.id.expenseAmount);
-            date = itemView.findViewById(R.id.expenseDate);
-            icon = itemView.findViewById(R.id.icon);
+            title = itemView.findViewById(R.id.expense_title);
+            amount = itemView.findViewById(R.id.expense_amount);
+            icon = itemView.findViewById(R.id.expense_icon);
         }
     }
 }

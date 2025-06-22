@@ -15,8 +15,9 @@ class ChooseCategoryAdapter(
 ) : RecyclerView.Adapter<ChooseCategoryAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val iconCategory: ImageView = itemView.findViewById(R.id.iconCategory)
-        val textCategoryName: TextView = itemView.findViewById(R.id.textCategoryName)
+        val icon: ImageView = itemView.findViewById(R.id.category_icon)
+        val name: TextView = itemView.findViewById(R.id.category_name)
+        val amount: TextView = itemView.findViewById(R.id.category_amount)
 
         init {
             itemView.setOnClickListener {
@@ -30,14 +31,22 @@ class ChooseCategoryAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_choose_category, parent, false)
+            .inflate(R.layout.item_category, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val category = categories[position]
-        holder.iconCategory.setImageResource(category.iconResId)
-        holder.textCategoryName.text = category.name
+        holder.name.text = category.name
+        holder.icon.setImageResource(category.iconResId)
+
+        // Показываем сумму, если есть
+        if (category.amount != null) {
+            holder.amount.text = "${category.amount} ₽"
+            holder.amount.visibility = View.VISIBLE
+        } else {
+            holder.amount.visibility = View.GONE
+        }
     }
 
     override fun getItemCount(): Int = categories.size

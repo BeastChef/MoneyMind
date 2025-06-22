@@ -35,6 +35,8 @@
     <string name="record_deleted">Запись удалена</string>
     <string name="cancel">Отмена</string>
     <string name="save">Сохранить</string>
+    <string name="category_icon">Иконка категории</string>
+    <string name="expense_icon">Иконка расхода</string>
 
     <!-- ✅ Прочие подписи -->
     <string name="chart_tabs">Навигация по графикам</string>

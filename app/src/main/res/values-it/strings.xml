@@ -43,6 +43,8 @@
     <string name="record_deleted">Voce eliminata</string>
     <string name="cancel">Annulla</string>
     <string name="save">Salva</string>
+    <string name="category_icon">Icona di categoria</string>
+    <string name="expense_icon">Icona di spesa</string>
 
     <!-- Altro -->
     <string name="chart_tabs">Navigazione grafici</string>

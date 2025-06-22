@@ -43,6 +43,8 @@
     <string name="record_deleted">Record Deleted</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
+    <string name="category_icon">Category icon</string>
+    <string name="expense_icon">Expense icon</string>
 
     <!-- Other labels -->
     <string name="chart_tabs">Chart Navigation</string>

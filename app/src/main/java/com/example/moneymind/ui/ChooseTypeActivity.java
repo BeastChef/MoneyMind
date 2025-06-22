@@ -17,14 +17,18 @@ public class ChooseTypeActivity extends AppCompatActivity {
         findViewById(R.id.blockIncome).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ChooseTypeActivity.this, ChooseIncomeCategoryActivity.class));
+                Intent intent = new Intent(ChooseTypeActivity.this, ChooseIncomeCategoryActivity.class);
+                intent.putExtra("CATEGORY_TYPE", "income"); // ✅ передаём тип
+                startActivity(intent);
             }
         });
 
         findViewById(R.id.blockExpense).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ChooseTypeActivity.this, ChooseExpenseCategoryActivity.class));
+                Intent intent = new Intent(ChooseTypeActivity.this, ChooseExpenseCategoryActivity.class);
+                intent.putExtra("CATEGORY_TYPE", "expense"); // ✅ передаём тип
+                startActivity(intent);
             }
         });
     }

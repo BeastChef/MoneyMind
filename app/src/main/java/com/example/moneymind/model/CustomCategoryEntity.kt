@@ -8,6 +8,7 @@ data class CustomCategoryEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
     val iconResId: Int,
+    val iconName: String,
     val isIncome: Boolean
 
 )

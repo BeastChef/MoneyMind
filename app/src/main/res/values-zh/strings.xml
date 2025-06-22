@@ -43,11 +43,13 @@
     <string name="record_deleted">记录已删除</string>
     <string name="cancel">取消</string>
     <string name="save">保存</string>
+    <string name="category_icon">类别图标</string>
 
     <!-- 其他标签 -->
     <string name="chart_tabs">图表导航</string>
     <string name="select_period_title">选择时间段</string>
     <string name="no_data_for_selected_day">该日期无数据</string>
+    <string name="expense_icon">费用图标</string>
 
     <!-- 支出类别 -->
     <string name="category_food">餐饮</string>

@@ -44,6 +44,8 @@
     <string name="record_deleted">تم حذف السجل</string>
     <string name="cancel">إلغاء</string>
     <string name="save">حفظ</string>
+    <string name="category_icon">أيقونة الفئة</string>
+    <string name="expense_icon">أيقونة المصروفات</string>
 
     <!-- تسميات إضافية -->
     <string name="chart_tabs">التنقل بين الرسوم البيانية</string>

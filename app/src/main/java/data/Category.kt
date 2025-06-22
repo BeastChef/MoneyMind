@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 data class Category(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,              // Название категории
+    val iconName: String,
     val iconResId: Int,           // ID иконки
 
     @ColumnInfo(name = "is_income")  // 👈 важно!
