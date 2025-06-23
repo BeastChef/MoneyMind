@@ -5,10 +5,11 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "custom_categories")
 data class CustomCategoryEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val name: String,
-    val iconResId: Int,
-    val iconName: String,
-    val isIncome: Boolean
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
 
+    val name: String,         // Название категории
+    val iconResId: Int,       // ID ресурса иконки (например, R.drawable.ic_food)
+    val iconName: String,     // Имя ресурса (например, "ic_food")
+    val isIncome: Boolean     // Тип: true = доход, false = расход
 )

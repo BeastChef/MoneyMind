@@ -40,6 +40,7 @@ import com.example.moneymind.data.CategoryDao;
 import com.example.moneymind.data.CategoryRepository;
 import com.example.moneymind.data.Expense;
 import com.example.moneymind.utils.DefaultCategoriesProvider;
+import com.example.moneymind.utils.DefaultCategoryInitializer;
 import com.example.moneymind.utils.OnSwipeTouchListener;
 import com.example.moneymind.viewmodel.ExpenseViewModel;
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory;
@@ -50,6 +51,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
+import com.example.moneymind.data.CustomCategoryDao;
+import com.example.moneymind.data.CategoryRepository;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -76,7 +80,10 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        insertDefaultsIfEmpty(this);
+        DefaultCategoryInitializer.initAsync(this);
+
+
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                 checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -310,17 +317,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(refresh);
     }
 
-    private void insertDefaultsIfEmpty(Context context) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            AppDatabase db = AppDatabase.getDatabase(context);
-            CategoryDao dao = db.categoryDao();
-            if (dao.getAllNow().isEmpty()) {
-                CategoryRepository repository = new CategoryRepository(dao);
-                DefaultCategoriesProvider.INSTANCE.getDefaultExpenseCategories();
-                DefaultCategoriesProvider.INSTANCE.getDefaultIncomeCategories();
-            }
-        });
-    }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

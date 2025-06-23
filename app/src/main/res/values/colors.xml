@@ -59,5 +59,6 @@
 
     <color name="income_color_strong">#4CAF50</color> <!-- Для графика -->
     <color name="expense_color_orange">#FFA726</color> <!-- Для графика -->
+    <color name="error_red">#D32F2F</color> <!-- мягкий красный -->
 
 </resources>

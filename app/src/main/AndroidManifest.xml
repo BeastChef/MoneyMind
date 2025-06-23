@@ -16,6 +16,7 @@
         android:theme="@style/Theme.MoneyMind"
         tools:targetApi="31">
 
+
         <!-- 🌟 Splash Activity — главная -->
         <activity
             android:name=".ui.MainActivity"
@@ -37,7 +38,7 @@
         <activity android:name=".ui.ChooseIncomeCategoryActivity" />
 
         <activity android:name=".ui.ChooseTypeActivity" />
-
+        <activity android:name=".ui.EditCategoryActivity" />
 
         <!-- При необходимости -->
         <!-- <activity android:name=".ui.choose.ChooseCategoryActivity" /> -->

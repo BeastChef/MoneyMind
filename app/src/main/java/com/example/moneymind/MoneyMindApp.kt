@@ -19,8 +19,12 @@ class MoneyMindApp : Application() {
         ExpenseRepository(database.expenseDao())
     }
 
+    // ✅ Теперь передаём оба DAO
     val categoryRepository: CategoryRepository by lazy {
-        CategoryRepository(database.categoryDao()) // ✅ Добавили репозиторий категорий
+        CategoryRepository(
+            database.categoryDao(),
+            database.customCategoryDao()
+        )
     }
 
     override fun onCreate() {
@@ -34,6 +38,9 @@ class MoneyMindApp : Application() {
         val config = resources.configuration
         config.setLocale(locale)
         resources.updateConfiguration(config, resources.displayMetrics)
+
+        // ❗Если нужно запланировать уведомление — раскомментируйте строку ниже:
+        // scheduleDailyReminder()
     }
 
     private fun scheduleDailyReminder() {

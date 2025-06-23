@@ -6,9 +6,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.moneymind.data.Category
 import com.example.moneymind.data.CategoryRepository
+import com.example.moneymind.model.CustomCategoryEntity
 import kotlinx.coroutines.launch
 
 class CategoryViewModel(private val repository: CategoryRepository) : ViewModel() {
+
+    // ---------- Обычные (дефолтные) категории ----------
 
     val allCategories: LiveData<List<Category>> = repository.allCategories
 
@@ -24,13 +27,27 @@ class CategoryViewModel(private val repository: CategoryRepository) : ViewModel(
         return repository.getCategoryById(id)
     }
 
-    // ✅ Новый метод для получения категорий по типу доход/расход
     fun getCategories(isIncome: Boolean): LiveData<List<Category>> {
-        return if (isIncome) {
-            repository.getIncomeCategories()
-        } else {
-            repository.getExpenseCategories()
-        }
+        return if (isIncome) repository.getIncomeCategories()
+        else repository.getExpenseCategories()
+    }
+
+    // ---------- Кастомные категории (CustomCategoryEntity) ----------
+
+    fun insertCustom(category: CustomCategoryEntity) = viewModelScope.launch {
+        repository.insertCustom(category)
+    }
+
+    fun updateCustom(category: CustomCategoryEntity) = viewModelScope.launch {
+        repository.updateCustom(category)
+    }
+
+    fun deleteCustomById(id: Int) = viewModelScope.launch {
+        repository.deleteCustomById(id)
+    }
+
+    fun getCustomCategories(isIncome: Boolean): LiveData<List<CustomCategoryEntity>> {
+        return repository.getCustomCategories(isIncome)
     }
 }
 

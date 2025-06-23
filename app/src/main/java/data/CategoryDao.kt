@@ -44,4 +44,5 @@ interface CategoryDao {
     // Получить категорию по ID
     @Query("SELECT * FROM categories WHERE id = :id LIMIT 1")
     suspend fun getById(id: Int): Category?
+
 }

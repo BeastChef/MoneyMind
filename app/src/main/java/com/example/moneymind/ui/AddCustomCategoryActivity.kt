@@ -27,12 +27,9 @@ class AddCustomCategoryActivity : AppCompatActivity() {
     private lateinit var layout: LinearLayout
 
     private var selectedIconResId: Int = R.drawable.ic_category_default
+    private var isIncome: Boolean = false
 
-    private val categoryViewModel: CategoryViewModel by lazy {
-        val dao = AppDatabase.getDatabase(applicationContext).categoryDao()
-        val repository = CategoryRepository(dao)
-        ViewModelProvider(this, CategoryViewModelFactory(repository))[CategoryViewModel::class.java]
-    }
+    private lateinit var categoryViewModel: CategoryViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +39,19 @@ class AddCustomCategoryActivity : AppCompatActivity() {
         saveButton = findViewById(R.id.saveCategoryButton)
         layout = findViewById(R.id.addCategoryLayout)
 
-        // Добавляем иконку в layout
+        // Получаем тип категории (доход или расход)
+        isIncome = intent.getStringExtra("CATEGORY_TYPE") == "income"
+
+        // ✅ ViewModel с передачей двух DAO
+        val db = AppDatabase.getDatabase(applicationContext)
+        val repository = CategoryRepository(
+            db.categoryDao(),           // обычные категории
+            db.customCategoryDao()      // кастомные категории ✅
+        )
+        val factory = CategoryViewModelFactory(repository)
+        categoryViewModel = ViewModelProvider(this, factory)[CategoryViewModel::class.java]
+
+        // Иконка по умолчанию
         selectedIconView = ImageView(this).apply {
             setImageResource(selectedIconResId)
             layoutParams = LinearLayout.LayoutParams(200, 200)
@@ -103,7 +112,6 @@ class AddCustomCategoryActivity : AppCompatActivity() {
     }
 
     private fun saveCustomCategory(name: String) {
-        val isIncome = intent.getStringExtra("CATEGORY_TYPE") == "income"
         val iconName = resources.getResourceEntryName(selectedIconResId)
 
         val category = Category(

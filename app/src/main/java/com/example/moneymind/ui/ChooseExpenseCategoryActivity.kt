@@ -26,22 +26,19 @@ class ChooseExpenseCategoryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose_expense_category)
 
-        // Кнопка "Отмена"
         findViewById<TextView>(R.id.btnCancel).setOnClickListener {
             finish()
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
 
-        // TabLayout: Расход / Доход
         val tabLayout = findViewById<TabLayout>(R.id.categoryTabLayout)
         tabLayout.addTab(tabLayout.newTab().setText("Доход"))
         tabLayout.addTab(tabLayout.newTab().setText("Расход"))
-        tabLayout.getTabAt(1)?.select() // выбрать "Расход" по умолчанию
+        tabLayout.getTabAt(1)?.select()
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 if (tab.position == 0) {
-                    // Перейти в экран доходов
                     val intent = Intent(this@ChooseExpenseCategoryActivity, ChooseIncomeCategoryActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent)
@@ -54,13 +51,15 @@ class ChooseExpenseCategoryActivity : AppCompatActivity() {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
 
-        // ViewModel
-        val dao = AppDatabase.getDatabase(applicationContext).categoryDao()
-        val repository = CategoryRepository(dao)
+        // ✅ Используем оба DAO
+        val db = AppDatabase.getDatabase(applicationContext)
+        val repository = CategoryRepository(
+            categoryDao = db.categoryDao(),
+            customCategoryDao = db.customCategoryDao()
+        )
         val factory = CategoryViewModelFactory(repository)
         categoryViewModel = ViewModelProvider(this, factory)[CategoryViewModel::class.java]
 
-        // RecyclerView
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_expense_categories)
         adapter = CategoryAdapter { category ->
             val intent = Intent(this, AddExpenseActivity::class.java)
@@ -76,14 +75,13 @@ class ChooseExpenseCategoryActivity : AppCompatActivity() {
 
         observeCategories()
 
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-
-        // Кнопка добавления своей категории
         findViewById<Button>(R.id.btn_add_custom_category).setOnClickListener {
             val intent = Intent(this, AddCustomCategoryActivity::class.java)
             intent.putExtra("CATEGORY_TYPE", "expense")
             startActivityForResult(intent, 100)
         }
+
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
     }
 
     private fun observeCategories() {

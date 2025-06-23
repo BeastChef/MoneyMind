@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+
+        <!-- Иконка -->
+        <ImageView
+            android:id="@+id/editCategoryIcon"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/bg_icon_circle"
+            android:padding="16dp"
+            android:contentDescription="Иконка"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Название категории -->
+        <EditText
+            android:id="@+id/editCategoryName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Название категории"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:background="@drawable/bg_input"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Кнопки -->
+        <Button
+            android:id="@+id/saveCategoryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Сохранить изменения"
+            android:backgroundTint="@color/wood_brown"
+            android:textColor="@android:color/white"
+            android:layout_marginBottom="12dp" />
+
+        <Button
+            android:id="@+id/deleteCategoryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Удалить категорию"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/error_red" />
+    </LinearLayout>
+</ScrollView>

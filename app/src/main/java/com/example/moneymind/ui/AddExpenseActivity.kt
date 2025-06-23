@@ -1,21 +1,18 @@
 package com.example.moneymind.ui
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.moneymind.MoneyMindApp
 import com.example.moneymind.R
-import com.example.moneymind.data.AppDatabase
 import com.example.moneymind.data.Expense
-import com.example.moneymind.model.CustomCategoryEntity
-import com.example.moneymind.utils.CategoryClassifier
+import com.example.moneymind.utils.CategoryColorHelper
 import com.example.moneymind.viewmodel.ExpenseViewModel
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory
 import com.google.android.material.button.MaterialButton
@@ -31,15 +28,17 @@ class AddExpenseActivity : AppCompatActivity() {
     private lateinit var amountInput: TextInputEditText
     private lateinit var dateInput: TextInputEditText
     private lateinit var saveButton: MaterialButton
-    private lateinit var categoryLayout: View
     private lateinit var categoryIcon: ImageView
-    private lateinit var categoryText: TextView
+    private lateinit var categoryName: TextView
+    private lateinit var btnEditCategory: MaterialButton
+    private lateinit var categoryLayout: View
 
-    private var selectedDateMillis: Long = System.currentTimeMillis()
-    private var selectedExpenseId: Int? = null
-    private var selectedType: String = "expense"
     private var selectedCategory: String? = null
-    private var selectedIconName: String = "ic_money" // ✅ Новая переменная
+    private var selectedIconName: String = "ic_money"
+    private var selectedIconResId: Int = R.drawable.ic_category_default
+    private var selectedDateMillis: Long = System.currentTimeMillis()
+    private var isIncome: Boolean = false
+    private var selectedExpenseId: Int? = null
 
     private val viewModel: ExpenseViewModel by viewModels {
         ExpenseViewModelFactory((application as MoneyMindApp).repository)
@@ -50,151 +49,128 @@ class AddExpenseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_expense)
 
+        // Инициализация view
         titleInput = findViewById(R.id.inputTitle)
         amountInput = findViewById(R.id.inputAmount)
         dateInput = findViewById(R.id.inputDate)
         saveButton = findViewById(R.id.saveButton)
-        categoryLayout = findViewById(R.id.selectedCategoryLayout)
         categoryIcon = findViewById(R.id.selectedCategoryIcon)
-        categoryText = findViewById(R.id.selectedCategoryText)
+        categoryName = findViewById(R.id.selectedCategoryText)
+        btnEditCategory = findViewById(R.id.btnEditCategory)
+        categoryLayout = findViewById(R.id.selectedCategoryLayout)
 
-        val calendar = Calendar.getInstance()
-        val formatter = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
-        dateInput.setText(formatter.format(calendar.time))
-
-        // Получение типа, категории и иконки
-        selectedType = if (intent.getBooleanExtra("is_income", false)) "income" else "expense"
+        // Получаем из intent
         selectedCategory = intent.getStringExtra("selected_category")
-        selectedIconName = intent.getStringExtra("selected_icon") ?: "ic_money" // ✅ Получаем iconName
+        selectedIconName = intent.getStringExtra("selected_icon") ?: "ic_money"
+        isIncome = intent.getBooleanExtra("is_income", false)
+        selectedIconResId = resources.getIdentifier(selectedIconName, "drawable", packageName)
+            .takeIf { it != 0 } ?: R.drawable.ic_category_default
+
+        // Формат даты
+        val formatter = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
+        dateInput.setText(formatter.format(Date(selectedDateMillis)))
+
+        // Показ даты
+        dateInput.setOnClickListener { showDatePickerDialog() }
 
         // Отображение категории
-        selectedCategory?.let { name ->
-            categoryText.text = name
-            val iconRes = resources.getIdentifier(selectedIconName, "drawable", packageName) // ✅ по имени
-            categoryIcon.setImageResource(if (iconRes != 0) iconRes else R.drawable.ic_default_category)
+        selectedCategory?.let {
             categoryLayout.visibility = View.VISIBLE
+            categoryName.text = it
+            categoryIcon.setImageResource(selectedIconResId)
+
+            val color = CategoryColorHelper.getColorForCategoryKey(selectedIconName, isIncome)
+            val bgDrawable = DrawableCompat.wrap(categoryIcon.background.mutate())
+            DrawableCompat.setTint(bgDrawable, color)
+            categoryIcon.background = bgDrawable
         }
 
-        // Выбор даты
-        dateInput.setOnClickListener {
-            val listener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                calendar.set(year, month, dayOfMonth)
-                selectedDateMillis = calendar.timeInMillis
-                dateInput.setText(formatter.format(calendar.time))
-            }
-
-            DatePickerDialog(this, listener,
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
+        // Кнопка редактирования категории
+        btnEditCategory.setOnClickListener {
+            val intent = Intent(this, EditCategoryActivity::class.java)
+            intent.putExtra("category_id", 0) // TODO: передать ID категории, если доступен
+            intent.putExtra("category_name", selectedCategory)
+            intent.putExtra("category_icon", selectedIconName)
+            intent.putExtra("category_is_income", isIncome)
+            startActivity(intent)
         }
 
-        // Редактирование существующей записи
-        val expenseId = intent.getIntExtra("expense_id", -1)
-        if (expenseId != -1) {
-            selectedExpenseId = expenseId
-            viewModel.getExpenseById(expenseId).observe(this) { expense ->
+        // Если редактируем
+        selectedExpenseId = intent.getIntExtra("expense_id", -1).takeIf { it != -1 }
+        selectedExpenseId?.let { id ->
+            viewModel.getExpenseById(id).observe(this) { expense ->
                 if (expense != null) {
                     titleInput.setText(expense.title)
                     amountInput.setText(expense.amount.toString())
                     selectedDateMillis = expense.date
                     dateInput.setText(formatter.format(Date(expense.date)))
-                    selectedType = expense.type
                     selectedCategory = expense.category
-                    selectedIconName = expense.iconName // ✅
-                    categoryText.text = selectedCategory
-                    val iconRes = resources.getIdentifier(selectedIconName, "drawable", packageName)
-                    categoryIcon.setImageResource(if (iconRes != 0) iconRes else R.drawable.ic_default_category)
+                    selectedIconName = expense.iconName
+                    selectedIconResId = resources.getIdentifier(selectedIconName, "drawable", packageName)
+                        .takeIf { it != 0 } ?: R.drawable.ic_category_default
+
+                    categoryName.text = selectedCategory
+                    categoryIcon.setImageResource(selectedIconResId)
+
+                    val color = CategoryColorHelper.getColorForCategoryKey(selectedIconName, isIncome)
+                    val bgDrawable = DrawableCompat.wrap(categoryIcon.background.mutate())
+                    DrawableCompat.setTint(bgDrawable, color)
+                    categoryIcon.background = bgDrawable
+
                     categoryLayout.visibility = View.VISIBLE
                 }
             }
         }
 
-        // Кнопка сохранить
+        // Сохранение
         saveButton.setOnClickListener {
-            val title = titleInput.text.toString().trim()
+            val title = titleInput.text.toString().trim() // может быть пустым
             val amount = amountInput.text.toString().toDoubleOrNull()
 
-            if (title.isBlank() || amount == null) {
-                Toast.makeText(this, "Введите корректные данные", Toast.LENGTH_SHORT).show()
+            if (amount == null || amount <= 0) {
+                Toast.makeText(this, "Введите корректную сумму", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
-            val category = selectedCategory ?: CategoryClassifier.classify(this, title)
 
             val expense = Expense(
                 id = selectedExpenseId ?: 0,
                 title = title,
                 amount = amount,
-                category = category,
+                category = selectedCategory ?: "Категория",
                 date = selectedDateMillis,
                 note = null,
-                type = selectedType,
-                iconName = selectedIconName // ✅ сохраняем иконку
+                type = if (isIncome) "income" else "expense",
+                iconName = selectedIconName
             )
 
-            if (selectedExpenseId != null) {
-                viewModel.update(expense)
-                Snackbar.make(saveButton, "Запись обновлена", Snackbar.LENGTH_SHORT).show()
-            } else {
-                viewModel.insert(expense)
-                Snackbar.make(saveButton, "Запись добавлена", Snackbar.LENGTH_SHORT).show()
+            lifecycleScope.launch {
+                if (selectedExpenseId != null) {
+                    viewModel.update(expense)
+                    Snackbar.make(saveButton, "Обновлено", Snackbar.LENGTH_SHORT).show()
+                } else {
+                    viewModel.insert(expense)
+                    Snackbar.make(saveButton, "Сохранено", Snackbar.LENGTH_SHORT).show()
+                }
+                finish()
             }
-
-            finish()
         }
     }
 
-    private fun showAddCategoryDialog(isIncome: Boolean) {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_category, null)
-        val editTextName = dialogView.findViewById<EditText>(R.id.editTextCategoryName)
-        val gridView = dialogView.findViewById<GridView>(R.id.iconGridView)
-
-        val iconResIds = resources.obtainTypedArray(R.array.icon_res_ids)
-        val icons = (0 until iconResIds.length()).map { iconResIds.getResourceId(it, 0) }
-        iconResIds.recycle()
-
-        var selectedIcon = icons.first()
-
-        gridView.adapter = object : BaseAdapter() {
-            override fun getCount() = icons.size
-            override fun getItem(position: Int) = icons[position]
-            override fun getItemId(position: Int) = position.toLong()
-            override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-                val imageView = ImageView(this@AddExpenseActivity)
-                imageView.setImageResource(icons[position])
-                imageView.layoutParams = AbsListView.LayoutParams(100, 100)
-                imageView.setPadding(8, 8, 8, 8)
-                return imageView
-            }
+    private fun showDatePickerDialog() {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = selectedDateMillis
+        val listener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+            calendar.set(year, month, dayOfMonth)
+            selectedDateMillis = calendar.timeInMillis
+            val formatter = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
+            dateInput.setText(formatter.format(calendar.time))
         }
 
-        gridView.setOnItemClickListener { _, _, position, _ ->
-            selectedIcon = icons[position]
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle("Новая категория")
-            .setView(dialogView)
-            .setPositiveButton("Добавить") { _, _ ->
-                val name = editTextName.text.toString()
-                if (name.isNotBlank()) {
-                    val iconName = resources.getResourceEntryName(selectedIcon) // ✅ сохраняем имя иконки
-                    val category = CustomCategoryEntity(
-                        name = name,
-                        iconResId = selectedIcon,
-                        iconName = iconName,
-                        isIncome = isIncome
-                    )
-                    lifecycleScope.launch {
-                        AppDatabase.getDatabase(applicationContext).customCategoryDao().insert(category)
-                    }
-                } else {
-                    Toast.makeText(this, "Введите название", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .setNegativeButton("Отмена", null)
-            .show()
+        DatePickerDialog(
+            this, listener,
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).show()
     }
 }
