@@ -24,6 +24,10 @@ import java.util.*
 
 class AddExpenseActivity : AppCompatActivity() {
 
+    companion object {
+        private const val EDIT_CATEGORY_REQUEST_CODE = 1001
+    }
+
     private lateinit var titleInput: TextInputEditText
     private lateinit var amountInput: TextInputEditText
     private lateinit var dateInput: TextInputEditText
@@ -39,6 +43,7 @@ class AddExpenseActivity : AppCompatActivity() {
     private var selectedDateMillis: Long = System.currentTimeMillis()
     private var isIncome: Boolean = false
     private var selectedExpenseId: Int? = null
+    private var selectedCategoryId: Int = -1
 
     private val viewModel: ExpenseViewModel by viewModels {
         ExpenseViewModelFactory((application as MoneyMindApp).repository)
@@ -49,7 +54,6 @@ class AddExpenseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_expense)
 
-        // Инициализация view
         titleInput = findViewById(R.id.inputTitle)
         amountInput = findViewById(R.id.inputAmount)
         dateInput = findViewById(R.id.inputDate)
@@ -63,17 +67,15 @@ class AddExpenseActivity : AppCompatActivity() {
         selectedCategory = intent.getStringExtra("selected_category")
         selectedIconName = intent.getStringExtra("selected_icon") ?: "ic_money"
         isIncome = intent.getBooleanExtra("is_income", false)
+        selectedCategoryId = intent.getIntExtra("category_id", -1)
         selectedIconResId = resources.getIdentifier(selectedIconName, "drawable", packageName)
             .takeIf { it != 0 } ?: R.drawable.ic_category_default
 
-        // Формат даты
         val formatter = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
         dateInput.setText(formatter.format(Date(selectedDateMillis)))
 
-        // Показ даты
         dateInput.setOnClickListener { showDatePickerDialog() }
 
-        // Отображение категории
         selectedCategory?.let {
             categoryLayout.visibility = View.VISIBLE
             categoryName.text = it
@@ -85,17 +87,15 @@ class AddExpenseActivity : AppCompatActivity() {
             categoryIcon.background = bgDrawable
         }
 
-        // Кнопка редактирования категории
         btnEditCategory.setOnClickListener {
             val intent = Intent(this, EditCategoryActivity::class.java)
-            intent.putExtra("category_id", 0) // TODO: передать ID категории, если доступен
+            intent.putExtra("category_id", selectedCategoryId)
             intent.putExtra("category_name", selectedCategory)
             intent.putExtra("category_icon", selectedIconName)
             intent.putExtra("category_is_income", isIncome)
-            startActivity(intent)
+            startActivityForResult(intent, EDIT_CATEGORY_REQUEST_CODE)
         }
 
-        // Если редактируем
         selectedExpenseId = intent.getIntExtra("expense_id", -1).takeIf { it != -1 }
         selectedExpenseId?.let { id ->
             viewModel.getExpenseById(id).observe(this) { expense ->
@@ -122,9 +122,8 @@ class AddExpenseActivity : AppCompatActivity() {
             }
         }
 
-        // Сохранение
         saveButton.setOnClickListener {
-            val title = titleInput.text.toString().trim() // может быть пустым
+            val title = titleInput.text.toString().trim()
             val amount = amountInput.text.toString().toDoubleOrNull()
 
             if (amount == null || amount <= 0) {
@@ -151,6 +150,18 @@ class AddExpenseActivity : AppCompatActivity() {
                     viewModel.insert(expense)
                     Snackbar.make(saveButton, "Сохранено", Snackbar.LENGTH_SHORT).show()
                 }
+                finish()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == EDIT_CATEGORY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            val type = data.getStringExtra("deleted_type") ?: data.getStringExtra("edited_type")
+            if (type != null) {
+                Toast.makeText(this, "Категория изменена", Toast.LENGTH_SHORT).show()
                 finish()
             }
         }

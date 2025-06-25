@@ -5,10 +5,11 @@ import com.example.moneymind.model.CustomCategoryEntity
 
 class CategoryRepository(
     private val categoryDao: CategoryDao,
-    private val customCategoryDao: CustomCategoryDao // ✅ Добавлен DAO кастомных категорий
+    private val customCategoryDao: CustomCategoryDao
 ) {
 
-    // ---------- Обычные категории ----------
+    // ---------- Обычные (дефолтные) категории ----------
+
     val allCategories: LiveData<List<Category>> = categoryDao.getAllCategories()
 
     suspend fun insert(category: Category) {
@@ -39,7 +40,8 @@ class CategoryRepository(
         return categoryDao.getCategoriesByType(isIncome)
     }
 
-    // ---------- Кастомные категории ----------
+    // ---------- Кастомные категории (CustomCategoryEntity) ----------
+
     suspend fun insertCustom(category: CustomCategoryEntity) {
         customCategoryDao.insert(category)
     }
@@ -54,5 +56,10 @@ class CategoryRepository(
 
     fun getCustomCategories(isIncome: Boolean): LiveData<List<CustomCategoryEntity>> {
         return customCategoryDao.getCategories(isIncome)
+    }
+
+    // ✅ Получить кастомные категории синхронно (для корутин)
+    suspend fun getCustomCategoriesNow(isIncome: Boolean): List<CustomCategoryEntity> {
+        return customCategoryDao.getAllNow(isIncome)
     }
 }

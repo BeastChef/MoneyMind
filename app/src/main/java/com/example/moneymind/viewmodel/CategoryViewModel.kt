@@ -1,15 +1,14 @@
 package com.example.moneymind.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.moneymind.data.Category
 import com.example.moneymind.data.CategoryRepository
 import com.example.moneymind.model.CustomCategoryEntity
 import kotlinx.coroutines.launch
 
-class CategoryViewModel(private val repository: CategoryRepository) : ViewModel() {
+class CategoryViewModel(
+    private val repository: CategoryRepository
+) : ViewModel() {
 
     // ---------- Обычные (дефолтные) категории ----------
 
@@ -28,8 +27,7 @@ class CategoryViewModel(private val repository: CategoryRepository) : ViewModel(
     }
 
     fun getCategories(isIncome: Boolean): LiveData<List<Category>> {
-        return if (isIncome) repository.getIncomeCategories()
-        else repository.getExpenseCategories()
+        return repository.getCategoriesByType(isIncome)
     }
 
     // ---------- Кастомные категории (CustomCategoryEntity) ----------
@@ -51,7 +49,9 @@ class CategoryViewModel(private val repository: CategoryRepository) : ViewModel(
     }
 }
 
-class CategoryViewModelFactory(private val repository: CategoryRepository) : ViewModelProvider.Factory {
+class CategoryViewModelFactory(
+    private val repository: CategoryRepository
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(CategoryViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

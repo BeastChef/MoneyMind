@@ -1,53 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp"
     android:background="@android:color/white">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal">
-
-        <!-- Иконка -->
-        <ImageView
-            android:id="@+id/editCategoryIcon"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:background="@drawable/bg_icon_circle"
-            android:padding="16dp"
-            android:contentDescription="Иконка"
-            android:layout_marginBottom="16dp"/>
-
-        <!-- Название категории -->
-        <EditText
-            android:id="@+id/editCategoryName"
+        <!-- Верхняя панель -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Название категории"
-            android:textSize="16sp"
-            android:padding="12dp"
-            android:background="@drawable/bg_input"
-            android:layout_marginBottom="16dp"/>
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
 
-        <!-- Кнопки -->
-        <Button
-            android:id="@+id/saveCategoryButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Сохранить изменения"
-            android:backgroundTint="@color/wood_brown"
-            android:textColor="@android:color/white"
-            android:layout_marginBottom="12dp" />
+                <ImageButton
+                    android:id="@+id/btnCancelCategory"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="12dp"
+                    android:contentDescription="Назад"
+                    android:src="@drawable/ic_back_arrow"
+                    app:tint="@android:color/white" />
 
-        <Button
-            android:id="@+id/deleteCategoryButton"
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Редактировать категорию"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:layout_marginStart="16dp" />
+        </LinearLayout>
+
+        <!-- Контент -->
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Удалить категорию"
-            android:textColor="@android:color/white"
-            android:backgroundTint="@color/error_red" />
-    </LinearLayout>
-</ScrollView>
+            android:layout_height="match_parent"
+            android:padding="24dp">
+
+                <LinearLayout
+                    android:id="@+id/editCategoryLayout"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal">
+
+                        <ImageView
+                            android:id="@+id/editCategoryIcon"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:background="@drawable/bg_icon_circle"
+                            android:padding="16dp"
+                            android:layout_marginBottom="16dp"
+                            android:scaleType="centerInside" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Название категории">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/editCategoryName"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnSaveCategory"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Сохранить"
+                            android:layout_marginTop="24dp"
+                            android:backgroundTint="@color/wood_brown"
+                            android:textColor="@android:color/white"
+                            app:cornerRadius="16dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnDeleteCategory"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Удалить"
+                            android:layout_marginTop="12dp"
+                            android:backgroundTint="@color/error_red"
+                            android:textColor="@android:color/white"
+                            app:cornerRadius="16dp" />
+                </LinearLayout>
+        </ScrollView>
+</LinearLayout>

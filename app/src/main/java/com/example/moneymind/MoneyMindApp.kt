@@ -43,6 +43,7 @@ class MoneyMindApp : Application() {
         // scheduleDailyReminder()
     }
 
+
     private fun scheduleDailyReminder() {
         val now = Calendar.getInstance()
         val target = now.clone() as Calendar
