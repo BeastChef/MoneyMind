@@ -10,12 +10,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moneymind.R
-import com.example.moneymind.data.Category
+import com.example.moneymind.model.CategoryItem
 import com.example.moneymind.utils.CategoryColorHelper
 
 class CategoryAdapter(
-    private val onItemClick: (Category) -> Unit
-) : ListAdapter<Category, CategoryAdapter.CategoryViewHolder>(CategoryDiffCallback()) {
+    private val onItemClick: (CategoryItem) -> Unit
+) : ListAdapter<CategoryItem, CategoryAdapter.CategoryViewHolder>(CategoryDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -32,11 +32,11 @@ class CategoryAdapter(
         private val icon: ImageView = itemView.findViewById(R.id.category_icon)
         private val name: TextView = itemView.findViewById(R.id.category_name)
 
-        fun bind(category: Category) {
+        fun bind(category: CategoryItem) {
             icon.setImageResource(category.iconResId)
             name.text = category.name
 
-            // ✅ Цвет круга по iconName и isIncome
+            // Цвет фона по ключу iconName и типу isIncome
             val color = CategoryColorHelper.getColorForCategoryKey(category.iconName, category.isIncome)
             val bgDrawable = DrawableCompat.wrap(icon.background.mutate())
             DrawableCompat.setTint(bgDrawable, color)
@@ -48,12 +48,12 @@ class CategoryAdapter(
         }
     }
 
-    class CategoryDiffCallback : DiffUtil.ItemCallback<Category>() {
-        override fun areItemsTheSame(oldItem: Category, newItem: Category): Boolean {
+    class CategoryDiffCallback : DiffUtil.ItemCallback<CategoryItem>() {
+        override fun areItemsTheSame(oldItem: CategoryItem, newItem: CategoryItem): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: Category, newItem: Category): Boolean {
+        override fun areContentsTheSame(oldItem: CategoryItem, newItem: CategoryItem): Boolean {
             return oldItem == newItem
         }
     }

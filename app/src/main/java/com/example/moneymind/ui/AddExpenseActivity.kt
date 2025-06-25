@@ -54,6 +54,7 @@ class AddExpenseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_expense)
 
+        // View init
         titleInput = findViewById(R.id.inputTitle)
         amountInput = findViewById(R.id.inputAmount)
         dateInput = findViewById(R.id.inputDate)
@@ -66,8 +67,8 @@ class AddExpenseActivity : AppCompatActivity() {
         // Получаем из intent
         selectedCategory = intent.getStringExtra("selected_category")
         selectedIconName = intent.getStringExtra("selected_icon") ?: "ic_money"
-        isIncome = intent.getBooleanExtra("is_income", false)
         selectedCategoryId = intent.getIntExtra("category_id", -1)
+        isIncome = intent.getBooleanExtra("is_income", false)
         selectedIconResId = resources.getIdentifier(selectedIconName, "drawable", packageName)
             .takeIf { it != 0 } ?: R.drawable.ic_category_default
 
@@ -76,26 +77,22 @@ class AddExpenseActivity : AppCompatActivity() {
 
         dateInput.setOnClickListener { showDatePickerDialog() }
 
+        // Показываем выбранную категорию
         selectedCategory?.let {
-            categoryLayout.visibility = View.VISIBLE
-            categoryName.text = it
-            categoryIcon.setImageResource(selectedIconResId)
-
-            val color = CategoryColorHelper.getColorForCategoryKey(selectedIconName, isIncome)
-            val bgDrawable = DrawableCompat.wrap(categoryIcon.background.mutate())
-            DrawableCompat.setTint(bgDrawable, color)
-            categoryIcon.background = bgDrawable
+            showCategoryDetails()
         }
 
         btnEditCategory.setOnClickListener {
-            val intent = Intent(this, EditCategoryActivity::class.java)
-            intent.putExtra("category_id", selectedCategoryId)
-            intent.putExtra("category_name", selectedCategory)
-            intent.putExtra("category_icon", selectedIconName)
-            intent.putExtra("category_is_income", isIncome)
+            val intent = Intent(this, EditCategoryActivity::class.java).apply {
+                putExtra("category_id", selectedCategoryId)
+                putExtra("category_name", selectedCategory)
+                putExtra("category_icon", selectedIconName)
+                putExtra("category_is_income", isIncome)
+            }
             startActivityForResult(intent, EDIT_CATEGORY_REQUEST_CODE)
         }
 
+        // Режим редактирования расхода
         selectedExpenseId = intent.getIntExtra("expense_id", -1).takeIf { it != -1 }
         selectedExpenseId?.let { id ->
             viewModel.getExpenseById(id).observe(this) { expense ->
@@ -109,15 +106,7 @@ class AddExpenseActivity : AppCompatActivity() {
                     selectedIconResId = resources.getIdentifier(selectedIconName, "drawable", packageName)
                         .takeIf { it != 0 } ?: R.drawable.ic_category_default
 
-                    categoryName.text = selectedCategory
-                    categoryIcon.setImageResource(selectedIconResId)
-
-                    val color = CategoryColorHelper.getColorForCategoryKey(selectedIconName, isIncome)
-                    val bgDrawable = DrawableCompat.wrap(categoryIcon.background.mutate())
-                    DrawableCompat.setTint(bgDrawable, color)
-                    categoryIcon.background = bgDrawable
-
-                    categoryLayout.visibility = View.VISIBLE
+                    showCategoryDetails()
                 }
             }
         }
@@ -153,6 +142,17 @@ class AddExpenseActivity : AppCompatActivity() {
                 finish()
             }
         }
+    }
+
+    private fun showCategoryDetails() {
+        categoryLayout.visibility = View.VISIBLE
+        categoryName.text = selectedCategory
+        categoryIcon.setImageResource(selectedIconResId)
+
+        val color = CategoryColorHelper.getColorForCategoryKey(selectedIconName, isIncome)
+        val bgDrawable = DrawableCompat.wrap(categoryIcon.background.mutate())
+        DrawableCompat.setTint(bgDrawable, color)
+        categoryIcon.background = bgDrawable
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -42,32 +42,40 @@ class EditCategoryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_category)
 
+        // Инициализация UI
         inputName = findViewById(R.id.editCategoryName)
         iconView = findViewById(R.id.editCategoryIcon)
         btnSave = findViewById(R.id.btnSaveCategory)
         btnDelete = findViewById(R.id.btnDeleteCategory)
-        btnCancel = findViewById(R.id.btnCancelCategory) // кнопка отмены
+        btnCancel = findViewById(R.id.btnCancelCategory)
         layout = findViewById(R.id.editCategoryLayout)
 
+        // Получение данных из Intent
         categoryId = intent.getIntExtra("category_id", -1)
         isIncome = intent.getBooleanExtra("category_is_income", false)
 
+        // Инициализация ViewModel
         val dao = AppDatabase.getDatabase(applicationContext)
         val repository = CategoryRepository(dao.categoryDao(), dao.customCategoryDao())
         viewModel = ViewModelProvider(this, CategoryViewModelFactory(repository))[CategoryViewModel::class.java]
 
-        // Загружаем категорию по ID
+        // Загрузка категории по ID
         lifecycleScope.launch {
             val list = withContext(Dispatchers.IO) {
-                dao.customCategoryDao().getAllNow(isIncome)
+                repository.getCustomCategoriesNow(isIncome)
             }
             categoryToEdit = list.find { it.id == categoryId }
-            categoryToEdit?.let { category ->
-                inputName.setText(category.name)
-                selectedIconResId = category.iconResId
-                iconName = category.iconName
-                iconView.setImageResource(selectedIconResId)
+
+            if (categoryToEdit == null) {
+                Toast.makeText(this@EditCategoryActivity, "Категория не найдена", Toast.LENGTH_SHORT).show()
+                finish()
+                return@launch
             }
+
+            inputName.setText(categoryToEdit!!.name)
+            selectedIconResId = categoryToEdit!!.iconResId
+            iconName = categoryToEdit!!.iconName
+            iconView.setImageResource(selectedIconResId)
         }
 
         iconView.setOnClickListener { showIconGridDialog() }
@@ -79,16 +87,12 @@ class EditCategoryActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-
             categoryToEdit?.let {
                 val updated = it.copy(name = name, iconResId = selectedIconResId, iconName = iconName)
                 lifecycleScope.launch {
                     viewModel.updateCustom(updated)
                     Toast.makeText(this@EditCategoryActivity, "Категория обновлена", Toast.LENGTH_SHORT).show()
-
-                    setResult(RESULT_OK, Intent().apply {
-                        putExtra("edited_type", if (isIncome) "income" else "expense")
-                    })
+                    setResult(RESULT_OK, Intent().putExtra("edited_type", if (isIncome) "income" else "expense"))
                     finish()
                 }
             }
@@ -103,10 +107,7 @@ class EditCategoryActivity : AppCompatActivity() {
                         lifecycleScope.launch {
                             viewModel.deleteCustomById(it.id)
                             Toast.makeText(this@EditCategoryActivity, "Категория удалена", Toast.LENGTH_SHORT).show()
-
-                            setResult(RESULT_OK, Intent().apply {
-                                putExtra("deleted_type", if (isIncome) "income" else "expense")
-                            })
+                            setResult(RESULT_OK, Intent().putExtra("deleted_type", if (isIncome) "income" else "expense"))
                             finish()
                         }
                     }
@@ -116,8 +117,7 @@ class EditCategoryActivity : AppCompatActivity() {
         }
 
         btnCancel.setOnClickListener {
-            // Просто закрываем экран без сохранений
-            finish()
+            finish() // Закрыть без сохранения
         }
     }
 
@@ -143,7 +143,6 @@ class EditCategoryActivity : AppCompatActivity() {
                 }
             }
         }
-
 
         gridView.setOnItemClickListener { _, _, position, _ ->
             tempSelected = icons[position]

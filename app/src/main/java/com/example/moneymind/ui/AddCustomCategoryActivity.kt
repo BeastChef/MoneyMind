@@ -11,8 +11,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.moneymind.R
 import com.example.moneymind.data.AppDatabase
-import com.example.moneymind.data.Category
 import com.example.moneymind.data.CategoryRepository
+import com.example.moneymind.model.CustomCategoryEntity
 import com.example.moneymind.viewmodel.CategoryViewModel
 import com.example.moneymind.viewmodel.CategoryViewModelFactory
 import com.google.android.material.button.MaterialButton
@@ -39,19 +39,16 @@ class AddCustomCategoryActivity : AppCompatActivity() {
         saveButton = findViewById(R.id.saveCategoryButton)
         layout = findViewById(R.id.addCategoryLayout)
 
-        // Получаем тип категории (доход или расход)
         isIncome = intent.getStringExtra("CATEGORY_TYPE") == "income"
 
-        // ✅ ViewModel с передачей двух DAO
         val db = AppDatabase.getDatabase(applicationContext)
         val repository = CategoryRepository(
-            db.categoryDao(),           // обычные категории
-            db.customCategoryDao()      // кастомные категории ✅
+            db.categoryDao(),
+            db.customCategoryDao()
         )
         val factory = CategoryViewModelFactory(repository)
         categoryViewModel = ViewModelProvider(this, factory)[CategoryViewModel::class.java]
 
-        // Иконка по умолчанию
         selectedIconView = ImageView(this).apply {
             setImageResource(selectedIconResId)
             layoutParams = LinearLayout.LayoutParams(200, 200)
@@ -61,7 +58,6 @@ class AddCustomCategoryActivity : AppCompatActivity() {
         }
         layout.addView(selectedIconView, 1)
 
-        // Кнопка "Сохранить"
         saveButton.setOnClickListener {
             val name = inputCategoryName.text.toString().trim()
             if (name.isNotEmpty()) {
@@ -114,7 +110,8 @@ class AddCustomCategoryActivity : AppCompatActivity() {
     private fun saveCustomCategory(name: String) {
         val iconName = resources.getResourceEntryName(selectedIconResId)
 
-        val category = Category(
+        val customCategory = CustomCategoryEntity(
+            id = 0, // Room сам сгенерирует
             name = name,
             iconResId = selectedIconResId,
             iconName = iconName,
@@ -122,7 +119,7 @@ class AddCustomCategoryActivity : AppCompatActivity() {
         )
 
         lifecycleScope.launch {
-            categoryViewModel.insert(category)
+            categoryViewModel.insertCustom(customCategory)
             Toast.makeText(this@AddCustomCategoryActivity, "Категория добавлена", Toast.LENGTH_SHORT).show()
             setResult(RESULT_OK)
             finish()

@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.moneymind.R
 import com.example.moneymind.data.AppDatabase
 import com.example.moneymind.data.CategoryRepository
+import com.example.moneymind.model.CategoryItem
 import com.example.moneymind.ui.adapter.CategoryAdapter
+import com.example.moneymind.utils.toCategoryItem
 import com.example.moneymind.viewmodel.CategoryViewModel
 import com.example.moneymind.viewmodel.CategoryViewModelFactory
 import com.google.android.material.tabs.TabLayout
@@ -51,21 +53,20 @@ class ChooseExpenseCategoryActivity : AppCompatActivity() {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
 
-        // ✅ Используем оба DAO
+        // Инициализация ViewModel
         val db = AppDatabase.getDatabase(applicationContext)
-        val repository = CategoryRepository(
-            categoryDao = db.categoryDao(),
-            customCategoryDao = db.customCategoryDao()
-        )
+        val repository = CategoryRepository(db.categoryDao(), db.customCategoryDao())
         val factory = CategoryViewModelFactory(repository)
         categoryViewModel = ViewModelProvider(this, factory)[CategoryViewModel::class.java]
 
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_expense_categories)
-        adapter = CategoryAdapter { category ->
-            val intent = Intent(this, AddExpenseActivity::class.java)
-            intent.putExtra("selected_category", category.name)
-            intent.putExtra("selected_icon", category.iconName)
-            intent.putExtra("is_income", false)
+        adapter = CategoryAdapter { category: CategoryItem ->
+            val intent = Intent(this, AddExpenseActivity::class.java).apply {
+                putExtra("selected_category", category.name)
+                putExtra("selected_icon", category.iconName)
+                putExtra("category_id", category.id)
+                putExtra("is_income", category.isIncome)
+            }
             startActivity(intent)
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
@@ -80,13 +81,12 @@ class ChooseExpenseCategoryActivity : AppCompatActivity() {
             intent.putExtra("CATEGORY_TYPE", "expense")
             startActivityForResult(intent, 100)
         }
-
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
     }
 
     private fun observeCategories() {
-        categoryViewModel.getCategories(isIncome = false).observe(this) { categories ->
-            adapter.submitList(categories)
+        categoryViewModel.getCustomCategories(isIncome = false).observe(this) { customList ->
+            val categoryItems = customList.map { it.toCategoryItem() } // ✅ преобразование
+            adapter.submitList(categoryItems)
         }
     }
 

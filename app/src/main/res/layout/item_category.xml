@@ -23,6 +23,7 @@
             android:id="@+id/category_icon"
             android:layout_width="56dp"
             android:layout_height="56dp"
+            android:layout_marginTop="4dp"
             android:background="@drawable/bg_icon_circle"
             android:padding="10dp"
             android:scaleType="centerInside"
@@ -41,7 +42,7 @@
             android:ellipsize="end"
             android:layout_marginTop="8dp" />
 
-        <!-- Сумма (если есть) -->
+        <!-- Сумма (если используешь для аналитики) -->
         <TextView
             android:id="@+id/category_amount"
             android:layout_width="wrap_content"

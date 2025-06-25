@@ -39,7 +39,8 @@
         <item>@drawable/ic_salary</item>           <!-- Зарплата -->
         <item>@drawable/ic_shopping</item>         <!-- Шопинг -->
         <item>@drawable/ic_transport</item>        <!-- Транспорт -->
-
+        <item>@drawable/ic_clothes</item>
+        <item>@drawable/ic_phone</item>
         <!-- ic_1 до ic_115 -->
         <item>@drawable/ic_1</item>
         <item>@drawable/ic_2</item>
@@ -169,6 +170,8 @@
         <item>Зарплата</item>
         <item>Шопинг</item>
         <item>Транспорт</item>
+        <item>Одежда</item>
+        <item>Связь</item>
         <item>1</item>
         <item>2</item>
         <item>3</item>
