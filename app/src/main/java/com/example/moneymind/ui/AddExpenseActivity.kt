@@ -44,7 +44,7 @@ class AddExpenseActivity : AppCompatActivity() {
     private var isIncome: Boolean = false
     private var selectedExpenseId: Int? = null
     private var selectedCategoryId: Int = -1
-
+    private var isCustomCategory: Boolean = true
     private val viewModel: ExpenseViewModel by viewModels {
         ExpenseViewModelFactory((application as MoneyMindApp).repository)
     }
@@ -69,6 +69,7 @@ class AddExpenseActivity : AppCompatActivity() {
         selectedIconName = intent.getStringExtra("selected_icon") ?: "ic_money"
         selectedCategoryId = intent.getIntExtra("category_id", -1)
         isIncome = intent.getBooleanExtra("is_income", false)
+        isCustomCategory = intent.getBooleanExtra("is_custom", true)
         selectedIconResId = resources.getIdentifier(selectedIconName, "drawable", packageName)
             .takeIf { it != 0 } ?: R.drawable.ic_category_default
 
@@ -88,6 +89,9 @@ class AddExpenseActivity : AppCompatActivity() {
                 putExtra("category_name", selectedCategory)
                 putExtra("category_icon", selectedIconName)
                 putExtra("category_is_income", isIncome)
+                putExtra("is_custom", isCustomCategory)
+
+
             }
             startActivityForResult(intent, EDIT_CATEGORY_REQUEST_CODE)
         }

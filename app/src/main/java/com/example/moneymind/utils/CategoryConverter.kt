@@ -10,7 +10,8 @@ fun Category.toCategoryItem(): CategoryItem {
         name = this.name,
         iconResId = this.iconResId,
         iconName = this.iconName,
-        isIncome = this.isIncome
+        isIncome = this.isIncome,
+        isCustom = false
     )
 }
 
@@ -20,6 +21,7 @@ fun CustomCategoryEntity.toCategoryItem(): CategoryItem {
         name = this.name,
         iconResId = this.iconResId,
         iconName = this.iconName,
-        isIncome = this.isIncome
+        isIncome = this.isIncome,
+        isCustom = true
     )
 }

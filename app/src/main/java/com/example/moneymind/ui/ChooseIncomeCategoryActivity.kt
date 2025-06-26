@@ -64,6 +64,8 @@ class ChooseIncomeCategoryActivity : AppCompatActivity() {
                 putExtra("selected_icon", category.iconName)
                 putExtra("category_id", category.id)
                 putExtra("is_income", category.isIncome)
+                putExtra("is_custom", category.isCustom)
+                intent.putExtra("is_custom", false)
             }
             startActivity(intent)
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
@@ -82,9 +84,15 @@ class ChooseIncomeCategoryActivity : AppCompatActivity() {
     }
 
     private fun observeCategories() {
-        categoryViewModel.getCustomCategories(isIncome = true).observe(this) { customList ->
-            val categoryItems = customList.map { it.toCategoryItem() }
-            adapter.submitList(categoryItems)
+        val db = AppDatabase.getDatabase(applicationContext)
+        val repository = CategoryRepository(db.categoryDao(), db.customCategoryDao())
+
+        // Получаем и дефолтные, и кастомные категории
+        categoryViewModel.getCategories(isIncome = true).observe(this) { defaultList ->
+            categoryViewModel.getCustomCategories(isIncome = true).observe(this) { customList ->
+                val combined = (defaultList.map { it.toCategoryItem() } + customList.map { it.toCategoryItem() })
+                adapter.submitList(combined)
+            }
         }
     }
 

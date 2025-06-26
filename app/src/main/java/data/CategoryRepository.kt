@@ -16,8 +16,18 @@ class CategoryRepository(
         categoryDao.insert(category)
     }
 
+    suspend fun update(category: Category) {
+        categoryDao.update(category)
+    }
+
     suspend fun delete(category: Category) {
         categoryDao.delete(category)
+    }
+
+    suspend fun deleteById(id: Int) {
+        categoryDao.getById(id)?.let {
+            categoryDao.delete(it)
+        }
     }
 
     suspend fun getCategoryById(id: Int): Category? {
@@ -58,7 +68,6 @@ class CategoryRepository(
         return customCategoryDao.getCategories(isIncome)
     }
 
-    // ✅ Получить кастомные категории синхронно (для корутин)
     suspend fun getCustomCategoriesNow(isIncome: Boolean): List<CustomCategoryEntity> {
         return customCategoryDao.getAllNow(isIncome)
     }

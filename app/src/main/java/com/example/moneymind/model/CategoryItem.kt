@@ -6,5 +6,6 @@ data class CategoryItem(
     val iconResId: Int,
     val iconName: String,
     val isIncome: Boolean,
+    val isCustom: Boolean,
     val amount: Double? = null // ✅ Добавили поле суммы
 )

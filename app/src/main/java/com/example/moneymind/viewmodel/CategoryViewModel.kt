@@ -22,6 +22,14 @@ class CategoryViewModel(
         repository.delete(category)
     }
 
+    fun update(category: Category) = viewModelScope.launch {
+        repository.update(category)
+    }
+
+    fun deleteCategoryById(id: Int) = viewModelScope.launch {
+        repository.deleteById(id)
+    }
+
     suspend fun getCategoryById(id: Int): Category? {
         return repository.getCategoryById(id)
     }

@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.moneymind.R
 import com.example.moneymind.data.AppDatabase
+import com.example.moneymind.data.Category
 import com.example.moneymind.data.CategoryRepository
 import com.example.moneymind.model.CustomCategoryEntity
 import com.example.moneymind.viewmodel.CategoryViewModel
@@ -34,15 +35,16 @@ class EditCategoryActivity : AppCompatActivity() {
     private var iconName = "ic_category_default"
     private var categoryId: Int = -1
     private var isIncome: Boolean = false
+    private var isCustom: Boolean = true
 
     private lateinit var viewModel: CategoryViewModel
     private var categoryToEdit: CustomCategoryEntity? = null
+    private var categoryDefault: Category? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_category)
 
-        // Инициализация UI
         inputName = findViewById(R.id.editCategoryName)
         iconView = findViewById(R.id.editCategoryIcon)
         btnSave = findViewById(R.id.btnSaveCategory)
@@ -50,32 +52,43 @@ class EditCategoryActivity : AppCompatActivity() {
         btnCancel = findViewById(R.id.btnCancelCategory)
         layout = findViewById(R.id.editCategoryLayout)
 
-        // Получение данных из Intent
         categoryId = intent.getIntExtra("category_id", -1)
         isIncome = intent.getBooleanExtra("category_is_income", false)
+        isCustom = intent.getBooleanExtra("is_custom", true)
 
-        // Инициализация ViewModel
         val dao = AppDatabase.getDatabase(applicationContext)
         val repository = CategoryRepository(dao.categoryDao(), dao.customCategoryDao())
         viewModel = ViewModelProvider(this, CategoryViewModelFactory(repository))[CategoryViewModel::class.java]
 
-        // Загрузка категории по ID
         lifecycleScope.launch {
-            val list = withContext(Dispatchers.IO) {
-                repository.getCustomCategoriesNow(isIncome)
+            if (isCustom) {
+                val list = withContext(Dispatchers.IO) {
+                    dao.customCategoryDao().getAllNow(isIncome)
+                }
+                categoryToEdit = list.find { it.id == categoryId }
+                categoryToEdit?.let { category ->
+                    inputName.setText(category.name)
+                    selectedIconResId = category.iconResId
+                    iconName = category.iconName
+                    iconView.setImageResource(selectedIconResId)
+                }
+            } else {
+                val cat = withContext(Dispatchers.IO) {
+                    dao.categoryDao().getById(categoryId)
+                }
+                categoryDefault = cat
+                categoryDefault?.let { category ->
+                    inputName.setText(category.name)
+                    selectedIconResId = category.iconResId
+                    iconName = category.iconName
+                    iconView.setImageResource(selectedIconResId)
+                }
             }
-            categoryToEdit = list.find { it.id == categoryId }
 
-            if (categoryToEdit == null) {
+            if (categoryToEdit == null && categoryDefault == null) {
                 Toast.makeText(this@EditCategoryActivity, "Категория не найдена", Toast.LENGTH_SHORT).show()
                 finish()
-                return@launch
             }
-
-            inputName.setText(categoryToEdit!!.name)
-            selectedIconResId = categoryToEdit!!.iconResId
-            iconName = categoryToEdit!!.iconName
-            iconView.setImageResource(selectedIconResId)
         }
 
         iconView.setOnClickListener { showIconGridDialog() }
@@ -87,14 +100,18 @@ class EditCategoryActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            categoryToEdit?.let {
-                val updated = it.copy(name = name, iconResId = selectedIconResId, iconName = iconName)
-                lifecycleScope.launch {
+            lifecycleScope.launch {
+                if (isCustom && categoryToEdit != null) {
+                    val updated = categoryToEdit!!.copy(name = name, iconResId = selectedIconResId, iconName = iconName)
                     viewModel.updateCustom(updated)
-                    Toast.makeText(this@EditCategoryActivity, "Категория обновлена", Toast.LENGTH_SHORT).show()
-                    setResult(RESULT_OK, Intent().putExtra("edited_type", if (isIncome) "income" else "expense"))
-                    finish()
+                } else if (categoryDefault != null) {
+                    val updated = categoryDefault!!.copy(name = name, iconResId = selectedIconResId, iconName = iconName)
+                    viewModel.update(updated)
                 }
+
+                Toast.makeText(this@EditCategoryActivity, "Категория обновлена", Toast.LENGTH_SHORT).show()
+                setResult(RESULT_OK, Intent().putExtra("edited_type", if (isIncome) "income" else "expense"))
+                finish()
             }
         }
 
@@ -103,13 +120,16 @@ class EditCategoryActivity : AppCompatActivity() {
                 .setTitle("Удалить категорию?")
                 .setMessage("Это действие нельзя отменить.")
                 .setPositiveButton("Удалить") { _, _ ->
-                    categoryToEdit?.let {
-                        lifecycleScope.launch {
-                            viewModel.deleteCustomById(it.id)
-                            Toast.makeText(this@EditCategoryActivity, "Категория удалена", Toast.LENGTH_SHORT).show()
-                            setResult(RESULT_OK, Intent().putExtra("deleted_type", if (isIncome) "income" else "expense"))
-                            finish()
+                    lifecycleScope.launch {
+                        if (isCustom && categoryToEdit != null) {
+                            viewModel.deleteCustomById(categoryToEdit!!.id)
+                        } else if (categoryDefault != null) {
+                            viewModel.deleteCategoryById(categoryDefault!!.id)
                         }
+
+                        Toast.makeText(this@EditCategoryActivity, "Категория удалена", Toast.LENGTH_SHORT).show()
+                        setResult(RESULT_OK, Intent().putExtra("deleted_type", if (isIncome) "income" else "expense"))
+                        finish()
                     }
                 }
                 .setNegativeButton("Отмена", null)
@@ -117,7 +137,7 @@ class EditCategoryActivity : AppCompatActivity() {
         }
 
         btnCancel.setOnClickListener {
-            finish() // Закрыть без сохранения
+            finish()
         }
     }
 

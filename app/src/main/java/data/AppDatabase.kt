@@ -34,12 +34,13 @@ abstract class AppDatabase : RoomDatabase() {
                 )
                     .fallbackToDestructiveMigration()
                     .addCallback(object : RoomDatabase.Callback() {
-                        override fun onCreate(db: SupportSQLiteDatabase) {
-                            super.onCreate(db)
-                            // 💡 Специально создаём БД, чтобы получить DAO
+                        override fun onOpen(db: SupportSQLiteDatabase) {
+                            super.onOpen(db)
                             CoroutineScope(Dispatchers.IO).launch {
-                                val database = getDatabase(context)
-                                populateDefaults(database.categoryDao(), context)
+                                val dao = getDatabase(context).categoryDao()
+                                if (dao.getCategoryCount() == 0) {
+                                    populateDefaults(dao, context)
+                                }
                             }
                         }
                     })
