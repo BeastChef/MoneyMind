@@ -3,19 +3,21 @@ package com.example.moneymind.ui
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.moneymind.R
 import com.example.moneymind.data.AppDatabase
 import com.example.moneymind.data.Category
 import com.example.moneymind.data.CategoryRepository
 import com.example.moneymind.model.CustomCategoryEntity
+import com.example.moneymind.ui.adapter.IconAdapter
 import com.example.moneymind.viewmodel.CategoryViewModel
 import com.example.moneymind.viewmodel.CategoryViewModelFactory
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Dispatchers
@@ -91,7 +93,7 @@ class EditCategoryActivity : AppCompatActivity() {
             }
         }
 
-        iconView.setOnClickListener { showIconGridDialog() }
+        iconView.setOnClickListener { showIconPickerBottomSheet() }
 
         btnSave.setOnClickListener {
             val name = inputName.text.toString().trim()
@@ -141,42 +143,39 @@ class EditCategoryActivity : AppCompatActivity() {
         }
     }
 
-    private fun showIconGridDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_icon_grid, null)
-        val gridView = dialogView.findViewById<GridView>(R.id.iconGridView)
+    private fun showIconPickerBottomSheet() {
+        val dialogView = layoutInflater.inflate(R.layout.bottom_sheet_icon_picker, null)
+        val dialog = BottomSheetDialog(this)
+        dialog.setContentView(dialogView)
+
+        val recyclerView = dialogView.findViewById<RecyclerView>(R.id.iconRecyclerView)
+        val btnConfirm = dialogView.findViewById<Button>(R.id.btnConfirmIconPicker)
+        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancelIconPicker)
 
         val iconResArray = resources.obtainTypedArray(R.array.icon_res_ids)
         val icons = (0 until iconResArray.length()).map { iconResArray.getResourceId(it, 0) }
         iconResArray.recycle()
 
-        var tempSelected = selectedIconResId
+        var tempSelectedResId = selectedIconResId
 
-        gridView.adapter = object : BaseAdapter() {
-            override fun getCount() = icons.size
-            override fun getItem(position: Int) = icons[position]
-            override fun getItemId(position: Int) = position.toLong()
-            override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-                return ImageView(this@EditCategoryActivity).apply {
-                    setImageResource(icons[position])
-                    layoutParams = AbsListView.LayoutParams(150, 150)
-                    setPadding(12, 12, 12, 12)
-                }
-            }
+        val adapter = IconAdapter(icons) { selected ->
+            tempSelectedResId = selected
         }
 
-        gridView.setOnItemClickListener { _, _, position, _ ->
-            tempSelected = icons[position]
+        recyclerView.layoutManager = GridLayoutManager(this, 4)
+        recyclerView.adapter = adapter
+
+        btnCancel?.setOnClickListener {
+            dialog.dismiss()
         }
 
-        AlertDialog.Builder(this)
-            .setTitle("Выберите иконку")
-            .setView(dialogView)
-            .setPositiveButton("Выбрать") { _, _ ->
-                selectedIconResId = tempSelected
-                iconView.setImageResource(selectedIconResId)
-                iconName = resources.getResourceEntryName(selectedIconResId)
-            }
-            .setNegativeButton("Отмена", null)
-            .show()
+        btnConfirm?.setOnClickListener {
+            selectedIconResId = tempSelectedResId
+            iconView.setImageResource(selectedIconResId)
+            iconName = resources.getResourceEntryName(selectedIconResId)
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 }
