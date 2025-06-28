@@ -124,15 +124,17 @@ class AddExpenseActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            val color = CategoryColorHelper.getColorForCategoryKey(selectedIconName, isIncome)
+
             val expense = Expense(
                 id = selectedExpenseId ?: 0,
                 title = title,
                 amount = amount,
                 category = selectedCategory ?: "Категория",
                 date = selectedDateMillis,
-                note = null,
                 type = if (isIncome) "income" else "expense",
-                iconName = selectedIconName
+                iconName = selectedIconName,
+                categoryColor = color
             )
 
             lifecycleScope.launch {

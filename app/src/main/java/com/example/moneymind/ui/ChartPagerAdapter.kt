@@ -1,4 +1,4 @@
-package com.example.moneymind.ui.charts
+package com.example.moneymind.ui
 
 import android.app.AlertDialog
 import android.content.Context
@@ -171,21 +171,24 @@ class ChartPagerAdapter(
     private fun setupPieChart(chart: PieChart) {
         val entries = mutableListOf<PieEntry>()
         val labels = mutableListOf<String>()
+        val colors = mutableListOf<Int>()
 
         when (selectedStatsType) {
             R.id.statsTypeAll -> {
-                val incomeTotal = expenseData.filter { it.type == "income" }.sumOf { it.amount.toDouble() }.toFloat()
-                val expenseTotal = expenseData.filter { it.type == "expense" }.sumOf { it.amount.toDouble() }.toFloat()
+                val incomeTotal = expenseData.filter { it.type == "income" }.sumOf { it.amount }.toFloat()
+                val expenseTotal = expenseData.filter { it.type == "expense" }.sumOf { it.amount }.toFloat()
 
-                if (incomeTotal > 0f) entries.add(PieEntry(incomeTotal, "Доходы"))
-                if (expenseTotal > 0f) entries.add(PieEntry(expenseTotal, "Расходы"))
+                if (incomeTotal > 0f) {
+                    entries.add(PieEntry(incomeTotal, "Доходы"))
+                    labels.add("Доходы")
+                    colors.add(ContextCompat.getColor(context, R.color.income_color_strong))
+                }
 
-                labels.addAll(listOf("Доходы", "Расходы"))
-
-                val colors = listOf(
-                    ContextCompat.getColor(context, R.color.income_color_strong),
-                    ContextCompat.getColor(context, R.color.expense_color_orange)
-                )
+                if (expenseTotal > 0f) {
+                    entries.add(PieEntry(expenseTotal, "Расходы"))
+                    labels.add("Расходы")
+                    colors.add(ContextCompat.getColor(context, R.color.expense_color_orange))
+                }
 
                 applyPieChart(chart, entries, labels, colors, "Финансы", expenseData, true)
                 return
@@ -194,20 +197,22 @@ class ChartPagerAdapter(
             R.id.statsTypeIncomes, R.id.statsTypeExpenses -> {
                 val isIncome = selectedStatsType == R.id.statsTypeIncomes
                 val filtered = expenseData.filter { it.type == if (isIncome) "income" else "expense" }
-                val grouped = filtered.groupBy { it.category }
-                    .mapValues { entry -> entry.value.sumOf { it.amount.toDouble() }.toFloat() }
 
-                grouped.forEach { (category, sum) ->
+                val grouped = filtered.groupBy { it.category }
+
+                for ((category, expenses) in grouped) {
+                    val sum = expenses.sumOf { it.amount }.toFloat()
                     if (sum > 0f) {
                         entries.add(PieEntry(sum, category))
                         labels.add(category)
+
+                        // берём цвет из первой записи этой категории
+                        val color = expenses.firstOrNull()?.categoryColor ?: Color.LTGRAY
+                        colors.add(color)
                     }
                 }
 
-                val baseColors = if (isIncome) incomeColors else expenseColors
-                val adjustedColors = List(entries.size) { i -> baseColors[i % baseColors.size] }
-
-                applyPieChart(chart, entries, labels, adjustedColors, if (isIncome) "Доходы" else "Расходы", filtered, false)
+                applyPieChart(chart, entries, labels, colors, if (isIncome) "Доходы" else "Расходы", filtered, false)
             }
         }
     }

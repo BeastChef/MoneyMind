@@ -1,5 +1,5 @@
 package com.example.moneymind.data
-
+import androidx.room.migration.Migration
 import android.content.Context
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [Expense::class, Category::class, CustomCategoryEntity::class],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -26,13 +26,19 @@ abstract class AppDatabase : RoomDatabase() {
 
         @JvmStatic
         fun getDatabase(context: Context): AppDatabase {
+            val migration6to7 = object : Migration(6, 7) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    database.execSQL("ALTER TABLE Category ADD COLUMN categoryColor TEXT DEFAULT '#CCCCCC'")
+                }
+            }
+
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "expense_database"
                 )
-                    .fallbackToDestructiveMigration()
+                    .addMigrations(migration6to7)
                     .addCallback(object : RoomDatabase.Callback() {
                         override fun onOpen(db: SupportSQLiteDatabase) {
                             super.onOpen(db)

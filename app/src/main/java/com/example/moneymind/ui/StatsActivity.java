@@ -1,14 +1,19 @@
 package com.example.moneymind.ui;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -17,11 +22,10 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.moneymind.MoneyMindApp;
 import com.example.moneymind.R;
 import com.example.moneymind.data.Expense;
-import com.example.moneymind.ui.charts.ChartPagerAdapter;
+import com.example.moneymind.ui.ChartPagerAdapter;
 import com.example.moneymind.viewmodel.ExpenseViewModel;
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory;
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -38,12 +42,10 @@ public class StatsActivity extends AppCompatActivity {
     private RadioGroup statsTypeGroup;
     private ViewPager2 chartViewPager;
     private TabLayout chartTabLayout;
-    private FloatingActionButton fabBack;
-    private FloatingActionButton fabPickDate;
     private ChartPagerAdapter chartPagerAdapter;
 
     private int selectedStatsType = R.id.statsTypeAll;
-    private int selectedPeriod = 0; // 0 = 7 дней, 1 = 30 дней
+    private int selectedPeriod = 0; // 0 = Месяц, 1 = Год
     private ExpenseViewModel viewModel;
     private LiveData<List<Expense>> currentExpenses;
     private Observer<List<Expense>> expenseObserver;
@@ -56,11 +58,21 @@ public class StatsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stats);
 
+        Toolbar toolbar = findViewById(R.id.statsToolbar);
+        setSupportActionBar(toolbar);
+        Drawable navIcon = toolbar.getNavigationIcon();
+        if (navIcon != null) {
+            navIcon.setTint(ContextCompat.getColor(this, android.R.color.white));
+            toolbar.setNavigationIcon(navIcon);
+        }
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         initViews();
         setupChartPager();
         setupActions();
         setupSpinner();
-        updateStats(); // сразу по умолчанию 7 дней
+        updateStats();
     }
 
     private void initViews() {
@@ -68,8 +80,6 @@ public class StatsActivity extends AppCompatActivity {
         statsTypeGroup = findViewById(R.id.statsTypeGroup);
         chartViewPager = findViewById(R.id.chartViewPager);
         chartTabLayout = findViewById(R.id.chartTabLayout);
-        fabBack = findViewById(R.id.fabBackToMain);
-        fabPickDate = findViewById(R.id.fabPickDate);
 
         viewModel = new ViewModelProvider(
                 this,
@@ -94,9 +104,6 @@ public class StatsActivity extends AppCompatActivity {
     }
 
     private void setupActions() {
-        fabBack.setOnClickListener(v -> finish());
-        fabPickDate.setOnClickListener(v -> openDatePicker());
-
         statsTypeGroup.setOnCheckedChangeListener((group, checkedId) -> {
             selectedStatsType = checkedId;
             updateStats();
@@ -107,16 +114,16 @@ public class StatsActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
-                new String[]{"7 дней", "30 дней"}
+                new String[]{"Месяц", "Год"}
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         statsFilterSpinner.setAdapter(adapter);
 
         statsFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, android.view.View view, int position, long id) {
                 selectedPeriod = position;
-                customStartDate = 0; // сброс кастомного выбора
+                customStartDate = 0;
                 customEndDate = 0;
                 updateStats();
             }
@@ -151,8 +158,20 @@ public class StatsActivity extends AppCompatActivity {
             selectedExpenses = viewModel.getExpensesBetween(customStartDate, customEndDate);
         } else {
             long now = System.currentTimeMillis();
-            long daysAgo = selectedPeriod == 0 ? 7 : 30;
-            long fromDate = now - daysAgo * 24L * 60 * 60 * 1000;
+            long fromDate;
+
+            if (selectedPeriod == 0) {
+                // Месяц назад
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.MONTH, -1);
+                fromDate = cal.getTimeInMillis();
+            } else {
+                // Год назад
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.YEAR, -1);
+                fromDate = cal.getTimeInMillis();
+            }
+
             selectedExpenses = viewModel.getExpensesBetween(fromDate, now);
         }
 
@@ -196,5 +215,24 @@ public class StatsActivity extends AppCompatActivity {
                 .setMessage(details.isEmpty() ? "Нет данных за этот день" : String.join("\n", details))
                 .setPositiveButton("ОК", null)
                 .show();
+    }
+
+    // Меню в тулбаре (назад и календарь)
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.stats_toolbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        } else if (item.getItemId() == R.id.action_pick_date) {
+            openDatePicker();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -66,6 +66,7 @@ class ChooseExpenseCategoryActivity : AppCompatActivity() {
                 putExtra("selected_icon", category.iconName)
                 putExtra("category_id", category.id)
                 putExtra("is_income", category.isIncome)
+                putExtra("is_custom", category.isCustom)
                 intent.putExtra("is_custom", false)
             }
             startActivity(intent)
