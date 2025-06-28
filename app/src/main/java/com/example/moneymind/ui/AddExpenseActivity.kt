@@ -32,10 +32,11 @@ class AddExpenseActivity : AppCompatActivity() {
     private lateinit var amountInput: TextInputEditText
     private lateinit var dateInput: TextInputEditText
     private lateinit var saveButton: MaterialButton
-    private lateinit var categoryIcon: ImageView
-    private lateinit var categoryName: TextView
-    private lateinit var btnEditCategory: MaterialButton
-    private lateinit var categoryLayout: View
+    private var cancelButton: MaterialButton? = null
+    private var categoryIcon: ImageView? = null
+    private var categoryName: TextView? = null
+    private var btnEditCategory: MaterialButton? = null
+    private var categoryLayout: View? = null
 
     private var selectedCategory: String? = null
     private var selectedIconName: String = "ic_money"
@@ -45,6 +46,8 @@ class AddExpenseActivity : AppCompatActivity() {
     private var selectedExpenseId: Int? = null
     private var selectedCategoryId: Int = -1
     private var isCustomCategory: Boolean = true
+    private var isFromMainTab: Boolean = false
+
     private val viewModel: ExpenseViewModel by viewModels {
         ExpenseViewModelFactory((application as MoneyMindApp).repository)
     }
@@ -52,51 +55,55 @@ class AddExpenseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_expense)
+        isFromMainTab = intent.getBooleanExtra("from_main_tab", false)
 
-        // View init
+        setContentView(
+            if (isFromMainTab) R.layout.activity_edit_expense_simple
+            else R.layout.activity_add_expense
+        )
+
         titleInput = findViewById(R.id.inputTitle)
         amountInput = findViewById(R.id.inputAmount)
         dateInput = findViewById(R.id.inputDate)
         saveButton = findViewById(R.id.saveButton)
+        cancelButton = findViewById(R.id.cancelButton)
+
         categoryIcon = findViewById(R.id.selectedCategoryIcon)
         categoryName = findViewById(R.id.selectedCategoryText)
         btnEditCategory = findViewById(R.id.btnEditCategory)
         categoryLayout = findViewById(R.id.selectedCategoryLayout)
 
-        // Получаем из intent
         selectedCategory = intent.getStringExtra("selected_category")
         selectedIconName = intent.getStringExtra("selected_icon") ?: "ic_money"
         selectedCategoryId = intent.getIntExtra("category_id", -1)
         isIncome = intent.getBooleanExtra("is_income", false)
         isCustomCategory = intent.getBooleanExtra("is_custom", true)
+
         selectedIconResId = resources.getIdentifier(selectedIconName, "drawable", packageName)
             .takeIf { it != 0 } ?: R.drawable.ic_category_default
 
         val formatter = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
         dateInput.setText(formatter.format(Date(selectedDateMillis)))
-
         dateInput.setOnClickListener { showDatePickerDialog() }
 
-        // Показываем выбранную категорию
-        selectedCategory?.let {
-            showCategoryDetails()
-        }
+        selectedCategory?.let { showCategoryDetails() }
 
-        btnEditCategory.setOnClickListener {
+        btnEditCategory?.setOnClickListener {
             val intent = Intent(this, EditCategoryActivity::class.java).apply {
                 putExtra("category_id", selectedCategoryId)
                 putExtra("category_name", selectedCategory)
                 putExtra("category_icon", selectedIconName)
                 putExtra("category_is_income", isIncome)
                 putExtra("is_custom", isCustomCategory)
-
-
+                putExtra("from_main_tab", true)
             }
             startActivityForResult(intent, EDIT_CATEGORY_REQUEST_CODE)
         }
 
-        // Режим редактирования расхода
+        cancelButton?.setOnClickListener {
+            finish()
+        }
+
         selectedExpenseId = intent.getIntExtra("expense_id", -1).takeIf { it != -1 }
         selectedExpenseId?.let { id ->
             viewModel.getExpenseById(id).observe(this) { expense ->
@@ -107,8 +114,9 @@ class AddExpenseActivity : AppCompatActivity() {
                     dateInput.setText(formatter.format(Date(expense.date)))
                     selectedCategory = expense.category
                     selectedIconName = expense.iconName
-                    selectedIconResId = resources.getIdentifier(selectedIconName, "drawable", packageName)
-                        .takeIf { it != 0 } ?: R.drawable.ic_category_default
+                    selectedIconResId = resources.getIdentifier(
+                        selectedIconName, "drawable", packageName
+                    ).takeIf { it != 0 } ?: R.drawable.ic_category_default
 
                     showCategoryDetails()
                 }
@@ -151,19 +159,18 @@ class AddExpenseActivity : AppCompatActivity() {
     }
 
     private fun showCategoryDetails() {
-        categoryLayout.visibility = View.VISIBLE
-        categoryName.text = selectedCategory
-        categoryIcon.setImageResource(selectedIconResId)
+        categoryLayout?.visibility = View.VISIBLE
+        categoryName?.text = selectedCategory
+        categoryIcon?.setImageResource(selectedIconResId)
 
         val color = CategoryColorHelper.getColorForCategoryKey(selectedIconName, isIncome)
-        val bgDrawable = DrawableCompat.wrap(categoryIcon.background.mutate())
-        DrawableCompat.setTint(bgDrawable, color)
-        categoryIcon.background = bgDrawable
+        categoryIcon?.background?.mutate()?.let { bg ->
+            DrawableCompat.setTint(DrawableCompat.wrap(bg), color)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         if (requestCode == EDIT_CATEGORY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             val type = data.getStringExtra("deleted_type") ?: data.getStringExtra("edited_type")
             if (type != null) {

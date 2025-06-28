@@ -2,20 +2,20 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/addExpenseLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
-    android:padding="24dp">
+    android:padding="24dp"
+    android:background="@android:color/white">
 
-    <!-- 🔄 Категория: иконка, название и кнопка -->
+    <!-- 🟡 Категория (иконка + название) -->
     <LinearLayout
         android:id="@+id/selectedCategoryLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:visibility="visible"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="12dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -28,7 +28,8 @@
             android:background="@drawable/bg_icon_circle"
             android:padding="16dp"
             android:scaleType="centerInside"
-            android:contentDescription="Иконка категории" />
+            android:contentDescription="Иконка категории"
+            android:src="@drawable/ic_category_placeholder" />
 
         <TextView
             android:id="@+id/selectedCategoryText"
@@ -37,21 +38,7 @@
             android:text="Категория"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
-            android:layout_marginBottom="8dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnEditCategory"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Редактировать категорию"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:textColor="@color/black"
-            app:cornerRadius="12dp"
-            app:icon="@drawable/ic_edit"
-            app:iconPadding="8dp"
-            app:iconTint="@color/black"
-            android:layout_marginBottom="20dp"/>
+            android:textColor="@color/black" />
     </LinearLayout>
 
     <!-- 📝 Название (необязательно) -->
@@ -122,6 +109,21 @@
         app:cornerRadius="12dp"
         android:layout_marginTop="24dp"
         app:layout_constraintTop_toBottomOf="@id/dateLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- ❌ Отмена -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/cancelButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="ОТМЕНА"
+        android:textAllCaps="true"
+        android:textColor="@color/wood_brown"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        app:cornerRadius="12dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/saveButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

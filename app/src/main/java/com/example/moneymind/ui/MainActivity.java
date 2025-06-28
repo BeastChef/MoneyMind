@@ -156,9 +156,15 @@ public class MainActivity extends AppCompatActivity {
         adapter.setOnExpenseClickListener(expense -> {
             Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
             intent.putExtra("expense_id", expense.getId());
+            intent.putExtra("selected_category", expense.getCategory());
+            intent.putExtra("selected_icon", expense.getIconName());
+            intent.putExtra("is_income", "income".equals(expense.getType()));
+            intent.putExtra("is_custom", true); // если у тебя кастомные категории
+            intent.putExtra("from_main_tab", true); // 🔥 вот это главное!
             startActivity(intent);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         });
+
 
         adapter.setOnExpenseLongClickListener(expense -> {
             new AlertDialog.Builder(this)
