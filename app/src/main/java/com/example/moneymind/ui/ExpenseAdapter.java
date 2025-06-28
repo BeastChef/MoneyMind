@@ -1,7 +1,6 @@
 package com.example.moneymind.ui;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 
 import com.example.moneymind.R;
 import com.example.moneymind.data.Expense;
-import com.example.moneymind.utils.CategoryColorHelper;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -65,10 +63,8 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         Expense expense = expenses.get(position);
         Context context = holder.itemView.getContext();
 
-        // Заголовок — либо заметка, либо категория
-        holder.title.setText(expense.getNote() != null && !expense.getNote().isEmpty()
-                ? expense.getNote()
-                : expense.getCategory());
+        // Название категории
+        holder.title.setText(expense.getCategory());
 
         // Формат суммы
         boolean isIncome = "income".equalsIgnoreCase(expense.getType());
@@ -76,19 +72,26 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         String formatted = (isIncome ? "+ " : "- ") + amount + " ₽";
         holder.amount.setText(formatted);
 
-        // Цвет суммы
+        // Цвет текста суммы
         int textColor = ContextCompat.getColor(context,
                 isIncome ? R.color.income_color : R.color.expense_color);
         holder.amount.setTextColor(textColor);
 
-        // ✅ Цвет круга по типу и имени категории (без зелёного/синего в расходах и т.д.)
-        int color = CategoryColorHelper.getColorForCategoryKey(expense.getCategory(), isIncome);
-        Drawable bg = DrawableCompat.wrap(holder.icon.getBackground().mutate());
-        DrawableCompat.setTint(bg, color);
-        holder.icon.setBackground(bg);
+        // Установка иконки
+        int iconResId = context.getResources().getIdentifier(
+                expense.getIconName(),
+                "drawable",
+                context.getPackageName()
+        );
+        if (iconResId == 0) {
+            iconResId = R.drawable.ic_category_default;
+        }
+        holder.icon.setImageResource(iconResId);
 
-        // Иконка (временно одна)
-        holder.icon.setImageResource(R.drawable.ic_baseline_money_24);
+        // Цвет фона иконки из categoryColor
+        Drawable bg = DrawableCompat.wrap(holder.icon.getBackground().mutate());
+        DrawableCompat.setTint(bg, expense.getCategoryColor());
+        holder.icon.setBackground(bg);
 
         // Клики
         holder.itemView.setOnClickListener(v -> {

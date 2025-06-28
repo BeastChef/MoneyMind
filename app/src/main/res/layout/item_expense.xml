@@ -12,45 +12,49 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:paddingVertical="16dp"
-        android:paddingHorizontal="8dp"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical"
         android:background="@android:color/white">
 
-        <!-- Иконка в круге -->
+        <!-- Иконка категории -->
         <ImageView
             android:id="@+id/expense_icon"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:background="@drawable/bg_icon_circle"
-            android:padding="10dp"
+            android:padding="8dp"
+            android:layout_marginEnd="16dp"
             android:scaleType="centerInside"
             android:contentDescription="@string/expense_icon" />
 
-        <!-- Название расхода -->
-        <TextView
-            android:id="@+id/expense_title"
-            android:layout_width="wrap_content"
+        <!-- Название + сумма -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Название"
-            android:textSize="14sp"
-            android:textColor="#212121"
-            android:gravity="center"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:layout_marginTop="8dp" />
+            android:layout_weight="1">
 
-        <!-- Сумма -->
-        <TextView
-            android:id="@+id/expense_amount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="-1 200 ₽"
-            android:textSize="12sp"
-            android:textColor="#D32F2F"
-            android:gravity="center"
-            android:layout_marginTop="2dp" />
+            <TextView
+                android:id="@+id/expense_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Категория"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#212121"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/expense_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-1 200 ₽"
+                android:textSize="14sp"
+                android:textColor="#D32F2F"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
