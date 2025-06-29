@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.moneymind.R;
 
-public class ChooseTypeActivity extends AppCompatActivity {
+public class ChooseTypeActivity extends BaseActivityJ  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

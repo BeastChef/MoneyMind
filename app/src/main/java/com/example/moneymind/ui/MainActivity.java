@@ -55,7 +55,7 @@ import com.example.moneymind.data.CustomCategoryDao;
 import com.example.moneymind.data.CategoryRepository;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivityJ  {
     @Override
     protected void attachBaseContext(Context newBase) {
         String lang = newBase.getSharedPreferences("settings", Context.MODE_PRIVATE)

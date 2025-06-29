@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-class AddExpenseActivity : AppCompatActivity() {
+class AddExpenseActivity : BaseActivityK() {
 
     companion object {
         private const val EDIT_CATEGORY_REQUEST_CODE = 1001

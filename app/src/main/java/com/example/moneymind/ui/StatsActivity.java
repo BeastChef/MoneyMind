@@ -37,7 +37,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class StatsActivity extends AppCompatActivity {
+public class StatsActivity extends BaseActivityJ  {
 
     private Spinner statsFilterSpinner;
     private RadioGroup statsTypeGroup;

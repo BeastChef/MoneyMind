@@ -24,7 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class EditCategoryActivity : AppCompatActivity() {
+class EditCategoryActivity : BaseActivityK() {
 
     private lateinit var inputName: TextInputEditText
     private lateinit var iconView: ImageView

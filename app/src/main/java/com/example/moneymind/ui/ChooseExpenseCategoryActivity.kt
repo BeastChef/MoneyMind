@@ -19,7 +19,7 @@ import com.example.moneymind.viewmodel.CategoryViewModel
 import com.example.moneymind.viewmodel.CategoryViewModelFactory
 import com.google.android.material.tabs.TabLayout
 
-class ChooseExpenseCategoryActivity : AppCompatActivity() {
+class ChooseExpenseCategoryActivity : BaseActivityK() {
 
     private lateinit var adapter: CategoryAdapter
     private lateinit var categoryViewModel: CategoryViewModel

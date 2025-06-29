@@ -17,7 +17,7 @@ import com.example.moneymind.viewmodel.CategoryViewModelFactory
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 
-class AddCustomCategoryActivity : AppCompatActivity() {
+class AddCustomCategoryActivity : BaseActivityK() {
 
     private lateinit var inputCategoryName: TextInputEditText
     private lateinit var iconRecycler: RecyclerView
