@@ -9,13 +9,13 @@
         android:id="@+id/editTextCategoryName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Название категории"
+        android:hint="@string/category_name"
         android:inputType="text" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Выберите иконку:"
+        android:text="@string/choose_icon"
         android:layout_marginTop="16dp"/>
 
     <GridView

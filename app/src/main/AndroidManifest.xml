@@ -16,33 +16,52 @@
         android:theme="@style/Theme.MoneyMind"
         tools:targetApi="31">
 
-
-        <!-- 🌟 Splash Activity — главная -->
+        <!-- 🌟 Splash / Главный экран -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.MoneyMind">
+            android:theme="@style/Theme.MoneyMind"
+            android:configChanges="locale|layoutDirection|screenLayout|uiMode|orientation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <!-- Остальные активности (🔥 configChanges добавлен) -->
+        <activity
+            android:name=".ui.StatsActivity"
+            android:configChanges="locale|layoutDirection|screenLayout|uiMode|orientation|screenSize|keyboardHidden" />
 
+        <activity
+            android:name=".ui.AddExpenseActivity"
+            android:configChanges="locale|layoutDirection|screenLayout|uiMode|orientation|screenSize|keyboardHidden" />
 
-        <!-- Остальные активности -->
-        <activity android:name=".ui.StatsActivity" />
-        <activity android:name=".ui.AddExpenseActivity" />
-        <activity android:name=".ui.AddCustomCategoryActivity" />
-        <activity android:name=".ui.ChooseExpenseCategoryActivity" />
-        <activity android:name=".ui.ChooseIncomeCategoryActivity" />
+        <activity
+            android:name=".ui.AddCustomCategoryActivity"
+            android:configChanges="locale|layoutDirection|screenLayout|uiMode|orientation|screenSize|keyboardHidden" />
 
-        <activity android:name=".ui.ChooseTypeActivity" />
-        <activity android:name=".ui.EditCategoryActivity" />
+        <activity
+            android:name=".ui.ChooseExpenseCategoryActivity"
+            android:configChanges="locale|layoutDirection|screenLayout|uiMode|orientation|screenSize|keyboardHidden" />
 
-        <!-- При необходимости -->
-        <!-- <activity android:name=".ui.choose.ChooseCategoryActivity" /> -->
+        <activity
+            android:name=".ui.ChooseIncomeCategoryActivity"
+            android:configChanges="locale|layoutDirection|screenLayout|uiMode|orientation|screenSize|keyboardHidden" />
 
+        <activity
+            android:name=".ui.ChooseTypeActivity"
+            android:configChanges="locale|layoutDirection|screenLayout|uiMode|orientation|screenSize|keyboardHidden" />
+
+        <activity
+            android:name=".ui.EditCategoryActivity"
+            android:configChanges="locale|layoutDirection|screenLayout|uiMode|orientation|screenSize|keyboardHidden" />
+
+        <!-- Если используется -->
+        <!--
+        <activity
+            android:name=".ui.choose.ChooseCategoryActivity"
+            android:configChanges="locale|layoutDirection|screenLayout|uiMode|orientation|screenSize|keyboardHidden" />
+        -->
     </application>
-
 </manifest>

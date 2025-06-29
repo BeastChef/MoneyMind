@@ -18,6 +18,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
+import android.content.Context;
 
 import com.example.moneymind.MoneyMindApp;
 import com.example.moneymind.R;
@@ -96,9 +97,9 @@ public class StatsActivity extends AppCompatActivity {
 
         new TabLayoutMediator(chartTabLayout, chartViewPager, (tab, position) -> {
             switch (position) {
-                case 0: tab.setText("Круговая"); break;
-                case 1: tab.setText("Столбцы"); break;
-                case 2: tab.setText("Биржевая"); break;
+                case 0: tab.setText(getString(R.string.chart_pie)); break;
+                case 1: tab.setText(getString(R.string.chart_bar)); break;
+                case 2: tab.setText(getString(R.string.chart_candlestick)); break;
             }
         }).attach();
     }
@@ -234,5 +235,13 @@ public class StatsActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    // 🔧 Добавь сюда:
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        String lang = newBase.getSharedPreferences("settings", Context.MODE_PRIVATE)
+                .getString("app_lang", "ru");
+        Context context = com.example.moneymind.utils.LocaleHelper.INSTANCE.setLocale(newBase, lang);
+        super.attachBaseContext(context);
     }
 }

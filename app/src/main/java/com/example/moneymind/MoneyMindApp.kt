@@ -1,10 +1,12 @@
 package com.example.moneymind
 
 import android.app.Application
+import android.content.Context
 import androidx.work.*
 import com.example.moneymind.data.AppDatabase
 import com.example.moneymind.data.CategoryRepository
 import com.example.moneymind.data.ExpenseRepository
+import com.example.moneymind.utils.LocaleHelper
 import com.example.moneymind.worker.ReminderWorker
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -19,7 +21,6 @@ class MoneyMindApp : Application() {
         ExpenseRepository(database.expenseDao())
     }
 
-    // ✅ Теперь передаём оба DAO
     val categoryRepository: CategoryRepository by lazy {
         CategoryRepository(
             database.categoryDao(),
@@ -27,22 +28,23 @@ class MoneyMindApp : Application() {
         )
     }
 
+    override fun attachBaseContext(base: Context?) {
+        val prefs = base?.getSharedPreferences("settings", MODE_PRIVATE)
+        val lang = prefs?.getString("app_lang", "ru") ?: "ru"
+        super.attachBaseContext(LocaleHelper.setLocale(base!!, lang))
+    }
+
     override fun onCreate() {
         super.onCreate()
 
         val prefs = getSharedPreferences("settings", MODE_PRIVATE)
         val lang = prefs.getString("app_lang", "ru") ?: "ru"
-        val locale = Locale(lang)
-        Locale.setDefault(locale)
 
-        val config = resources.configuration
-        config.setLocale(locale)
-        resources.updateConfiguration(config, resources.displayMetrics)
+        LocaleHelper.setLocale(this, lang)
 
         // ❗Если нужно запланировать уведомление — раскомментируйте строку ниже:
         // scheduleDailyReminder()
     }
-
 
     private fun scheduleDailyReminder() {
         val now = Calendar.getInstance()

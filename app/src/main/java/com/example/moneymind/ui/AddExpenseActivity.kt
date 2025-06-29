@@ -197,4 +197,10 @@ class AddExpenseActivity : AppCompatActivity() {
             calendar.get(Calendar.DAY_OF_MONTH)
         ).show()
     }
+    override fun attachBaseContext(newBase: android.content.Context) {
+        val lang = newBase.getSharedPreferences("settings", android.content.Context.MODE_PRIVATE)
+            .getString("app_lang", "ru") ?: "ru"
+        val context = com.example.moneymind.utils.LocaleHelper.setLocale(newBase, lang)
+        super.attachBaseContext(context)
+    }
 }

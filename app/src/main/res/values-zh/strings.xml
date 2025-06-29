@@ -66,4 +66,26 @@
     <string name="category_gift">礼物</string>
     <string name="category_other_income">其他（收入）</string>
 
+    <string name="new_category">新类别</string> <!-- 🇨🇳 Chinese -->
+    <string name="enter_name">输入名称</string>
+    <string name="category">类别</string>
+    <string name="edit_category">编辑类别</string>
+    <string name="title_optional">名称（可选）</string>
+    <string name="amount">金额</string>
+    <string name="date">日期</string>
+    <string name="select_category_type">选择类别类型</string>
+    <string name="add_custom_category">添加自定义类别</string>
+    <string name="back">返回</string>
+    <string name="category_name">类别名称</string>
+    <string name="delete">删除</string>
+    <string name="charts">图表</string>
+    <string name="select">选择</string>
+    <string name="choose_icon">选择图标</string>
+    <string name="chart_pie">饼图</string>
+    <string name="chart_bar">柱状图</string>
+    <string name="chart_candlestick">蜡烛图</string>
+
+
+
+
 </resources>

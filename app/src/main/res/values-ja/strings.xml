@@ -66,4 +66,23 @@
     <string name="category_gift">ギフト</string>
     <string name="category_other_income">その他（収入）</string>
 
+    <string name="new_category">新しいカテゴリ</string> <!-- 🇯🇵 Japanese -->
+    <string name="enter_name">名前を入力</string>
+    <string name="category">カテゴリ</string>
+    <string name="edit_category">カテゴリを編集</string>
+    <string name="title_optional">名称（任意）</string>
+    <string name="amount">金額</string>
+    <string name="date">日付</string>
+    <string name="select_category_type">カテゴリの種類を選択</string>
+    <string name="add_custom_category">カスタムカテゴリを追加</string>
+    <string name="back">戻る</string>
+    <string name="category_name">カテゴリ名</string>
+    <string name="delete">削除</string>
+    <string name="charts">グラフ</string>
+    <string name="select">選択</string>
+    <string name="choose_icon">アイコンを選択</string>
+    <string name="chart_pie">円グラフ</string>
+    <string name="chart_bar">棒グラフ</string>
+    <string name="chart_candlestick">ローソク足</string>
+
 </resources>

@@ -66,4 +66,24 @@
     <string name="category_gift">Regalos</string>
     <string name="category_other_income">Otro (ingreso)</string>
 
+    <string name="new_category">Nueva categoría</string> <!-- 🇪🇸 Spanish -->
+    <string name="enter_name">Ingrese el nombre</string>
+    <string name="category">Categoría</string>
+    <string name="edit_category">Editar categoría</string>
+    <string name="title_optional">Nombre (opcional)</string>
+    <string name="amount">Cantidad</string>
+    <string name="date">Fecha</string>
+    <string name="select_category_type">Seleccionar tipo de categoría</string>
+    <string name="add_custom_category">Agregar categoría personalizada</string>
+    <string name="back">Atrás</string>
+    <string name="category_name">Nombre de la categoría</string>
+    <string name="delete">Eliminar</string>
+    <string name="charts">Gráficos</string>
+    <string name="select">Seleccionar</string>
+    <string name="choose_icon">Elegir icono</string>
+    <string name="chart_pie">Gráfico circular</string>
+    <string name="chart_bar">Barras</string>
+    <string name="chart_candlestick">Velas</string>
+
+
 </resources>

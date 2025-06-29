@@ -66,4 +66,22 @@
     <string name="category_gift">Hediye</string>
     <string name="category_other_income">Diğer (gelir)</string>
 
+    <string name="new_category">Yeni kategori</string> <!-- 🇹🇷 Turkish -->
+    <string name="enter_name">İsim girin</string>
+    <string name="category">Kategori</string>
+    <string name="edit_category">Kategoriyi düzenle</string>
+    <string name="title_optional">Ad (isteğe bağlı)</string>
+    <string name="amount">Tutar</string>
+    <string name="date">Tarih</string>
+    <string name="select_category_type">Kategori türünü seç</string>
+    <string name="add_custom_category">Özel kategori ekle</string>
+    <string name="back">Geri</string>
+    <string name="category_name">Kategori adı</string>
+    <string name="delete">Sil</string>
+    <string name="charts">Grafikler</string>
+    <string name="select">Seç</string>
+    <string name="choose_icon">Simge seç</string>
+    <string name="chart_pie">Pasta grafiği</string>
+    <string name="chart_bar">Çubuk</string>
+    <string name="chart_candlestick">Mum</string>
 </resources>

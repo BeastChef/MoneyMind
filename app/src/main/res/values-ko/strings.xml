@@ -66,4 +66,22 @@
     <string name="category_gift">선물</string>
     <string name="category_other_income">기타(수입)</string>
 
+    <string name="new_category">새 카테고리</string> <!-- 🇰🇷 Korean -->
+    <string name="enter_name">이름 입력</string>
+    <string name="category">카테고리</string>
+    <string name="edit_category">카테고리 편집</string>
+    <string name="title_optional">이름(선택 사항)</string>
+    <string name="amount">금액</string>
+    <string name="date">날짜</string>
+    <string name="select_category_type">카테고리 유형 선택</string>
+    <string name="add_custom_category">사용자 정의 카테고리 추가</string>
+    <string name="back">뒤로</string>
+    <string name="category_name">카테고리 이름</string>
+    <string name="delete">삭제</string>
+    <string name="charts">차트</string>
+    <string name="select">선택</string>
+    <string name="choose_icon">아이콘 선택</string>
+    <string name="chart_pie">원형 차트</string>
+    <string name="chart_bar">막대</string>
+    <string name="chart_candlestick">캔들</string>
 </resources>

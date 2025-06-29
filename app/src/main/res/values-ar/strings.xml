@@ -67,4 +67,25 @@
     <string name="category_gift">الهدايا</string>
     <string name="category_other_income">أخرى (دخل)</string>
 
+    <string name="new_category">فئة جديدة</string> <!-- 🇸🇦 Arabic -->
+    <string name="enter_name">أدخل الاسم</string>
+    <string name="category">الفئة</string>
+    <string name="edit_category">تحرير الفئة</string>
+    <string name="title_optional">الاسم (اختياري)</string>
+    <string name="amount">المبلغ</string>
+    <string name="date">التاريخ</string>
+    <string name="select_category_type">اختر نوع الفئة</string>
+    <string name="add_custom_category">أضف فئة مخصصة</string>
+    <string name="back">رجوع</string>
+    <string name="category_name">اسم الفئة</string>
+    <string name="delete">حذف</string>
+    <string name="charts">الرسوم البيانية</string>
+    <string name="select">اختيار</string>
+    <string name="choose_icon">اختر أيقونة</string>
+    <string name="chart_pie">مخطط دائري</string>
+    <string name="chart_bar">أعمدة</string>
+    <string name="chart_candlestick">شموع</string>
+
+
+
 </resources>

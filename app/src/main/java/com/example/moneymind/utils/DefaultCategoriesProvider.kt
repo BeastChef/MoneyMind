@@ -7,7 +7,7 @@ object DefaultCategoriesProvider {
 
     fun getDefaultExpenseCategories(): List<Category> = listOf(
         Category(
-            name = "Еда",
+            name = "@string/category_food",
             iconName = "ic_food",
             iconResId = R.drawable.ic_food,
             isIncome = false

@@ -7,7 +7,7 @@
 
     <EditText
         android:id="@+id/editSearchInput"
-        android:hint="Введите название"
+        android:hint="@string/enter_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text" />

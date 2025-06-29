@@ -66,4 +66,25 @@
     <string name="category_gift">Gifts</string>
     <string name="category_other_income">Other (income)</string>
 
+    <string name="new_category">New Category</string> <!-- 🇬🇧 English -->
+    <string name="enter_name">Enter name</string>
+    <string name="category">Category</string>
+    <string name="edit_category">Edit category</string>
+    <string name="title_optional">Title (optional)</string>
+    <string name="amount">Amount</string>
+    <string name="date">Date</string>
+    <string name="select_category_type">Select category type</string>
+    <string name="add_custom_category">Add custom category</string>
+    <string name="back">Back</string>
+    <string name="category_name">Category name</string>
+    <string name="delete">Delete</string>
+    <string name="charts">Charts</string>
+    <string name="select">Select</string>
+    <string name="choose_icon">Choose icon</string>
+    <string name="chart_pie">Pie Chart</string>
+    <string name="chart_bar">Bar</string>
+    <string name="chart_candlestick">Candlestick</string>
+
+
+
 </resources>

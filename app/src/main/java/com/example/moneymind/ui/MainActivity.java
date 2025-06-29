@@ -56,6 +56,13 @@ import com.example.moneymind.data.CategoryRepository;
 
 
 public class MainActivity extends AppCompatActivity {
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        String lang = newBase.getSharedPreferences("settings", Context.MODE_PRIVATE)
+                .getString("app_lang", "ru");
+        Context context = com.example.moneymind.utils.LocaleHelper.INSTANCE.setLocale(newBase, lang);
+        super.attachBaseContext(context);
+    }
 
     private static final int REQUEST_CHOOSE_CATEGORY = 1001;
 

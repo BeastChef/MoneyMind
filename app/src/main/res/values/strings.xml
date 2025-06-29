@@ -63,7 +63,24 @@
     <string name="change_language">Сменить язык</string>
     <string name="language_dialog_title">Выберите язык</string>
 
-
+    <string name="new_category">Новая категория</string> <!-- 🇷🇺 Russian -->
+    <string name="enter_name">Введите название</string>
+    <string name="category">Категория</string>
+    <string name="edit_category">Редактировать категорию</string>
+    <string name="title_optional">Наименование(необязательно)</string>
+    <string name="amount">Сумма</string>
+    <string name="date">Дата</string>
+    <string name="select_category_type">Выбрать тип категории</string>
+    <string name="add_custom_category">Добавить свою категорию</string>
+    <string name="back">Назад</string>
+    <string name="category_name">Название категории</string>
+    <string name="delete">Удалить</string>
+    <string name="charts">Графики</string>
+    <string name="select">Выбрать</string>
+    <string name="choose_icon">Выберите иконку</string>
+    <string name="chart_pie">Круговая</string>
+    <string name="chart_bar">Столбцы</string>
+    <string name="chart_candlestick">Биржевая</string>
 
     <!-- 🛠️ Добавлено для item_category.xml -->
     <string name="icon">Иконка</string>
