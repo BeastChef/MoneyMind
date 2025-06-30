@@ -52,6 +52,7 @@
     <string name="category_shopping">Покупки</string>
     <string name="category_other">Другое</string>
 
+
     <!-- ✅ Категории доходов -->
     <string name="category_salary">Зарплата</string>
     <string name="category_investments">Инвестиции</string>
@@ -81,7 +82,11 @@
     <string name="chart_pie">Круговая</string>
     <string name="chart_bar">Столбцы</string>
     <string name="chart_candlestick">Биржевая</string>
-
+    <string name="finance_chart">Финансы</string>
+    <string name="no_data">Нет данных</string>
+    <string name="ok">OK</string>
+    <string name="stats_filter_month">Месяц</string>
+    <string name="stats_filter_year">Год</string>
     <!-- 🛠️ Добавлено для item_category.xml -->
     <string name="icon">Иконка</string>
 

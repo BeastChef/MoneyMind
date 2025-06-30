@@ -2,6 +2,7 @@ package com.example.moneymind
 
 import android.app.Application
 import android.content.Context
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.work.*
 import com.example.moneymind.data.AppDatabase
 import com.example.moneymind.data.CategoryRepository
@@ -37,12 +38,20 @@ class MoneyMindApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        // 🌍 Установка языка
         val prefs = getSharedPreferences("settings", MODE_PRIVATE)
         val lang = prefs.getString("app_lang", "ru") ?: "ru"
-
         LocaleHelper.setLocale(this, lang)
 
-        // ❗Если нужно запланировать уведомление — раскомментируйте строку ниже:
+        // 🎨 Установка темы
+        val themePref = prefs.getInt("app_theme", 2) // 0 - светлая, 1 - тёмная, 2 - системная
+        when (themePref) {
+            0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        }
+
+        // ❗Если нужно запланировать уведомление — раскомментируй строку ниже:
         // scheduleDailyReminder()
     }
 

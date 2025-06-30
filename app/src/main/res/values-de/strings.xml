@@ -84,7 +84,10 @@
     <string name="chart_pie">Kreisdiagramm</string>
     <string name="chart_bar">Balken</string>
     <string name="chart_candlestick">Kerzen</string>
-
-
+    <string name="finance_chart">Finanzen</string>
+    <string name="no_data">Keine Daten</string>
+    <string name="ok">OK</string>
+    <string name="stats_filter_month">Monat</string>
+    <string name="stats_filter_year">Jahr</string>
 
 </resources>

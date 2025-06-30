@@ -1,5 +1,7 @@
 package com.example.moneymind.ui;
 
+import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,19 +13,17 @@ import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
-import android.content.Context;
 
 import com.example.moneymind.MoneyMindApp;
 import com.example.moneymind.R;
 import com.example.moneymind.data.Expense;
-import com.example.moneymind.ui.ChartPagerAdapter;
+import com.example.moneymind.utils.TooltipBlocker;
 import com.example.moneymind.viewmodel.ExpenseViewModel;
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -37,7 +37,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class StatsActivity extends BaseActivityJ  {
+public class StatsActivity extends BaseActivityJ {
 
     private Spinner statsFilterSpinner;
     private RadioGroup statsTypeGroup;
@@ -46,7 +46,8 @@ public class StatsActivity extends BaseActivityJ  {
     private ChartPagerAdapter chartPagerAdapter;
 
     private int selectedStatsType = R.id.statsTypeAll;
-    private int selectedPeriod = 0; // 0 = Месяц, 1 = Год
+    private int selectedPeriod = 0;
+
     private ExpenseViewModel viewModel;
     private LiveData<List<Expense>> currentExpenses;
     private Observer<List<Expense>> expenseObserver;
@@ -54,22 +55,25 @@ public class StatsActivity extends BaseActivityJ  {
     private long customStartDate = 0;
     private long customEndDate = 0;
 
+    private AlertDialog activeDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stats);
 
+        TooltipBlocker.INSTANCE.disableAllTooltips(findViewById(android.R.id.content));
+
         Toolbar toolbar = findViewById(R.id.statsToolbar);
         setSupportActionBar(toolbar);
-        Drawable navIcon = toolbar.getNavigationIcon();
-        if (navIcon != null) {
-            navIcon.setTint(ContextCompat.getColor(this, android.R.color.white));
-            toolbar.setNavigationIcon(navIcon);
+        if (toolbar.getNavigationIcon() != null) {
+            toolbar.getNavigationIcon().setTint(ContextCompat.getColor(this, android.R.color.white));
         }
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initViews();
+        disableTooltips();
         setupChartPager();
         setupActions();
         setupSpinner();
@@ -88,6 +92,17 @@ public class StatsActivity extends BaseActivityJ  {
         ).get(ExpenseViewModel.class);
     }
 
+    private void disableTooltips() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            statsFilterSpinner.setTooltipText(null);
+            findViewById(R.id.statsTypeAll).setTooltipText(null);
+            findViewById(R.id.statsTypeIncomes).setTooltipText(null);
+            findViewById(R.id.statsTypeExpenses).setTooltipText(null);
+            chartTabLayout.setTooltipText(null);
+            chartViewPager.setTooltipText(null);
+        }
+    }
+
     private void setupChartPager() {
         chartPagerAdapter = new ChartPagerAdapter(this, clickedLabel -> {
             showDetailsDialog(clickedLabel);
@@ -97,9 +112,15 @@ public class StatsActivity extends BaseActivityJ  {
 
         new TabLayoutMediator(chartTabLayout, chartViewPager, (tab, position) -> {
             switch (position) {
-                case 0: tab.setText(getString(R.string.chart_pie)); break;
-                case 1: tab.setText(getString(R.string.chart_bar)); break;
-                case 2: tab.setText(getString(R.string.chart_candlestick)); break;
+                case 0:
+                    tab.setText(getString(R.string.chart_pie));
+                    break;
+                case 1:
+                    tab.setText(getString(R.string.chart_bar));
+                    break;
+                case 2:
+                    tab.setText(getString(R.string.chart_candlestick));
+                    break;
             }
         }).attach();
     }
@@ -115,7 +136,10 @@ public class StatsActivity extends BaseActivityJ  {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
-                new String[]{"Месяц", "Год"}
+                new String[]{
+                        getString(R.string.stats_filter_month),
+                        getString(R.string.stats_filter_year)
+                }
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         statsFilterSpinner.setAdapter(adapter);
@@ -137,8 +161,11 @@ public class StatsActivity extends BaseActivityJ  {
     private void openDatePicker() {
         MaterialDatePicker.Builder<androidx.core.util.Pair<Long, Long>> builder =
                 MaterialDatePicker.Builder.dateRangePicker();
-        builder.setTitleText("Выберите период");
 
+        // Заголовок локализован
+        builder.setTitleText(getString(R.string.select_period_title));
+
+        // Строим и показываем диалог
         MaterialDatePicker<?> picker = builder.build();
         picker.show(getSupportFragmentManager(), picker.toString());
 
@@ -161,17 +188,13 @@ public class StatsActivity extends BaseActivityJ  {
             long now = System.currentTimeMillis();
             long fromDate;
 
+            Calendar cal = Calendar.getInstance();
             if (selectedPeriod == 0) {
-                // Месяц назад
-                Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.MONTH, -1);
-                fromDate = cal.getTimeInMillis();
             } else {
-                // Год назад
-                Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.YEAR, -1);
-                fromDate = cal.getTimeInMillis();
             }
+            fromDate = cal.getTimeInMillis();
 
             selectedExpenses = viewModel.getExpensesBetween(fromDate, now);
         }
@@ -211,14 +234,23 @@ public class StatsActivity extends BaseActivityJ  {
             }
         }
 
-        new AlertDialog.Builder(this)
+        activeDialog = new AlertDialog.Builder(this)
                 .setTitle(label)
-                .setMessage(details.isEmpty() ? "Нет данных за этот день" : String.join("\n", details))
-                .setPositiveButton("ОК", null)
+                .setMessage(details.isEmpty()
+                        ? getString(R.string.no_data_for_selected_day)
+                        : String.join("\n", details))
+                .setPositiveButton(getString(R.string.ok), null)
                 .show();
     }
 
-    // Меню в тулбаре (назад и календарь)
+    @Override
+    protected void onDestroy() {
+        if (activeDialog != null && activeDialog.isShowing()) {
+            activeDialog.dismiss();
+        }
+        super.onDestroy();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.stats_toolbar_menu, menu);
@@ -235,13 +267,5 @@ public class StatsActivity extends BaseActivityJ  {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-    // 🔧 Добавь сюда:
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        String lang = newBase.getSharedPreferences("settings", Context.MODE_PRIVATE)
-                .getString("app_lang", "ru");
-        Context context = com.example.moneymind.utils.LocaleHelper.INSTANCE.setLocale(newBase, lang);
-        super.attachBaseContext(context);
     }
 }

@@ -84,8 +84,11 @@
     <string name="chart_pie">饼图</string>
     <string name="chart_bar">柱状图</string>
     <string name="chart_candlestick">蜡烛图</string>
-
-
+    <string name="finance_chart">金融</string>
+    <string name="no_data">没有数据</string>
+    <string name="ok">OK</string>
+    <string name="stats_filter_month">月</string>
+    <string name="stats_filter_year">年</string>
 
 
 </resources>

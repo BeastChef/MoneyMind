@@ -84,7 +84,10 @@
     <string name="chart_pie">Pie Chart</string>
     <string name="chart_bar">Bar</string>
     <string name="chart_candlestick">Candlestick</string>
-
-
+    <string name="finance_chart">Finance</string>
+    <string name="no_data">No data</string>
+    <string name="ok">OK</string>
+    <string name="stats_filter_month">Month</string>
+    <string name="stats_filter_year">Year</string>
 
 </resources>

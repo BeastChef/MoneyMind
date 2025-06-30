@@ -30,6 +30,9 @@ interface CategoryDao {
     // Вставка одной категории
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(category: Category)
+    // ✅ ДОБАВЬ ВОТ ЭТО:
+    @Query("DELETE FROM categories")
+    suspend fun deleteAll()
 
     // Вставка всех категорий (например, по умолчанию)
     @Insert(onConflict = OnConflictStrategy.IGNORE)

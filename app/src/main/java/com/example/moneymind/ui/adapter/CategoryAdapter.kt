@@ -34,7 +34,9 @@ class CategoryAdapter(
 
         fun bind(category: CategoryItem) {
             icon.setImageResource(category.iconResId)
-            name.text = category.name
+
+            val resId = itemView.context.resources.getIdentifier(category.name, "string", itemView.context.packageName)
+            name.text = if (resId != 0) itemView.context.getString(resId) else category.name
 
             // Цвет фона по ключу iconName и типу isIncome
             val color = CategoryColorHelper.getColorForCategoryKey(category.iconName, category.isIncome)

@@ -84,6 +84,10 @@
     <string name="chart_pie">Gráfico circular</string>
     <string name="chart_bar">Barras</string>
     <string name="chart_candlestick">Velas</string>
-
+    <string name="finance_chart">Finanzas</string>
+    <string name="no_data">No hay datos</string>
+    <string name="ok">OK</string>
+    <string name="stats_filter_month">Mes</string>
+    <string name="stats_filter_year">Año</string>
 
 </resources>

@@ -175,23 +175,26 @@ class ChartPagerAdapter(
 
         when (selectedStatsType) {
             R.id.statsTypeAll -> {
+                val incomeLabel = context.getString(R.string.filter_incomes)
+                val expenseLabel = context.getString(R.string.filter_expenses)
+                val centerText = context.getString(R.string.finance_chart)
+
                 val incomeTotal = expenseData.filter { it.type == "income" }.sumOf { it.amount }.toFloat()
                 val expenseTotal = expenseData.filter { it.type == "expense" }.sumOf { it.amount }.toFloat()
 
                 if (incomeTotal > 0f) {
-                    entries.add(PieEntry(incomeTotal, "Доходы"))
-                    labels.add("Доходы")
+                    entries.add(PieEntry(incomeTotal, incomeLabel))
+                    labels.add(incomeLabel)
                     colors.add(ContextCompat.getColor(context, R.color.income_color_strong))
                 }
 
                 if (expenseTotal > 0f) {
-                    entries.add(PieEntry(expenseTotal, "Расходы"))
-                    labels.add("Расходы")
+                    entries.add(PieEntry(expenseTotal, expenseLabel))
+                    labels.add(expenseLabel)
                     colors.add(ContextCompat.getColor(context, R.color.expense_color_orange))
                 }
 
-                applyPieChart(chart, entries, labels, colors, "Финансы", expenseData, true)
-                return
+                applyPieChart(chart, entries, labels, colors, centerText, expenseData, true)
             }
 
             R.id.statsTypeIncomes, R.id.statsTypeExpenses -> {
@@ -212,7 +215,12 @@ class ChartPagerAdapter(
                     }
                 }
 
-                applyPieChart(chart, entries, labels, colors, if (isIncome) "Доходы" else "Расходы", filtered, false)
+                val centerText = if (isIncome)
+                    context.getString(R.string.filter_incomes)
+                else
+                    context.getString(R.string.filter_expenses)
+
+                applyPieChart(chart, entries, labels, colors, centerText, filtered, false)
             }
         }
     }
@@ -225,6 +233,9 @@ class ChartPagerAdapter(
         dataSource: List<Expense>,
         summaryMode: Boolean
     ) {
+        val incomeStr = context.getString(R.string.filter_incomes)
+        val expenseStr = context.getString(R.string.filter_expenses)
+
         val dataSet = PieDataSet(entries, "")
         dataSet.colors = colors
         dataSet.valueTextSize = 14f
@@ -243,11 +254,9 @@ class ChartPagerAdapter(
 
         chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
-                val index = h?.x?.toInt() ?: return
-                val label = labels.getOrNull(index) ?: return
-
+                val label = (e as? PieEntry)?.label ?: return
                 val filtered = if (summaryMode) {
-                    val type = if (label == "Доходы") "income" else "expense"
+                    val type = if (label == incomeStr) "income" else "expense"
                     dataSource.filter { it.type == type }
                 } else {
                     dataSource.filter { it.category == label }
@@ -260,8 +269,8 @@ class ChartPagerAdapter(
 
                 AlertDialog.Builder(context)
                     .setTitle(label)
-                    .setMessage(details.joinToString("\n").ifEmpty { "Нет данных" })
-                    .setPositiveButton("ОК", null)
+                    .setMessage(details.joinToString("\n").ifEmpty { context.getString(R.string.no_data_for_selected_day) })
+                    .setPositiveButton(context.getString(R.string.ok), null)
                     .show()
             }
 

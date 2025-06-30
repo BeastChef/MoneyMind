@@ -84,5 +84,9 @@
     <string name="chart_pie">円グラフ</string>
     <string name="chart_bar">棒グラフ</string>
     <string name="chart_candlestick">ローソク足</string>
-
+    <string name="finance_chart">ファイナンス</string>
+    <string name="no_data">データなし</string>
+    <string name="ok">OK</string>
+    <string name="stats_filter_month">月</string>
+    <string name="stats_filter_year">年</string>
 </resources>

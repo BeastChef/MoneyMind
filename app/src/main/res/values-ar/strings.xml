@@ -85,7 +85,9 @@
     <string name="chart_pie">مخطط دائري</string>
     <string name="chart_bar">أعمدة</string>
     <string name="chart_candlestick">شموع</string>
-
-
-
+    <string name="finance_chart">تمويل</string>
+    <string name="no_data">لا توجد بيانات</string>
+    <string name="ok">OK</string>
+    <string name="stats_filter_month">شهر</string>
+    <string name="stats_filter_year">سنة</string>
 </resources>

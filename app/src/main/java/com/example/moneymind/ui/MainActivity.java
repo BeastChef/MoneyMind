@@ -21,7 +21,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
@@ -36,10 +36,8 @@ import com.example.moneymind.MoneyMindApp;
 import com.example.moneymind.R;
 import com.example.moneymind.data.AppDatabase;
 import com.example.moneymind.data.Category;
-import com.example.moneymind.data.CategoryDao;
 import com.example.moneymind.data.CategoryRepository;
 import com.example.moneymind.data.Expense;
-import com.example.moneymind.utils.DefaultCategoriesProvider;
 import com.example.moneymind.utils.DefaultCategoryInitializer;
 import com.example.moneymind.utils.OnSwipeTouchListener;
 import com.example.moneymind.viewmodel.ExpenseViewModel;
@@ -51,18 +49,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
-import com.example.moneymind.data.CustomCategoryDao;
-import com.example.moneymind.data.CategoryRepository;
 
-
-public class MainActivity extends BaseActivityJ  {
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        String lang = newBase.getSharedPreferences("settings", Context.MODE_PRIVATE)
-                .getString("app_lang", "ru");
-        Context context = com.example.moneymind.utils.LocaleHelper.INSTANCE.setLocale(newBase, lang);
-        super.attachBaseContext(context);
-    }
+public class MainActivity extends BaseActivityJ {
 
     private static final int REQUEST_CHOOSE_CATEGORY = 1001;
 
@@ -77,7 +65,6 @@ public class MainActivity extends BaseActivityJ  {
     private MaterialToolbar topAppBar;
     private Spinner filterSpinner;
     private RadioGroup typeFilterGroup;
-
     private int selectedDateFilter = 0;
     private int selectedTypeFilter = R.id.filterAll;
 
@@ -88,9 +75,6 @@ public class MainActivity extends BaseActivityJ  {
         setContentView(R.layout.activity_main);
 
         DefaultCategoryInitializer.initAsync(this);
-
-
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                 checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -120,7 +104,7 @@ public class MainActivity extends BaseActivityJ  {
         btnChooseIncome = findViewById(R.id.btnChooseIncome);
         btnChooseExpense = findViewById(R.id.btnChooseExpense);
 
-        // Тулбар: Календарь + Поиск
+        // Тулбар
         topAppBar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_calendar) {
                 showDatePickerDialog();
@@ -146,7 +130,7 @@ public class MainActivity extends BaseActivityJ  {
             @Override public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        // Фильтр по типу (Свести / Доходы / Расходы)
+        // Фильтр по типу
         typeFilterGroup.setOnCheckedChangeListener((group, checkedId) -> {
             selectedTypeFilter = checkedId;
             updateFilteredData();
@@ -166,12 +150,11 @@ public class MainActivity extends BaseActivityJ  {
             intent.putExtra("selected_category", expense.getCategory());
             intent.putExtra("selected_icon", expense.getIconName());
             intent.putExtra("is_income", "income".equals(expense.getType()));
-            intent.putExtra("is_custom", true); // если у тебя кастомные категории
-            intent.putExtra("from_main_tab", true); // 🔥 вот это главное!
+            intent.putExtra("is_custom", true);
+            intent.putExtra("from_main_tab", true);
             startActivity(intent);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         });
-
 
         adapter.setOnExpenseLongClickListener(expense -> {
             new AlertDialog.Builder(this)
@@ -214,7 +197,7 @@ public class MainActivity extends BaseActivityJ  {
             drawerLayout.openDrawer(GravityCompat.END);
         });
 
-        // Язык
+        // Язык и тема
         View navView = navigationView.getHeaderView(0);
         if (navView == null && navigationView.getChildCount() > 0)
             navView = navigationView.getChildAt(0);
@@ -234,9 +217,13 @@ public class MainActivity extends BaseActivityJ  {
                             .show();
                 });
             }
+
+            View btnTheme = navView.findViewById(R.id.btnChangeTheme);
+            if (btnTheme != null) {
+                btnTheme.setOnClickListener(v -> showThemeDialog());
+            }
         }
 
-        // Свайп вправо
         findViewById(R.id.main).setOnTouchListener(new OnSwipeTouchListener(this) {
             @Override public void onSwipeRight() {
                 startActivity(new Intent(MainActivity.this, StatsActivity.class));
@@ -246,48 +233,42 @@ public class MainActivity extends BaseActivityJ  {
 
         updateFilteredData();
     }
+    private void showThemeDialog() {
+        String[] themes = {"Светлая", "Тёмная", "Системная"};
 
-    private void updateFilteredData() {
-        LiveData<List<Expense>> data;
-        boolean isExpense = selectedTypeFilter == R.id.filterExpenses;
-        boolean isIncome = selectedTypeFilter == R.id.filterIncomes;
+        new AlertDialog.Builder(this)
+                .setTitle("Выберите тему")
+                .setItems(themes, (dialog, which) -> {
+                    switch (which) {
+                        case 0:
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                            break;
+                        case 1:
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                            break;
+                        case 2:
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                            break;
+                    }
 
-        switch (selectedDateFilter) {
-            case 1:
-                data = isExpense ? viewModel.getLast7DaysExpensesOnly()
-                        : isIncome ? viewModel.getLast7DaysIncomes()
-                        : viewModel.getLast7DaysAll();
-                break;
-            case 2:
-                data = isExpense ? viewModel.getLast30DaysExpensesOnly()
-                        : isIncome ? viewModel.getLast30DaysIncomes()
-                        : viewModel.getLast30DaysAll();
-                break;
-            default:
-                data = isExpense ? viewModel.getAllExpensesOnly()
-                        : isIncome ? viewModel.getAllIncomes()
-                        : viewModel.getAllExpenses();
-        }
+                    // Сохраняем выбор
+                    getSharedPreferences("settings", MODE_PRIVATE).edit()
+                            .putInt("app_theme", which)
+                            .apply();
 
-        data.observe(this, expenses -> {
-            adapter.setExpenseList(expenses);
-            updateSummaryCards(expenses);
-        });
+                    recreate(); // Перезапуск активити
+                })
+                .show();
     }
 
-    private void updateSummaryCards(List<Expense> expenses) {
-        double income = 0, expense = 0;
-        for (Expense e : expenses) {
-            if ("income".equals(e.getType())) income += e.getAmount();
-            else expense += e.getAmount();
-        }
-        double balance = income - expense;
+    private void setLocale(String langCode) {
+        getSharedPreferences("settings", MODE_PRIVATE)
+                .edit().putString("app_lang", langCode).apply();
 
-        incomeAmountText.setText(income + " ₽");
-        expenseAmountText.setText(expense + " ₽");
-        balanceAmountText.setText(balance + " ₽");
+        Intent refresh = new Intent(this, MainActivity.class);
+        finish();
+        startActivity(refresh);
     }
-
     private void showDatePickerDialog() {
         Calendar cal = Calendar.getInstance();
         new DatePickerDialog(this, (view, year, month, day) -> {
@@ -319,19 +300,45 @@ public class MainActivity extends BaseActivityJ  {
                 .show();
     }
 
-    private void setLocale(String langCode) {
-        Locale newLocale = new Locale(langCode);
-        Locale.setDefault(newLocale);
-        Configuration config = new Configuration();
-        config.setLocale(newLocale);
-        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
-        Intent refresh = new Intent(this, MainActivity.class);
-        finish();
-        startActivity(refresh);
+    private void updateFilteredData() {
+        LiveData<List<Expense>> data;
+        boolean isExpense = selectedTypeFilter == R.id.filterExpenses;
+        boolean isIncome = selectedTypeFilter == R.id.filterIncomes;
+
+        switch (selectedDateFilter) {
+            case 1:
+                data = isExpense ? viewModel.getLast7DaysExpensesOnly()
+                        : isIncome ? viewModel.getLast7DaysIncomes()
+                        : viewModel.getLast7DaysAll();
+                break;
+            case 2:
+                data = isExpense ? viewModel.getLast30DaysExpensesOnly()
+                        : isIncome ? viewModel.getLast30DaysIncomes()
+                        : viewModel.getLast30DaysAll();
+                break;
+            default:
+                data = isExpense ? viewModel.getAllExpensesOnly()
+                        : isIncome ? viewModel.getAllIncomes()
+                        : viewModel.getAllExpenses();
+        }
+
+        data.observe(this, expenses -> {
+            adapter.setExpenseList(expenses);
+            updateSummaryCards(expenses);
+        });
     }
+    private void updateSummaryCards(List<Expense> expenses) {
+        double income = 0, expense = 0;
+        for (Expense e : expenses) {
+            if ("income".equals(e.getType())) income += e.getAmount();
+            else expense += e.getAmount();
+        }
+        double balance = income - expense;
 
-
-
+        incomeAmountText.setText(String.valueOf(income));
+        expenseAmountText.setText(String.valueOf(expense));
+        balanceAmountText.setText(String.valueOf(balance));
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

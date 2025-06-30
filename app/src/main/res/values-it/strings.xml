@@ -84,7 +84,11 @@
     <string name="chart_pie">Grafico a torta</string>
     <string name="chart_bar">Barre</string>
     <string name="chart_candlestick">Candele</string>
-
+    <string name="finance_chart">Finanza</string>
+    <string name="no_data">Nessun dato</string>
+    <string name="ok">OK</string>
+    <string name="stats_filter_month">Mese</string>
+    <string name="stats_filter_year">Anno</string>
 
 </resources>
 

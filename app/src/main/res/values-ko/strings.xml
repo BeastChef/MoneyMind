@@ -84,4 +84,9 @@
     <string name="chart_pie">원형 차트</string>
     <string name="chart_bar">막대</string>
     <string name="chart_candlestick">캔들</string>
+    <string name="finance_chart">재원</string>
+    <string name="no_data">데이터 없음</string>
+    <string name="ok">OK</string>
+    <string name="stats_filter_month">월</string>
+    <string name="stats_filter_year">년도</string>
 </resources>

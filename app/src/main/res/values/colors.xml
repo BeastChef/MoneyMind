@@ -10,19 +10,17 @@
     <color name="md_theme_error">#8B2F2F</color>
 
     <!-- Тема приложения (тёмная) -->
-    <color name="md_theme_dark_primary">#90CAF9</color>
-    <color name="md_theme_dark_onPrimary">#0D47A1</color>
-    <color name="md_theme_dark_secondary">#FBC02D</color>
+
     <color name="md_theme_dark_background">#000000</color>
-    <color name="md_theme_dark_surface">#1E1E1E</color>
+
     <color name="md_theme_dark_error">#CF6679</color>
     <color name="md_theme_dark_onBackground">#FFFFFF</color>
-    <color name="wood_brown">#8B5E3C</color> <!-- приятный древесный -->
+    <color name="wood_brown">#444444</color> <!-- приятный древесный -->
     <color name="brown_wood">#A97453</color> <!-- Приятный коричневый -->
     <color name="metallic_dark">#4A4A4A</color> <!-- Темно-серый металл -->
     <color name="metallics_dark">#3C3F41</color> <!-- Холодный графит -->
     <color name="line_separator">#CCCCCC</color> <!-- светло-серый -->
-    <color name="line_gray">#DDDDDD</color>
+
     <color name="green_income">#4CAF50</color> <!-- или любой другой зеленый -->
     <color name="orange_expense">#FF9800</color> <!-- или приятный оранжевый -->
     <color name="gray_dark">#444444</color>
@@ -60,5 +58,57 @@
     <color name="income_color_strong">#4CAF50</color> <!-- Для графика -->
     <color name="expense_color_orange">#FFA726</color> <!-- Для графика -->
     <color name="error_red">#D32F2F</color> <!-- мягкий красный -->
+
+    <!-- Светлая тема -->
+    <color name="md_theme_light_primary">#444444</color>
+
+    <color name="md_theme_light_onPrimaryContainer">#018786</color>
+
+
+
+
+
+    <!-- Тёмная тема -->
+    <color name="md_theme_dark_primary">#9FABFF</color>
+    <color name="md_theme_dark_onPrimary">#00105C</color>
+    <color name="md_theme_dark_primaryContainer">#2F3F8B</color>
+    <color name="md_theme_dark_onPrimaryContainer">#DDE2FF</color>
+
+    <color name="md_theme_dark_secondary">#A1A7B7</color>
+    <color name="md_theme_dark_onSecondary">#20242D</color>
+
+    <color name="md_theme_dark_surface">#121212</color>
+    <color name="md_theme_dark_onSurface">#E0E0E0</color>
+
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_primaryContainer">#D2E4F3</color>
+
+
+    <color name="md_theme_light_secondary">#A2C6AE</color> <!-- пастельный зелёный -->
+    <color name="md_theme_light_onSecondary">#1E3528</color>
+
+    <color name="md_theme_light_surface">#FDFDFD</color>
+    <color name="md_theme_light_onSurface">#2D2D2D</color>
+
+    <color name="md_theme_light_background">#FAFAFA</color>
+    <color name="md_theme_light_onBackground">#1A1A1A</color>
+
+    <color name="md_theme_light_error">#B00020</color>
+    <color name="md_theme_light_onError">#FFFFFF</color>
+
+    <color name="line_gray">#E0E0E0</color>
+    <!-- Основные тёмные фоны -->
+    <color name="dm_background">#121212</color>
+    <color name="dm_surface">#1E1E1E</color>
+    <color name="dm_onBackground">#FFFFFF</color>
+    <color name="dm_onSurface">#E0E0E0</color>
+
+    <!-- Мягкие акценты -->
+    <color name="dm_accent_yellow">#E5C07B</color>   <!-- тёплый жёлтый -->
+    <color name="dm_accent_blue">#80C8FF</color>     <!-- мягкий голубой -->
+    <color name="dm_accent_purple">#C792EA</color>   <!-- сиреневый -->
+    <color name="dm_accent_green">#A3D9A5</color>    <!-- мятный -->
+
+    <color name="dm_error">#CF6679</color> <!-- Material error -->
 
 </resources>

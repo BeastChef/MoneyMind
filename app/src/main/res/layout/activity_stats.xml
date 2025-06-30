@@ -17,7 +17,8 @@
         android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
         app:title="@string/charts"
         app:navigationIcon="@drawable/ic_back_arrow"
-        app:menu="@menu/stats_toolbar_menu" />
+        app:menu="@menu/stats_toolbar_menu"
+        android:tooltipText="" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -37,7 +38,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="TouchTargetSizeCheck"
-            android:contentDescription="@string/chart_tabs" />
+            android:contentDescription="@string/chart_tabs"
+            android:tooltipText="" />
 
         <!-- 🔽 Фильтр по типу данных -->
         <RadioGroup
@@ -55,19 +57,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/filter_all"
-                android:checked="true" />
+                android:checked="true"
+                android:tooltipText="" />
 
             <RadioButton
                 android:id="@+id/statsTypeIncomes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/filter_incomes" />
+                android:text="@string/filter_incomes"
+                android:tooltipText="" />
 
             <RadioButton
                 android:id="@+id/statsTypeExpenses"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/filter_expenses" />
+                android:text="@string/filter_expenses"
+                android:tooltipText="" />
         </RadioGroup>
 
         <!-- 🔽 Переключатель типа графика -->
@@ -84,7 +89,8 @@
             app:layout_constraintTop_toBottomOf="@id/statsTypeGroup"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:contentDescription="@string/chart_tabs" />
+            android:contentDescription="@string/chart_tabs"
+            android:tooltipText="" />
 
         <!-- 🔽 Графики -->
         <androidx.viewpager2.widget.ViewPager2
@@ -94,7 +100,8 @@
             app:layout_constraintTop_toBottomOf="@id/chartTabLayout"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            android:tooltipText="" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
