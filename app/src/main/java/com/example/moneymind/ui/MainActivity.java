@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
@@ -31,6 +32,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.example.moneymind.utils.LocaleHelper;
 
 import com.example.moneymind.MoneyMindApp;
 import com.example.moneymind.R;
@@ -116,11 +118,43 @@ public class MainActivity extends BaseActivityJ {
             return false;
         });
 
-        // Фильтр по периоду
-        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(
-                this, R.array.filter_options, android.R.layout.simple_spinner_item);
+        // Кастомный адаптер для Spinner — текст всегда чёрный
+        String[] filterOptions = getResources().getStringArray(R.array.filter_options);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_spinner_item,
+                filterOptions
+        ) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                if (view instanceof TextView) {
+                    ((TextView) view).setTextColor(getResources().getColor(android.R.color.black));
+                }
+                return view;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                if (view instanceof TextView) {
+                    ((TextView) view).setTextColor(getResources().getColor(android.R.color.black));
+                }
+                return view;
+            }
+        };
+
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterSpinner.setAdapter(spinnerAdapter);
+
+// Обработка выбора фильтра
+        filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                selectedDateFilter = pos;
+                updateFilteredData();
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
         filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
@@ -262,12 +296,18 @@ public class MainActivity extends BaseActivityJ {
     }
 
     private void setLocale(String langCode) {
+        // Сохраняем выбранный язык
         getSharedPreferences("settings", MODE_PRIVATE)
                 .edit().putString("app_lang", langCode).apply();
 
+        // Обновляем локаль (через LocaleHelper)
+        LocaleHelper.setLocale(this, langCode);
+
+        // Перезапускаем MainActivity
         Intent refresh = new Intent(this, MainActivity.class);
-        finish();
+        refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(refresh);
+        finish();
     }
     private void showDatePickerDialog() {
         Calendar cal = Calendar.getInstance();

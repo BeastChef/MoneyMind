@@ -32,7 +32,9 @@ class MoneyMindApp : Application() {
     override fun attachBaseContext(base: Context?) {
         val prefs = base?.getSharedPreferences("settings", MODE_PRIVATE)
         val lang = prefs?.getString("app_lang", "ru") ?: "ru"
-        super.attachBaseContext(LocaleHelper.setLocale(base!!, lang))
+        val updatedContext = LocaleHelper.setLocale(base!!, lang)
+        super.attachBaseContext(updatedContext)
+
     }
 
     override fun onCreate() {

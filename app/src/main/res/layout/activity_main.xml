@@ -18,7 +18,7 @@
             style="@style/Widget.Material3.Toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/white"
+            android:background="@color/card_background_color"
             android:elevation="4dp"
             android:theme="@style/ThemeOverlay.Material3.Light"
             app:menu="@menu/top_app_bar_menu"
@@ -30,17 +30,19 @@
                 android:id="@+id/filterSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
                 android:entries="@array/filter_options"
                 android:spinnerMode="dropdown"
-                android:background="@android:color/transparent"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:textAlignment="center"
-                android:gravity="center"
+                android:background="@color/card_background_color"
+                android:popupBackground="@color/card_background_color"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:theme="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary" />
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:gravity="center"
+                android:layout_gravity="start"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textAppearance="@style/BlackSpinnerText" />
 
         </com.google.android.material.appbar.MaterialToolbar>
 
@@ -113,7 +115,8 @@
                 android:text="@string/statistics"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@color/black"
+                android:background="?android:colorBackground"
+                android:textColor="?android:textColorPrimary"
                 android:gravity="center"
                 android:textAlignment="center"
                 android:layout_marginBottom="8dp"/>
@@ -143,7 +146,7 @@
             app:fabAlignmentMode="center"
             app:fabCradleRoundedCornerRadius="36dp"
             app:fabCradleVerticalOffset="10dp"
-            app:backgroundTint="@android:color/white"
+            app:backgroundTint="@color/card_background_color"
             app:elevation="6dp"
             app:hideOnScroll="false" />
 
@@ -217,6 +220,8 @@
         android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_gravity="end"
-        android:background="@android:color/white"
+        android:background="?android:colorBackground"
+        android:textColor="?android:textColorPrimary"
+
         app:headerLayout="@layout/nav_settings_drawer" />
 </androidx.drawerlayout.widget.DrawerLayout>

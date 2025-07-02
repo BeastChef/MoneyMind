@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@android:color/white">
+    android:background="?android:colorBackground"
+    android:textColor="?android:textColorPrimary">
 
     <!-- Верхняя панель с кнопкой "Отмена" и заголовком -->
     <LinearLayout
@@ -46,7 +47,8 @@
         app:tabSelectedTextColor="@android:color/black"
         app:tabTextColor="@android:color/darker_gray"
         app:tabIndicatorHeight="2dp"
-        android:background="@android:color/white" />
+        android:background="?android:colorBackground"
+        android:textColor="?android:textColorPrimary" />
 
     <!-- Список категорий -->
     <androidx.recyclerview.widget.RecyclerView

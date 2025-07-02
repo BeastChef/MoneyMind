@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="card_background_color" format="color"/>
+    <attr name="taim_text_background_color" format="color"/>
+    <attr name="statsToolbarColor" format="color" />
+    <attr name="statsToolbarTextColor" format="color" />
+    <attr name="chartTabSelectedTextColor" format="color" />
+    <attr name="chartTabIndicatorColor" format="color" />
+</resources>

@@ -15,7 +15,8 @@
         android:orientation="horizontal"
         android:padding="16dp"
         android:gravity="center_vertical"
-        android:background="@android:color/white">
+        android:background="?android:colorBackground"
+        android:textColor="?android:textColorPrimary">
 
         <!-- Иконка категории -->
         <ImageView
@@ -42,7 +43,7 @@
                 android:text="@string/category"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#212121"
+                android:textColor="?android:textColorPrimary"
                 android:maxLines="1"
                 android:ellipsize="end" />
 

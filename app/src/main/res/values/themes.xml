@@ -1,38 +1,23 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-
     <style name="Theme.MoneyMind" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Светлая тема -->
+        <!-- 🎨 Основные цвета -->
         <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
-        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
-        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
-
         <item name="colorSecondary">@color/md_theme_light_secondary</item>
         <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
 
+        <!-- 📦 Поверхности -->
         <item name="colorSurface">@color/md_theme_light_surface</item>
         <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
-
         <item name="android:colorBackground">@color/md_theme_light_background</item>
         <item name="colorError">@color/md_theme_light_error</item>
 
-        <item name="colorPrimarySurface">@color/line_gray</item>
+        <!-- 🧭 Навигация и статус -->
+        <item name="android:statusBarColor">@color/md_theme_light_background</item>
+        <item name="android:navigationBarColor">@color/md_theme_light_background</item>
 
-        <!-- Status/navigation bar -->
-        <item name="android:statusBarColor" tools:targetApi="l">@color/md_theme_light_primary</item>
-        <item name="android:navigationBarColor" tools:targetApi="l">@color/md_theme_light_surface</item>
-
-        <!-- SplashScreen (Android 12+) -->
-        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@drawable/ic_logo</item>
-        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/md_theme_light_primary</item>
-        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="31">@android:color/transparent</item>
+        <!-- 📊 Цвета для вкладок (TabLayout) -->
+        <item name="chartTabSelectedTextColor">#000000</item>
+        <item name="chartTabIndicatorColor">#C792EA</item>
     </style>
-
-    <style name="Theme.MoneyMind.Fullscreen" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:windowBackground">@color/md_theme_light_primary</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-    </style>
-
 </resources>

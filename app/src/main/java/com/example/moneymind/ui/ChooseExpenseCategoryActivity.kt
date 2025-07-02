@@ -34,8 +34,8 @@ class ChooseExpenseCategoryActivity : BaseActivityK() {
         }
 
         val tabLayout = findViewById<TabLayout>(R.id.categoryTabLayout)
-        tabLayout.addTab(tabLayout.newTab().setText("Доход"))
-        tabLayout.addTab(tabLayout.newTab().setText("Расход"))
+        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.income)))
+        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.expense)))
         tabLayout.getTabAt(1)?.select()
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {

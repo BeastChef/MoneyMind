@@ -1,18 +1,17 @@
 package com.example.moneymind.ui;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import com.example.moneymind.utils.LocaleHelper;
 
 public class BaseActivityJ extends AppCompatActivity {
+
     @Override
     protected void attachBaseContext(Context newBase) {
-        String lang = newBase.getSharedPreferences("settings", Context.MODE_PRIVATE)
-                .getString("app_lang", "ru");
-        Context context = LocaleHelper.INSTANCE.setLocale(newBase, lang);
-        super.attachBaseContext(context);
+        // Получаем язык из SharedPreferences и применяем его через LocaleHelper
+        Context updated = LocaleHelper.setLocale(newBase, LocaleHelper.getLanguage(newBase));
+        super.attachBaseContext(updated);
     }
 
     @Override
@@ -22,8 +21,8 @@ public class BaseActivityJ extends AppCompatActivity {
     }
 
     private void applySavedTheme() {
-        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
-        int themePref = prefs.getInt("app_theme", 2); // 0 = светлая, 1 = тёмная, 2 = системная
+        int themePref = getSharedPreferences("settings", MODE_PRIVATE)
+                .getInt("app_theme", 2); // 0 = светлая, 1 = тёмная, 2 = системная
 
         switch (themePref) {
             case 0:

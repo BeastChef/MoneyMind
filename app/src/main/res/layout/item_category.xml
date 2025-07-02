@@ -16,7 +16,8 @@
         android:gravity="center_horizontal"
         android:paddingVertical="16dp"
         android:paddingHorizontal="8dp"
-        android:background="@android:color/white">
+        android:background="?android:colorBackground"
+        android:textColor="?android:textColorPrimary">
 
         <!-- Иконка в круге -->
         <ImageView
@@ -36,7 +37,7 @@
             android:layout_height="wrap_content"
             android:text="@string/category"
             android:textSize="14sp"
-            android:textColor="#212121"
+            android:textColor="?android:textColorPrimary"
             android:gravity="center"
             android:maxLines="1"
             android:ellipsize="end"
@@ -49,7 +50,7 @@
             android:layout_height="wrap_content"
             android:text="2 100 ₽"
             android:textSize="12sp"
-            android:textColor="#757575"
+            android:textColor="?android:textColorSecondary"
             android:gravity="center"
             android:layout_marginTop="2dp"
             android:visibility="gone" />

@@ -4,7 +4,6 @@
         <!-- 🌙 Акценты -->
         <item name="colorPrimary">@color/dm_accent_yellow</item>
         <item name="colorOnPrimary">@color/dm_onBackground</item>
-
         <item name="colorSecondary">@color/dm_accent_purple</item>
         <item name="colorOnSecondary">@color/dm_onBackground</item>
 
@@ -18,18 +17,8 @@
         <item name="android:statusBarColor">@color/dm_background</item>
         <item name="android:navigationBarColor">@color/dm_background</item>
 
-        <!-- 🌀 Splash -->
-        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@drawable/ic_logo</item>
-        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/dm_accent_yellow</item>
-        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="31">@android:color/transparent</item>
+        <!-- 📊 Цвета для вкладок (TabLayout) -->
+        <item name="chartTabSelectedTextColor">#F0F0F0</item>
+        <item name="chartTabIndicatorColor">#C792EA</item>
     </style>
-
-    <style name="Theme.MoneyMind.Fullscreen" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="android:windowBackground">@color/dm_background</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-    </style>
-
 </resources>
-

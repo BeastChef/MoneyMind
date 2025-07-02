@@ -60,7 +60,7 @@
     <color name="error_red">#D32F2F</color> <!-- мягкий красный -->
 
     <!-- Светлая тема -->
-    <color name="md_theme_light_primary">#444444</color>
+    <color name="md_theme_light_primary">#A3D9A5</color>
 
     <color name="md_theme_light_onPrimaryContainer">#018786</color>
 
@@ -110,5 +110,7 @@
     <color name="dm_accent_green">#A3D9A5</color>    <!-- мятный -->
 
     <color name="dm_error">#CF6679</color> <!-- Material error -->
+    <color name="card_background_color">#A3D9A5</color>
+    <color name="taim_text_background_color">#121212</color>
 
 </resources>

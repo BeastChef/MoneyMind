@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="24dp"
-    android:background="@android:color/white">
+    android:background="?android:colorBackground"
+    android:textColor="?android:textColorPrimary">
 
     <!-- 🟡 Категория (иконка + название) -->
     <LinearLayout
@@ -38,7 +39,8 @@
             android:text="@string/category"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/black" />
+            android:background="?android:colorBackground"
+            android:textColor="?android:textColorPrimary" />
     </LinearLayout>
 
     <!-- 📝 Название (необязательно) -->
@@ -119,7 +121,7 @@
         android:layout_height="wrap_content"
         android:text="@string/cancel"
         android:textAllCaps="true"
-        android:textColor="@color/wood_brown"
+        android:textColor="?attr/colorOnBackground"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         app:cornerRadius="12dp"
         android:layout_marginTop="12dp"

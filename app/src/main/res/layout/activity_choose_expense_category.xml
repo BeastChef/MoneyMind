@@ -7,10 +7,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@android:color/white"
+    android:background="?android:colorBackground"
     android:padding="0dp">
 
-    <!-- Верхняя панель с кнопкой "Отмена" и заголовком -->
+    <!-- Верхняя панель -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cancel"
-            android:textColor="@color/black"
+            android:textColor="?android:textColorPrimary"
             android:textSize="16sp"
             android:paddingEnd="16dp" />
 
@@ -37,19 +37,19 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:textColor="@color/black"/>
+            android:textColor="?android:textColorPrimary"/>
     </LinearLayout>
 
-    <!-- Переключатель Доход / Расход -->
+    <!-- Таб -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/categoryTabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:contentDescription="@string/select_category_type"
-        android:background="@android:color/white"
-        app:tabIndicatorColor="@color/black"
-        app:tabSelectedTextColor="@color/black"
-        app:tabTextColor="@color/darker_gray"
+        android:background="?android:colorBackground"
+        app:tabIndicatorColor="?attr/colorPrimary"
+        app:tabSelectedTextColor="?android:textColorPrimary"
+        app:tabTextColor="?android:textColorSecondary"
         app:tabIndicatorHeight="2dp"/>
 
     <!-- Сетка категорий -->
@@ -66,7 +66,7 @@
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="3" />
 
-    <!-- Кнопка "Добавить свою категорию" -->
+    <!-- Кнопка -->
     <Button
         android:id="@+id/btn_add_custom_category"
         android:layout_width="match_parent"
@@ -74,7 +74,7 @@
         android:layout_margin="16dp"
         android:text="@string/add_custom_category"
         android:textAllCaps="false"
-        android:backgroundTint="@color/wood_brown"
+        android:backgroundTint="?attr/colorPrimary"
         android:textColor="@android:color/white"
         app:cornerRadius="8dp" />
 </LinearLayout>
