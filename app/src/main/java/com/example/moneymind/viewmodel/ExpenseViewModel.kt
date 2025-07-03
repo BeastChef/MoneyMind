@@ -63,6 +63,9 @@ class ExpenseViewModel(private val repository: ExpenseRepository) : ViewModel() 
     fun searchExpensesByTitle(query: String): LiveData<List<Expense>> {
         return repository.searchExpensesByTitle(query)
     }
+    fun searchExpensesByTitleOrCategory(query: String): LiveData<List<Expense>> {
+        return repository.searchExpensesByTitleOrCategory(query)
+    }
     private fun daysAgo(days: Int): Long {
         return System.currentTimeMillis() - days * 24L * 60 * 60 * 1000
 

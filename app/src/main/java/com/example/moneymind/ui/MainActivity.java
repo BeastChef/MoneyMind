@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -262,6 +263,7 @@ public class MainActivity extends BaseActivityJ {
         MaterialDatePicker<Pair<Long, Long>> picker = builder.build();
         picker.show(getSupportFragmentManager(), picker.toString());
 
+        // ✅ Пользователь нажал OK
         picker.addOnPositiveButtonClickListener(selection -> {
             if (selection != null) {
                 customStartDate = selection.first;
@@ -269,6 +271,18 @@ public class MainActivity extends BaseActivityJ {
                 customRangeActive = true;
                 updateFilteredData();
             }
+        });
+
+        // ✅ Пользователь нажал "Отмена"
+        picker.addOnNegativeButtonClickListener(dialog -> {
+            customRangeActive = false;
+            updateFilteredData(); // ← сбрасываем кастомный фильтр
+        });
+
+        // ✅ Пользователь тапнул вне календаря
+        picker.addOnCancelListener(dialog -> {
+            customRangeActive = false;
+            updateFilteredData(); // ← сбрасываем кастомный фильтр
         });
     }
 
@@ -321,18 +335,26 @@ public class MainActivity extends BaseActivityJ {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_search, null);
         EditText input = dialogView.findViewById(R.id.editSearchInput);
+
         builder.setView(dialogView)
                 .setTitle("Поиск")
                 .setPositiveButton("Найти", (dialog, which) -> {
                     String query = input.getText().toString().trim();
                     if (!query.isEmpty()) {
-                        viewModel.searchExpensesByTitle(query).observe(this, expenses -> {
-                            adapter.setExpenseList(expenses);
-                            updateSummaryCards(expenses);
+                        viewModel.searchExpensesByTitleOrCategory(query).observe(this, expenses -> {
+                            if (expenses == null || expenses.isEmpty()) {
+                                adapter.setExpenseList(List.of()); // Пустой список
+                                Toast.makeText(this, "По вашему запросу ничего не найдено", Toast.LENGTH_SHORT).show();
+                            } else {
+                                adapter.setExpenseList(expenses);
+                                updateSummaryCards(expenses);
+                            }
                         });
                     }
                 })
-                .setNegativeButton("Отмена", null)
+                .setNegativeButton("Отмена", (dialog, which) -> {
+                    updateFilteredData(); // Сброс — возврат к фильтрации по времени
+                })
                 .show();
     }
 

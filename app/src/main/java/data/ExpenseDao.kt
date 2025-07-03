@@ -65,4 +65,7 @@ interface ExpenseDao {
 
     @Query("SELECT * FROM expenses WHERE date BETWEEN :start AND :end ORDER BY date DESC")
     fun getByExactDateRange(start: Long, end: Long): LiveData<List<Expense>>
+    @Query("SELECT * FROM expenses WHERE title LIKE :query OR category LIKE :query ORDER BY date DESC")
+    fun searchByTitleOrCategory(query: String): LiveData<List<Expense>>
+
 }

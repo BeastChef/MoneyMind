@@ -50,6 +50,9 @@ class ExpenseRepository(private val expenseDao: ExpenseDao) {
     fun searchExpensesByTitle(query: String): LiveData<List<Expense>> {
         return expenseDao.searchByTitle("%$query%")
     }
+    fun searchExpensesByTitleOrCategory(query: String): LiveData<List<Expense>> {
+        return expenseDao.searchByTitleOrCategory("%$query%")
+    }
 
     // ✅ Метод: получить расходы по точной дате (с 00:00 до 23:59)
     fun getExpensesByExactDate(date: Long): LiveData<List<Expense>> {
