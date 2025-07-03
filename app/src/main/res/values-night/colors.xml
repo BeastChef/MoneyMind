@@ -1,4 +1,7 @@
 <resources>
     <color name="card_background_color">#E5C07B</color>
     <color name="taim_text_background_color">#121212</color>
+
+    <color name="fab_add_color">#A97453</color> <!-- Бронза -->
+
 </resources>

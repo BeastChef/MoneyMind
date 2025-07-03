@@ -48,7 +48,7 @@ dependencies {
     implementation("androidx.room:room-runtime:$room_version")
     kapt("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
-
+    implementation("com.google.android.material:material:1.12.0")
     // ViewModel + LiveData
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
@@ -63,7 +63,7 @@ dependencies {
     implementation(libs.constraintlayout)
 
     // Material Components (обязательно для BottomAppBar, FAB и NavigationView)
-    implementation("com.google.android.material:material:1.11.0")
+
 
     // Charts + ViewPager2
     implementation(libs.mpandroidchart)

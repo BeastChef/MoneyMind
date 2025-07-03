@@ -2,10 +2,8 @@ package com.example.moneymind.ui;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +22,7 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.Insets;
+import androidx.core.util.Pair;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -32,19 +31,19 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.moneymind.utils.LocaleHelper;
 
 import com.example.moneymind.MoneyMindApp;
 import com.example.moneymind.R;
 import com.example.moneymind.data.AppDatabase;
 import com.example.moneymind.data.Category;
-import com.example.moneymind.data.CategoryRepository;
 import com.example.moneymind.data.Expense;
 import com.example.moneymind.utils.DefaultCategoryInitializer;
+import com.example.moneymind.utils.LocaleHelper;
 import com.example.moneymind.utils.OnSwipeTouchListener;
 import com.example.moneymind.viewmodel.ExpenseViewModel;
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.Calendar;
@@ -70,6 +69,10 @@ public class MainActivity extends BaseActivityJ {
     private int selectedDateFilter = 0;
     private int selectedTypeFilter = R.id.filterAll;
 
+    private long customStartDate = 0;
+    private long customEndDate = 0;
+    private boolean customRangeActive = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +96,6 @@ public class MainActivity extends BaseActivityJ {
                 new ExpenseViewModelFactory(((MoneyMindApp) getApplication()).getRepository()))
                 .get(ExpenseViewModel.class);
 
-        // UI элементы
         topAppBar = findViewById(R.id.topAppBar);
         filterSpinner = findViewById(R.id.filterSpinner);
         typeFilterGroup = findViewById(R.id.typeFilterGroup);
@@ -106,10 +108,9 @@ public class MainActivity extends BaseActivityJ {
         btnChooseIncome = findViewById(R.id.btnChooseIncome);
         btnChooseExpense = findViewById(R.id.btnChooseExpense);
 
-        // Тулбар
         topAppBar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_calendar) {
-                showDatePickerDialog();
+                openDatePicker();
                 return true;
             } else if (item.getItemId() == R.id.action_search) {
                 showSearchDialog();
@@ -118,7 +119,6 @@ public class MainActivity extends BaseActivityJ {
             return false;
         });
 
-        // Кастомный адаптер для Spinner — текст всегда чёрный
         String[] filterOptions = getResources().getStringArray(R.array.filter_options);
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(
                 this,
@@ -147,30 +147,20 @@ public class MainActivity extends BaseActivityJ {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterSpinner.setAdapter(spinnerAdapter);
 
-// Обработка выбора фильтра
         filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 selectedDateFilter = pos;
+                customRangeActive = false;
                 updateFilteredData();
             }
             @Override public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                selectedDateFilter = pos;
-                updateFilteredData();
-            }
-            @Override public void onNothingSelected(AdapterView<?> parent) {}
-        });
-
-        // Фильтр по типу
         typeFilterGroup.setOnCheckedChangeListener((group, checkedId) -> {
             selectedTypeFilter = checkedId;
             updateFilteredData();
         });
 
-        // Список расходов
         RecyclerView recyclerView = findViewById(R.id.expensesRecyclerView);
         adapter = new ExpenseAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -231,7 +221,6 @@ public class MainActivity extends BaseActivityJ {
             drawerLayout.openDrawer(GravityCompat.END);
         });
 
-        // Язык и тема
         View navView = navigationView.getHeaderView(0);
         if (navView == null && navigationView.getChildCount() > 0)
             navView = navigationView.getChildAt(0);
@@ -245,9 +234,7 @@ public class MainActivity extends BaseActivityJ {
 
                     new AlertDialog.Builder(this)
                             .setTitle(getString(R.string.language_dialog_title))
-                            .setItems(langs, (dialog, which) -> {
-                                setLocale(codes[which]);
-                            })
+                            .setItems(langs, (dialog, which) -> setLocale(codes[which]))
                             .show();
                 });
             }
@@ -267,58 +254,67 @@ public class MainActivity extends BaseActivityJ {
 
         updateFilteredData();
     }
-    private void showThemeDialog() {
-        String[] themes = {"Светлая", "Тёмная", "Системная"};
 
-        new AlertDialog.Builder(this)
-                .setTitle("Выберите тему")
-                .setItems(themes, (dialog, which) -> {
-                    switch (which) {
-                        case 0:
-                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                            break;
-                        case 1:
-                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                            break;
-                        case 2:
-                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                            break;
-                    }
+    private void openDatePicker() {
+        MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
+        builder.setTitleText(getString(R.string.select_period_title));
 
-                    // Сохраняем выбор
-                    getSharedPreferences("settings", MODE_PRIVATE).edit()
-                            .putInt("app_theme", which)
-                            .apply();
+        MaterialDatePicker<Pair<Long, Long>> picker = builder.build();
+        picker.show(getSupportFragmentManager(), picker.toString());
 
-                    recreate(); // Перезапуск активити
-                })
-                .show();
+        picker.addOnPositiveButtonClickListener(selection -> {
+            if (selection != null) {
+                customStartDate = selection.first;
+                customEndDate = selection.second;
+                customRangeActive = true;
+                updateFilteredData();
+            }
+        });
     }
 
-    private void setLocale(String langCode) {
-        // Сохраняем выбранный язык
-        getSharedPreferences("settings", MODE_PRIVATE)
-                .edit().putString("app_lang", langCode).apply();
+    private void updateFilteredData() {
+        LiveData<List<Expense>> data;
+        boolean isExpense = selectedTypeFilter == R.id.filterExpenses;
+        boolean isIncome = selectedTypeFilter == R.id.filterIncomes;
 
-        // Обновляем локаль (через LocaleHelper)
-        LocaleHelper.setLocale(this, langCode);
+        if (customRangeActive) {
+            data = viewModel.getExpensesBetweenDates(customStartDate, customEndDate);
+        } else {
+            switch (selectedDateFilter) {
+                case 1:
+                    data = isExpense ? viewModel.getLast7DaysExpensesOnly()
+                            : isIncome ? viewModel.getLast7DaysIncomes()
+                            : viewModel.getLast7DaysAll();
+                    break;
+                case 2:
+                    data = isExpense ? viewModel.getLast30DaysExpensesOnly()
+                            : isIncome ? viewModel.getLast30DaysIncomes()
+                            : viewModel.getLast30DaysAll();
+                    break;
+                default:
+                    data = isExpense ? viewModel.getAllExpensesOnly()
+                            : isIncome ? viewModel.getAllIncomes()
+                            : viewModel.getAllExpenses();
+            }
+        }
 
-        // Перезапускаем MainActivity
-        Intent refresh = new Intent(this, MainActivity.class);
-        refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(refresh);
-        finish();
+        data.observe(this, expenses -> {
+            adapter.setExpenseList(expenses);
+            updateSummaryCards(expenses);
+        });
     }
-    private void showDatePickerDialog() {
-        Calendar cal = Calendar.getInstance();
-        new DatePickerDialog(this, (view, year, month, day) -> {
-            cal.set(year, month, day);
-            long selected = cal.getTimeInMillis();
-            viewModel.getExpensesByExactDate(selected).observe(this, expenses -> {
-                adapter.setExpenseList(expenses);
-                updateSummaryCards(expenses);
-            });
-        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show();
+
+    private void updateSummaryCards(List<Expense> expenses) {
+        double income = 0, expense = 0;
+        for (Expense e : expenses) {
+            if ("income".equals(e.getType())) income += e.getAmount();
+            else expense += e.getAmount();
+        }
+        double balance = income - expense;
+
+        incomeAmountText.setText(String.valueOf(income));
+        expenseAmountText.setText(String.valueOf(expense));
+        balanceAmountText.setText(String.valueOf(balance));
     }
 
     private void showSearchDialog() {
@@ -340,44 +336,37 @@ public class MainActivity extends BaseActivityJ {
                 .show();
     }
 
-    private void updateFilteredData() {
-        LiveData<List<Expense>> data;
-        boolean isExpense = selectedTypeFilter == R.id.filterExpenses;
-        boolean isIncome = selectedTypeFilter == R.id.filterIncomes;
+    private void showThemeDialog() {
+        String[] themes = {"Светлая", "Тёмная", "Системная"};
 
-        switch (selectedDateFilter) {
-            case 1:
-                data = isExpense ? viewModel.getLast7DaysExpensesOnly()
-                        : isIncome ? viewModel.getLast7DaysIncomes()
-                        : viewModel.getLast7DaysAll();
-                break;
-            case 2:
-                data = isExpense ? viewModel.getLast30DaysExpensesOnly()
-                        : isIncome ? viewModel.getLast30DaysIncomes()
-                        : viewModel.getLast30DaysAll();
-                break;
-            default:
-                data = isExpense ? viewModel.getAllExpensesOnly()
-                        : isIncome ? viewModel.getAllIncomes()
-                        : viewModel.getAllExpenses();
-        }
-
-        data.observe(this, expenses -> {
-            adapter.setExpenseList(expenses);
-            updateSummaryCards(expenses);
-        });
+        new AlertDialog.Builder(this)
+                .setTitle("Выберите тему")
+                .setItems(themes, (dialog, which) -> {
+                    switch (which) {
+                        case 0:
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                            break;
+                        case 1:
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                            break;
+                        case 2:
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                            break;
+                    }
+                    getSharedPreferences("settings", MODE_PRIVATE).edit().putInt("app_theme", which).apply();
+                    recreate();
+                })
+                .show();
     }
-    private void updateSummaryCards(List<Expense> expenses) {
-        double income = 0, expense = 0;
-        for (Expense e : expenses) {
-            if ("income".equals(e.getType())) income += e.getAmount();
-            else expense += e.getAmount();
-        }
-        double balance = income - expense;
 
-        incomeAmountText.setText(String.valueOf(income));
-        expenseAmountText.setText(String.valueOf(expense));
-        balanceAmountText.setText(String.valueOf(balance));
+    private void setLocale(String langCode) {
+        getSharedPreferences("settings", MODE_PRIVATE)
+                .edit().putString("app_lang", langCode).apply();
+        LocaleHelper.setLocale(this, langCode);
+        Intent refresh = new Intent(this, MainActivity.class);
+        refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(refresh);
+        finish();
     }
 
     @Override

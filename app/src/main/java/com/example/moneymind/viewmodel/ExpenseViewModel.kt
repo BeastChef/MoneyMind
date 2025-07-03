@@ -65,5 +65,18 @@ class ExpenseViewModel(private val repository: ExpenseRepository) : ViewModel() 
     }
     private fun daysAgo(days: Int): Long {
         return System.currentTimeMillis() - days * 24L * 60 * 60 * 1000
+
+    }
+    fun getExpensesLast7Days(): LiveData<List<Expense>> {
+        val sevenDaysAgo = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000
+        return repository.getExpensesBetweenDates(sevenDaysAgo, System.currentTimeMillis())
+    }
+
+    fun getExpensesLast30Days(): LiveData<List<Expense>> {
+        val thirtyDaysAgo = System.currentTimeMillis() - 30 * 24 * 60 * 60 * 1000
+        return repository.getExpensesBetweenDates(thirtyDaysAgo, System.currentTimeMillis())
+    }
+    fun getExpensesBetweenDates(start: Long, end: Long): LiveData<List<Expense>> {
+        return repository.getExpensesBetweenDates(start, end)
     }
 }

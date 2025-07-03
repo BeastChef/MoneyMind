@@ -112,5 +112,7 @@
     <color name="dm_error">#CF6679</color> <!-- Material error -->
     <color name="card_background_color">#A3D9A5</color>
     <color name="taim_text_background_color">#121212</color>
+    <color name="fab_add_color1">#FFD700</color> <!-- Золото -->
+    <color name="fab_add_color">#C0C0C0</color> <!-- Серебро -->
 
 </resources>

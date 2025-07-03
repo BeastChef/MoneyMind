@@ -45,6 +45,7 @@ class ExpenseRepository(private val expenseDao: ExpenseDao) {
         return expenseDao.getExpensesByCategory(category)
     }
 
+
     // ✅ Метод для поиска по названию
     fun searchExpensesByTitle(query: String): LiveData<List<Expense>> {
         return expenseDao.searchByTitle("%$query%")
