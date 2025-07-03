@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.moneymind.MoneyMindApp
@@ -15,6 +14,7 @@ import com.example.moneymind.data.Expense
 import com.example.moneymind.utils.CategoryColorHelper
 import com.example.moneymind.viewmodel.ExpenseViewModel
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -61,6 +61,16 @@ class AddExpenseActivity : BaseActivityK() {
             if (isFromMainTab) R.layout.activity_edit_expense_simple
             else R.layout.activity_add_expense
         )
+
+        // 🔙 Назад-кнопка (только если обычная форма)
+        if (!isFromMainTab) {
+            val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+            setSupportActionBar(toolbar)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            toolbar.setNavigationOnClickListener {
+                onBackPressedDispatcher.onBackPressed()
+            }
+        }
 
         titleInput = findViewById(R.id.inputTitle)
         amountInput = findViewById(R.id.inputAmount)
@@ -197,6 +207,7 @@ class AddExpenseActivity : BaseActivityK() {
             calendar.get(Calendar.DAY_OF_MONTH)
         ).show()
     }
+
     override fun attachBaseContext(newBase: android.content.Context) {
         val lang = newBase.getSharedPreferences("settings", android.content.Context.MODE_PRIVATE)
             .getString("app_lang", "ru") ?: "ru"

@@ -28,13 +28,15 @@
             </intent-filter>
         </activity>
 
-        <!-- Остальные активности (🔥 configChanges добавлен) -->
+        <!-- Остальные активности -->
         <activity
             android:name=".ui.StatsActivity"
             android:configChanges="locale|layoutDirection|screenLayout|uiMode|orientation|screenSize|keyboardHidden" />
 
+        <!-- ✅ Добавили adjustResize здесь -->
         <activity
             android:name=".ui.AddExpenseActivity"
+            android:windowSoftInputMode="adjustResize"
             android:configChanges="locale|layoutDirection|screenLayout|uiMode|orientation|screenSize|keyboardHidden" />
 
         <activity
@@ -63,5 +65,6 @@
             android:name=".ui.choose.ChooseCategoryActivity"
             android:configChanges="locale|layoutDirection|screenLayout|uiMode|orientation|screenSize|keyboardHidden" />
         -->
+
     </application>
 </manifest>

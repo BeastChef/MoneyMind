@@ -1,122 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/addExpenseLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?android:colorBackground"
-    android:padding="24dp">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/selectedCategoryLayout"
-        android:layout_width="0dp"
+    <!-- 🔹 Toolbar с кнопкой "Назад" -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:visibility="visible"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+        app:title="@string/back"
+        app:navigationIcon="@drawable/ic_back_arrow" />
 
-        <ImageView
-            android:id="@+id/selectedCategoryIcon"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/bg_icon_circle"
-            android:padding="16dp"
-            android:scaleType="centerInside"
-            android:contentDescription="@string/category_icon" />
+    <!-- 🔹 Scrollable content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:layout_marginTop="56dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
-            android:id="@+id/selectedCategoryText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/category"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="?android:textColorPrimary"
-            android:layout_marginBottom="8dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnEditCategory"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/edit_category"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:textColor="?android:textColorPrimary"
-            app:cornerRadius="12dp"
-            app:icon="@drawable/ic_edit"
-            app:iconPadding="8dp"
-            app:iconTint="?android:textColorPrimary"
-            android:layout_marginBottom="20dp"/>
-    </LinearLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/inputTitleLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/title_optional"
-        app:boxStrokeColor="?android:textColorPrimary"
-        app:layout_constraintTop_toBottomOf="@id/selectedCategoryLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/inputTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/amountLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/amount"
-        android:layout_marginTop="12dp"
-        app:boxStrokeColor="?android:textColorPrimary"
-        app:layout_constraintTop_toBottomOf="@id/inputTitleLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/inputAmount"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/addExpenseLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="numberDecimal"/>
-    </com.google.android.material.textfield.TextInputLayout>
+            android:background="?android:colorBackground"
+            android:padding="24dp">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/dateLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/date"
-        android:layout_marginTop="12dp"
-        app:boxStrokeColor="?android:textColorPrimary"
-        app:layout_constraintTop_toBottomOf="@id/amountLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+            <LinearLayout
+                android:id="@+id/selectedCategoryLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:visibility="visible"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/inputDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false"
-            android:clickable="true"/>
-    </com.google.android.material.textfield.TextInputLayout>
+                <ImageView
+                    android:id="@+id/selectedCategoryIcon"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:padding="16dp"
+                    android:scaleType="centerInside"
+                    android:contentDescription="@string/category_icon" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/saveButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/save"
-        android:textAllCaps="true"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/wood_brown"
-        app:cornerRadius="12dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@id/dateLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/selectedCategoryText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/category"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="?android:textColorPrimary"
+                    android:layout_marginBottom="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEditCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/edit_category"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:textColor="?android:textColorPrimary"
+                    app:cornerRadius="12dp"
+                    app:icon="@drawable/ic_edit"
+                    app:iconPadding="8dp"
+                    app:iconTint="?android:textColorPrimary"
+                    android:layout_marginBottom="20dp"/>
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inputTitleLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/title_optional"
+                app:boxStrokeColor="?android:textColorPrimary"
+                app:layout_constraintTop_toBottomOf="@id/selectedCategoryLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/amountLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/amount"
+                android:layout_marginTop="12dp"
+                app:boxStrokeColor="?android:textColorPrimary"
+                app:layout_constraintTop_toBottomOf="@id/inputTitleLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputAmount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/dateLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/date"
+                android:layout_marginTop="12dp"
+                app:boxStrokeColor="?android:textColorPrimary"
+                app:layout_constraintTop_toBottomOf="@id/amountLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:clickable="true"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/saveButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/save"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                android:backgroundTint="@color/wood_brown"
+                app:cornerRadius="12dp"
+                android:layout_marginTop="24dp"
+                app:layout_constraintTop_toBottomOf="@id/dateLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

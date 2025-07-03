@@ -57,6 +57,8 @@ interface CategoryDao {
     // Удалить категорию полностью
     @Delete
     suspend fun delete(category: Category)
+    @Update
+    fun updateAll(categories: List<Category>)
 
     // Сколько всего категорий
     @Query("SELECT COUNT(*) FROM categories")

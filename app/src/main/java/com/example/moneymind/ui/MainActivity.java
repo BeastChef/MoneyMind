@@ -80,7 +80,9 @@ public class MainActivity extends BaseActivityJ {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        DefaultCategoryInitializer.initAsync(this);
+        // 🧠 Вот здесь вызываем обновление категорий
+        DefaultCategoryInitializer.INSTANCE.updateCategoriesIfNeeded(this);
+        DefaultCategoryInitializer.INSTANCE.updateNamesAsync(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                 checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -384,7 +386,16 @@ public class MainActivity extends BaseActivityJ {
     private void setLocale(String langCode) {
         getSharedPreferences("settings", MODE_PRIVATE)
                 .edit().putString("app_lang", langCode).apply();
+
+        // Обновляем язык UI
         LocaleHelper.setLocale(this, langCode);
+
+        // Обновляем названия категорий асинхронно
+        Executors.newSingleThreadExecutor().execute(() -> {
+            DefaultCategoryInitializer.INSTANCE.updateNamesAsync(getApplicationContext());
+        });
+
+        // Перезапускаем активити
         Intent refresh = new Intent(this, MainActivity.class);
         refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(refresh);
