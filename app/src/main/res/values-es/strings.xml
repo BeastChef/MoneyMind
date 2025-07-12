@@ -89,5 +89,42 @@
     <string name="ok">OK</string>
     <string name="stats_filter_month">Mes</string>
     <string name="stats_filter_year">Año</string>
+    <string name="search_button">Buscar</string>
+    <string name="delete_record_message">Eliminar registro</string>
+    <string name="message_record_deleted">Registro eliminado</string>
+    <string name="change_theme">Cambiar tema</string>
+    <string name="calendar">Calendario</string>
+    <string name="search">Buscar</string>
+    <string name="light_theme">Claro</string>
+    <string name="dark_theme">Oscuro</string>
+    <string name="no_data_found">No se encontraron resultados para tu búsqueda</string>
+    <string name="select_theme">Seleccionar tema</string>
+    <string name="google_login_success">Inicio de sesión con Google exitoso</string>
+    <string name="google_login_error">Error al iniciar sesión con Google</string>
+    <string name="google_sign_in_error">Error: </string>
+    <string name="category_not_found">Categoría no encontrada</string>
+    <string name="category_updated">Categoría actualizada</string>
+    <string name="delete_category">¿Eliminar categoría?</string>
+    <string name="delete_category_message">Esta acción no se puede deshacer.</string>
 
+    <string name="delete_category_messages">¿Está seguro de que desea eliminar esta categoría?</string>
+
+    <string name="category_deleted">Categoría eliminada</string>
+
+    <string name="enter_valid_amount">Introduce una cantidad válida</string>
+
+    <string name="updated">Actualizado</string>
+    <string name="saved">Guardado</string>
+
+    <string name="no_internet_connection">Sin conexión a Internet</string>
+    <string name="firebase_error">Error de inicio de sesión en Firebase</string>
+
+    <string name="category_edited">Categoría editada</string>
+    <!-- AddCustomCategoryActivity -->
+    <string name="enter_category_name">Ingrese un nombre</string>
+    <string name="category_added">Categoría añadida</string>
+
+    <!-- ChartPagerAdapter -->
+    <string name="balance_per_day">Balance por día</string>
+    <string name="unknown_category">Categoría desconocida</string>
 </resources>

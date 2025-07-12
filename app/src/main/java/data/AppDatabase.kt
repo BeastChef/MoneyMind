@@ -39,17 +39,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "expense_database"
                 )
                     .addMigrations(migration6to7)
-                    .addCallback(object : RoomDatabase.Callback() {
-                        override fun onOpen(db: SupportSQLiteDatabase) {
-                            super.onOpen(db)
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val dao = getDatabase(context).categoryDao()
-                                if (dao.getCategoryCount() == 0) {
-                                    populateDefaults(dao, context)
-                                }
-                            }
-                        }
-                    })
+
                     .build()
                 INSTANCE = instance
                 instance

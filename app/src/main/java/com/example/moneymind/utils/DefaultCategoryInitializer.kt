@@ -1,32 +1,69 @@
 package com.example.moneymind.utils
 
 import android.content.Context
+import android.content.res.Resources
 import com.example.moneymind.R
 import com.example.moneymind.data.AppDatabase
 import com.example.moneymind.data.Category
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 object DefaultCategoryInitializer {
 
+    private const val PREFS_NAME = "settings"
+    private const val KEY_LAST_LANG = "last_default_lang"
+
+    // Инициализация категорий при установке приложения
     @JvmStatic
     fun initAsync(context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
-            val db = AppDatabase.getDatabase(context)
-            val categoryDao = db.categoryDao()
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            val lastLang = prefs.getString(KEY_LAST_LANG, null)
+            val currentLang = Locale.getDefault().language
 
-            val existingIcons = categoryDao.getAllNow().map { it.iconName }.toSet()
-            val res = context.resources
+            if (lastLang == null || lastLang != currentLang) {
+                val db = AppDatabase.getDatabase(context)
+                val dao = db.categoryDao()
 
-            val defaultCategories = getDefaultCategories(res)
+                // Удаляем только дефолтные (по iconName)
+                val defaultIconNames = getDefaultCategories(context.resources).map { it.iconName }.toSet()
+                val toDelete = dao.getAllNow().filter { it.iconName in defaultIconNames }
+                toDelete.forEach { dao.delete(it) }
 
-            defaultCategories
-                .filterNot { existingIcons.contains(it.iconName) }
-                .forEach { categoryDao.insert(it) }
+                // Добавляем новые дефолтные категории на нужном языке
+                dao.insertAll(getDefaultCategories(context.resources))
+
+                // Сохраняем текущий язык
+                prefs.edit().putString(KEY_LAST_LANG, currentLang).apply()
+            }
         }
     }
 
+    // Обновление категорий при изменении языка
+    @JvmStatic
+    fun updateCategoriesIfNeeded(context: Context) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val db = AppDatabase.getDatabase(context)
+            val dao = db.categoryDao()
+            val existingCategories = dao.getAllNow()
+            val res = context.resources
+            val defaultCategories = getDefaultCategories(res)
+
+            // Сравниваем и обновляем категории
+            defaultCategories.forEach { newCategory ->
+                val existingCategory = existingCategories.find { it.iconName == newCategory.iconName }
+                if (existingCategory == null) {
+                    dao.insert(newCategory)  // Если нет категории, добавляем новую
+                } else if (existingCategory.name != newCategory.name) {
+                    dao.update(existingCategory.copy(name = newCategory.name))  // Обновляем название категории
+                }
+            }
+        }
+    }
+
+    // Обновление названий категорий
     @JvmStatic
     fun updateNamesAsync(context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -54,21 +91,7 @@ object DefaultCategoryInitializer {
         }
     }
 
-    @JvmStatic
-    fun updateCategoriesIfNeeded(context: Context) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val db = AppDatabase.getDatabase(context)
-            val dao = db.categoryDao()
-            val existingIcons = dao.getAllNow().map { it.iconName }.toSet()
-
-            val categoriesToInsert = getDefaultCategories(context.resources)
-                .filterNot { existingIcons.contains(it.iconName) }
-
-            dao.insertAll(categoriesToInsert)
-        }
-    }
-
-    private fun getDefaultCategories(res: android.content.res.Resources): List<Category> {
+    private fun getDefaultCategories(res: Resources): List<Category> {
         return listOf(
             // Доходы
             Category(0, res.getString(R.string.category_salary), "ic_salary", R.drawable.ic_salary, true),

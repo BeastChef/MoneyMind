@@ -89,6 +89,42 @@
     <string name="ok">OK</string>
     <string name="stats_filter_month">Mese</string>
     <string name="stats_filter_year">Anno</string>
+    <string name="search_button">Cerca</string>
+    <string name="delete_record_message">Elimina record</string>
+    <string name="message_record_deleted">Record eliminato</string>
+    <string name="change_theme">Cambia tema</string>
+    <string name="calendar">Calendario</string>
+    <string name="search">Cerca</string>
+    <string name="light_theme">Chiaro</string>
+    <string name="dark_theme">Scuro</string>
+    <string name="no_data_found">Nessun risultato trovato per la tua richiesta</string>
+    <string name="select_theme">Seleziona tema</string>
+    <string name="google_login_success">Accesso con Google riuscito</string>
+    <string name="google_login_error">Errore di accesso con Google</string>
+    <string name="google_sign_in_error">Errore: </string>
+    <string name="category_not_found">Categoria non trovata</string>
+    <string name="category_updated">Categoria aggiornata</string>
+    <string name="delete_category">Eliminare la categoria?</string>
+    <string name="delete_category_message">Questa azione non può essere annullata.</string>
 
+    <string name="delete_category_messages">Sei sicuro di voler eliminare questa categoria?</string>
+
+    <string name="category_deleted">Categoria eliminata</string>
+
+    <string name="enter_valid_amount">Inserisci una somma valida</string>
+
+    <string name="updated">Aggiornato</string>
+    <string name="saved">Salvato</string>
+
+    <string name="no_internet_connection">Nessuna connessione a Internet</string>
+    <string name="firebase_error">Errore di accesso a Firebase</string>
+
+    <string name="category_edited">Categoria modificata</string>
+    <!-- AddCustomCategoryActivity -->
+    <string name="enter_category_name">Inserisci un nome</string>
+    <string name="category_added">Categoria aggiunta</string>
+
+    <!-- ChartPagerAdapter -->
+    <string name="balance_per_day">Saldo per giorno</string>
+    <string name="unknown_category">Categoria sconosciuta </string>
 </resources>
-

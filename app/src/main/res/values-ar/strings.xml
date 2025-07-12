@@ -90,4 +90,42 @@
     <string name="ok">OK</string>
     <string name="stats_filter_month">شهر</string>
     <string name="stats_filter_year">سنة</string>
+    <string name="search_button">بحث</string>
+    <string name="delete_record_message">حذف السجل</string>
+    <string name="message_record_deleted">تم حذف السجل</string>
+    <string name="change_theme">تغيير الموضوع</string>
+    <string name="calendar">التقويم</string>
+    <string name="search">ابحث</string>
+    <string name="light_theme">فاتح</string>
+    <string name="dark_theme">مظلم</string>
+    <string name="no_data_found">لم يتم العثور على نتائج لطلبك</string>
+    <string name="select_theme">اختر السمة</string>
+    <string name="google_login_success">تم تسجيل الدخول باستخدام Google بنجاح</string>
+    <string name="google_login_error">فشل تسجيل الدخول باستخدام Google</string>
+    <string name="google_sign_in_error">خطأ: </string>
+    <string name="category_not_found">لم يتم العثور على الفئة</string>
+    <string name="category_updated">تم تحديث الفئة</string>
+    <string name="delete_category">هل تريد حذف الفئة؟</string>
+    <string name="delete_category_message">لا يمكن التراجع عن هذا الإجراء.</string>
+
+    <string name="delete_category_messages">هل أنت متأكد أنك تريد حذف هذه الفئة؟</string>
+
+    <string name="category_deleted">تم حذف الفئة</string>
+
+    <string name="enter_valid_amount">أدخل المبلغ الصحيح</string>
+
+    <string name="updated">تم التحديث</string>
+    <string name="saved">تم الحفظ</string>
+
+    <string name="no_internet_connection">لا يوجد اتصال بالإنترنت</string>
+    <string name="firebase_error">خطأ في تسجيل الدخول إلى Firebase</string>
+
+    <string name="category_edited">تم تعديل الفئة</string>
+    <!-- AddCustomCategoryActivity -->
+    <string name="enter_category_name">أدخل الاسم</string>
+    <string name="category_added">تم إضافة الفئة</string>
+
+    <!-- ChartPagerAdapter -->
+    <string name="balance_per_day">الرصيد حسب الأيام</string>
+    <string name="unknown_category">فئة غير معروفة </string>
 </resources>

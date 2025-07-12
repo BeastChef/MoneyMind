@@ -89,4 +89,42 @@
     <string name="ok">OK</string>
     <string name="stats_filter_month">Ay</string>
     <string name="stats_filter_year">Yıl</string>
+    <string name="search_button">Ara</string>
+    <string name="delete_record_message">Kaydı Sil</string>
+    <string name="message_record_deleted">Kayıt silindi</string>
+    <string name="change_theme">Tema Değiştir</string>
+    <string name="calendar">Takvim</string>
+    <string name="search">Ara</string>
+    <string name="light_theme">Aydınlık</string>
+    <string name="dark_theme">Karanlık</string>
+    <string name="no_data_found">Sorgunuzla ilgili sonuç bulunamadı</string>
+    <string name="select_theme">Tema seçin</string>
+    <string name="google_login_success">Google ile giriş başarılı</string>
+    <string name="google_login_error">Google ile giriş başarısız oldu</string>
+    <string name="google_sign_in_error">Hata: </string>
+    <string name="category_not_found">Kategori bulunamadı</string>
+    <string name="category_updated">Kategori güncellendi</string>
+    <string name="delete_category">Kategoriyi silmek istiyor musunuz?</string>
+    <string name="delete_category_message">Bu işlem geri alınamaz.</string>
+
+    <string name="delete_category_messages">Bu kategoriyi silmek istediğinizden emin misiniz?</string>
+
+    <string name="category_deleted">Kategori silindi</string>
+
+    <string name="enter_valid_amount">Geçerli bir miktar girin</string>
+
+    <string name="updated">Güncellendi</string>
+    <string name="saved">Kaydedildi</string>
+
+    <string name="no_internet_connection">İnternet bağlantısı yok</string>
+    <string name="firebase_error">Firebase oturum açma hatası</string>
+
+    <string name="category_edited">Kategori düzenlendi</string>
+    <!-- AddCustomCategoryActivity -->
+    <string name="enter_category_name">Bir isim girin</string>
+    <string name="category_added">Kategori eklendi</string>
+
+    <!-- ChartPagerAdapter -->
+    <string name="balance_per_day">Günlük bakiye</string>
+    <string name="unknown_category">Bilinmeyen kategori </string>
 </resources>

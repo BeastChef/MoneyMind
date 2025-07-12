@@ -89,6 +89,42 @@
     <string name="ok">OK</string>
     <string name="stats_filter_month">月</string>
     <string name="stats_filter_year">年</string>
+    <string name="search_button">搜索</string>
+    <string name="delete_record_message">删除记录</string>
+    <string name="message_record_deleted">记录已删除</string>
+    <string name="change_theme">更改主题</string>
+    <string name="calendar">日历</string>
+    <string name="search">搜索</string>
+    <string name="light_theme">浅色</string>
+    <string name="dark_theme">深色</string>
+    <string name="no_data_found">未找到与您的查询匹配的结果</string>
+    <string name="select_theme">选择主题</string>
+    <string name="google_login_success">成功通过 Google 登录</string>
+    <string name="google_login_error">Google 登录失败</string>
+    <string name="google_sign_in_error">错误： </string>
+    <string name="category_not_found">未找到类别</string>
+    <string name="category_updated">类别已更新</string>
+    <string name="delete_category">删除类别？</string>
+    <string name="delete_category_message">此操作无法撤销。</string>
 
+    <string name="delete_category_messages">您确定要删除此类别吗？</string>
 
+    <string name="category_deleted">类别已删除</string>
+
+    <string name="enter_valid_amount">请输入有效金额</string>
+
+    <string name="updated">已更新</string>
+    <string name="saved">已保存</string>
+
+    <string name="no_internet_connection">没有互联网连接</string>
+    <string name="firebase_error">Firebase登录错误</string>
+
+    <string name="category_edited">类别已编辑</string>
+    <!-- AddCustomCategoryActivity -->
+    <string name="enter_category_name">请输入名称</string>
+    <string name="category_added">类别已添加</string>
+
+    <!-- ChartPagerAdapter -->
+    <string name="balance_per_day">每日余额</string>
+    <string name="unknown_category">未知类别</string>
 </resources>

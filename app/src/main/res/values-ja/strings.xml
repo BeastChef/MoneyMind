@@ -89,4 +89,42 @@
     <string name="ok">OK</string>
     <string name="stats_filter_month">月</string>
     <string name="stats_filter_year">年</string>
+    <string name="search_button">検索</string>
+    <string name="delete_record_message">記録を削除</string>
+    <string name="message_record_deleted">記録が削除されました</string>
+    <string name="change_theme">テーマを変更</string>
+    <string name="calendar">カレンダー</string>
+    <string name="search">検索</string>
+    <string name="light_theme">ライト</string>
+    <string name="dark_theme">ダーク</string>
+    <string name="no_data_found">検索に一致する結果が見つかりませんでした</string>
+    <string name="select_theme">テーマを選択</string>
+    <string name="google_login_success">Googleでのログインに成功しました</string>
+    <string name="google_login_error">Googleでのログインに失敗しました</string>
+    <string name="google_sign_in_error">エラー: </string>
+    <string name="category_not_found">カテゴリが見つかりません</string>
+    <string name="category_updated">カテゴリが更新されました</string>
+    <string name="delete_category">カテゴリを削除しますか？</string>
+    <string name="delete_category_message">この操作は元に戻せません。</string>
+
+    <string name="delete_category_messages">このカテゴリーを削除してもよろしいですか？</string>
+
+    <string name="category_deleted">カテゴリーが削除されました</string>
+
+    <string name="enter_valid_amount">有効な金額を入力してください</string>
+
+    <string name="updated">更新されました</string>
+    <string name="saved">保存しました</string>
+
+    <string name="no_internet_connection">インターネット接続がありません</string>
+    <string name="firebase_error">Firebaseサインインエラー</string>
+
+    <string name="category_edited">カテゴリーが編集されました</string>
+    <!-- AddCustomCategoryActivity -->
+    <string name="enter_category_name">名前を入力してください</string>
+    <string name="category_added">カテゴリーが追加されました</string>
+
+    <!-- ChartPagerAdapter -->
+    <string name="balance_per_day">日ごとの残高</string>
+    <string name="unknown_category">不明なカテゴリ </string>
 </resources>

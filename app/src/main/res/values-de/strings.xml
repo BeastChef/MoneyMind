@@ -89,5 +89,42 @@
     <string name="ok">OK</string>
     <string name="stats_filter_month">Monat</string>
     <string name="stats_filter_year">Jahr</string>
+    <string name="search_button">Suche</string>
+    <string name="delete_record_message">Eintrag löschen</string>
+    <string name="message_record_deleted">Eintrag gelöscht</string>
+    <string name="change_theme">Thema ändern</string>
+    <string name="calendar">Kalender</string>
+    <string name="search">Suchen</string>
+    <string name="light_theme">Hell</string>
+    <string name="dark_theme">Dunkel</string>
+    <string name="no_data_found">Keine Ergebnisse für Ihre Anfrage gefunden</string>
+    <string name="select_theme">Thema auswählen</string>
+    <string name="google_login_success">Google-Anmeldung erfolgreich</string>
+    <string name="google_login_error">Fehler bei der Google-Anmeldung</string>
+    <string name="google_sign_in_error">Fehler: </string>
+    <string name="category_not_found">Kategorie nicht gefunden</string>
+    <string name="category_updated">Kategorie aktualisiert</string>
+    <string name="delete_category">Kategorie löschen?</string>
+    <string name="delete_category_message">Diese Aktion kann nicht rückgängig gemacht werden.</string>
 
+    <string name="delete_category_messages">Sind Sie sicher, dass Sie diese Kategorie löschen möchten?</string>
+
+    <string name="category_deleted">Kategorie gelöscht</string>
+
+    <string name="enter_valid_amount">Geben Sie einen gültigen Betrag ein</string>
+
+    <string name="updated">Aktualisiert</string>
+    <string name="saved">Gespeichert</string>
+
+    <string name="no_internet_connection">Keine Internetverbindung</string>
+    <string name="firebase_error">Fehler beim Firebase-Login</string>
+
+    <string name="category_edited">Kategorie bearbeitet</string>
+    <!-- AddCustomCategoryActivity -->
+    <string name="enter_category_name">Geben Sie den Namen ein</string>
+    <string name="category_added">Kategorie hinzugefügt</string>
+
+    <!-- ChartPagerAdapter -->
+    <string name="balance_per_day">Saldo pro Tag</string>
+    <string name="unknown_category">Unbekannte Kategorie</string>
 </resources>

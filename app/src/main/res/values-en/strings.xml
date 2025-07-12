@@ -89,5 +89,42 @@
     <string name="ok">OK</string>
     <string name="stats_filter_month">Month</string>
     <string name="stats_filter_year">Year</string>
+    <string name="search_button">Search</string>
+    <string name="delete_record_message">Delete record</string>
+    <string name="message_record_deleted">Record deleted</string>
+    <string name="change_theme">Change theme</string>
+    <string name="calendar">Calendar</string>
+    <string name="search">Search</string>
+    <string name="light_theme">Light</string>
+    <string name="dark_theme">Dark</string>
+    <string name="no_data_found">No results found for your query</string>
+    <string name="select_theme">Select theme</string>
+    <string name="google_login_success">Signed in with Google successfully</string>
+    <string name="google_login_error">Google sign-in failed</string>
+    <string name="google_sign_in_error">Error: </string>
+    <string name="category_not_found">Category not found</string>
+    <string name="category_updated">Category updated</string>
+    <string name="delete_category">Delete category?</string>
+    <string name="delete_category_message">This action cannot be undone.</string>
 
+    <string name="delete_category_messages">Are you sure you want to delete this category?</string>
+
+    <string name="category_deleted">Category Deleted</string>
+
+    <string name="enter_valid_amount">Enter a valid amount</string>
+
+    <string name="updated">Updated</string>
+    <string name="saved">Saved</string>
+
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="firebase_error">Firebase sign-in error</string>
+
+    <string name="category_edited">Category Edited</string>
+    <!-- AddCustomCategoryActivity -->
+    <string name="enter_category_name">Enter a name</string>
+    <string name="category_added">Category added</string>
+
+    <!-- ChartPagerAdapter -->
+    <string name="balance_per_day">Balance per day</string>
+    <string name="unknown_category">Unknown category</string>
 </resources>

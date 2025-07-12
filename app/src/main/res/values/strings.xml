@@ -87,7 +87,47 @@
     <string name="ok">OK</string>
     <string name="stats_filter_month">Месяц</string>
     <string name="stats_filter_year">Год</string>
+    <string name="search_button">Поиск</string>
+    <string name="delete_record_message">Удалить запись</string>
+    <string name="message_record_deleted">Запись удалена</string>
+    <string name="change_theme">Сменить тему</string>
+    <string name="calendar">Календарь</string>
+    <string name="search">Найти</string>
+    <string name="light_theme">Светлая</string>
+    <string name="dark_theme">Тёмная</string>
+    <string name="default_web_client_id">1:1057606697591:android:eeb37d67c102fef2d7bc72</string>
+    <string name="no_data_found">По вашему запросу ничего не найдено</string>
+    <string name="select_theme">Выберите тему</string>
+    <string name="google_login_success">Вход через Google успешен</string>
+    <string name="google_login_error">Ошибка входа через Google</string>
+    <string name="google_sign_in_error">Ошибка: </string>
+    <string name="category_not_found">Категория не найдена</string>
+    <string name="category_updated">Категория обновлена</string>
+    <string name="delete_category">Удалить категорию?</string>
+    <string name="delete_category_message">Это действие нельзя отменить.</string>
+    <!-- Строки для удаления категории -->
+
+    <string name="delete_category_messages">Вы уверены, что хотите удалить эту категорию?</string>
+
+    <string name="category_deleted">Категория удалена</string>
+
+    <!-- Строки для формы добавления расходов -->
+    <string name="enter_valid_amount">Введите корректную сумму</string>
+
+    <string name="updated">Обновлено</string>
+    <string name="saved">Сохранено</string>
+
+    <!-- Строки для ошибок -->
+    <string name="no_internet_connection">Нет подключения к интернету</string>
+    <string name="firebase_error">Ошибка входа в Firebase</string>
+
+    <!-- Строка для редактирования категории -->
+    <string name="category_edited">Категория изменена</string>
+
     <!-- 🛠️ Добавлено для item_category.xml -->
     <string name="icon">Иконка</string>
-
+    <string name="enter_category_name">Введите название</string>
+    <string name="category_added">Категория добавлена</string>
+    <string name="balance_per_day">Баланс по дням</string>
+    <string name="unknown_category">Неизвестная категория</string>
 </resources>

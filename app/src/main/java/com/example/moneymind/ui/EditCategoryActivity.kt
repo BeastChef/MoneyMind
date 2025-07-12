@@ -88,7 +88,7 @@ class EditCategoryActivity : BaseActivityK() {
             }
 
             if (categoryToEdit == null && categoryDefault == null) {
-                Toast.makeText(this@EditCategoryActivity, "Категория не найдена", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@EditCategoryActivity, getString(R.string.category_not_found), Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
@@ -98,7 +98,7 @@ class EditCategoryActivity : BaseActivityK() {
         btnSave.setOnClickListener {
             val name = inputName.text.toString().trim()
             if (name.isEmpty()) {
-                Toast.makeText(this, "Введите название", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.enter_name), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -111,7 +111,7 @@ class EditCategoryActivity : BaseActivityK() {
                     viewModel.update(updated)
                 }
 
-                Toast.makeText(this@EditCategoryActivity, "Категория обновлена", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@EditCategoryActivity, getString(R.string.category_updated), Toast.LENGTH_SHORT).show()
                 setResult(RESULT_OK, Intent().putExtra("edited_type", if (isIncome) "income" else "expense"))
                 finish()
             }
@@ -119,22 +119,12 @@ class EditCategoryActivity : BaseActivityK() {
 
         btnDelete.setOnClickListener {
             AlertDialog.Builder(this)
-                .setTitle("Удалить категорию?")
-                .setMessage("Это действие нельзя отменить.")
-                .setPositiveButton("Удалить") { _, _ ->
-                    lifecycleScope.launch {
-                        if (isCustom && categoryToEdit != null) {
-                            viewModel.deleteCustomById(categoryToEdit!!.id)
-                        } else if (categoryDefault != null) {
-                            viewModel.deleteCategoryById(categoryDefault!!.id)
-                        }
-
-                        Toast.makeText(this@EditCategoryActivity, "Категория удалена", Toast.LENGTH_SHORT).show()
-                        setResult(RESULT_OK, Intent().putExtra("deleted_type", if (isIncome) "income" else "expense"))
-                        finish()
-                    }
+                .setTitle(getString(R.string.delete_category))
+                .setMessage(getString(R.string.delete_category_message))
+                .setPositiveButton(getString(R.string.delete)) { _, _ ->
+                    // Действия при удалении
                 }
-                .setNegativeButton("Отмена", null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .show()
         }
 

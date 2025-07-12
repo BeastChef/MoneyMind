@@ -185,10 +185,10 @@ public class MainActivity extends BaseActivityJ {
 
         adapter.setOnExpenseLongClickListener(expense -> {
             new AlertDialog.Builder(this)
-                    .setTitle("Удалить запись")
-                    .setMessage("Удалить «" + expense.getCategory() + "»?")
-                    .setPositiveButton("Удалить", (dialog, which) -> viewModel.delete(expense))
-                    .setNegativeButton("Отмена", null)
+                    .setTitle(getString(R.string.delete_record_message))  // Здесь будет перевод "Удалить запись"
+                    .setMessage(getString(R.string.delete_record_message) + " «" + expense.getCategory() + "»?")
+                    .setPositiveButton(getString(R.string.delete), (dialog, which) -> viewModel.delete(expense))
+                    .setNegativeButton(getString(R.string.cancel), null)
                     .show();
         });
 
@@ -206,9 +206,11 @@ public class MainActivity extends BaseActivityJ {
 
         btnChooseIncome.setOnClickListener(v -> {
             Intent intent = new Intent(this, ChooseIncomeCategoryActivity.class);
+            intent.putExtra("button_text", getString(R.string.choose_category)); // Передаем строку для кнопки
             startActivityForResult(intent, REQUEST_CHOOSE_CATEGORY);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         });
+
 
         btnChooseExpense.setOnClickListener(v -> {
             Intent intent = new Intent(this, ChooseExpenseCategoryActivity.class);
@@ -339,14 +341,14 @@ public class MainActivity extends BaseActivityJ {
         EditText input = dialogView.findViewById(R.id.editSearchInput);
 
         builder.setView(dialogView)
-                .setTitle("Поиск")
-                .setPositiveButton("Найти", (dialog, which) -> {
+                .setTitle(getString(R.string.search))  // Получаем строку из ресурсов
+                .setPositiveButton(getString(R.string.search_button), (dialog, which) -> {
                     String query = input.getText().toString().trim();
                     if (!query.isEmpty()) {
                         viewModel.searchExpensesByTitleOrCategory(query).observe(this, expenses -> {
                             if (expenses == null || expenses.isEmpty()) {
                                 adapter.setExpenseList(List.of()); // Пустой список
-                                Toast.makeText(this, "По вашему запросу ничего не найдено", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, getString(R.string.no_data_found), Toast.LENGTH_SHORT).show();
                             } else {
                                 adapter.setExpenseList(expenses);
                                 updateSummaryCards(expenses);
@@ -354,17 +356,20 @@ public class MainActivity extends BaseActivityJ {
                         });
                     }
                 })
-                .setNegativeButton("Отмена", (dialog, which) -> {
+                .setNegativeButton(getString(R.string.cancel), (dialog, which) -> {
                     updateFilteredData(); // Сброс — возврат к фильтрации по времени
                 })
                 .show();
     }
 
     private void showThemeDialog() {
-        String[] themes = {"Светлая", "Тёмная", "Системная"};
+        String[] themes = {
+                getString(R.string.light_theme),
+                getString(R.string.dark_theme)
+        };
 
         new AlertDialog.Builder(this)
-                .setTitle("Выберите тему")
+                .setTitle(getString(R.string.select_theme))  // Получаем строку из ресурсов
                 .setItems(themes, (dialog, which) -> {
                     switch (which) {
                         case 0:
