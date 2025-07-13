@@ -18,6 +18,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -27,6 +28,9 @@ class AddExpenseActivity : BaseActivityK() {
     companion object {
         private const val EDIT_CATEGORY_REQUEST_CODE = 1001
     }
+
+    // 🔐 Firebase
+    private lateinit var auth: FirebaseAuth
 
     private lateinit var titleInput: TextInputEditText
     private lateinit var amountInput: TextInputEditText
@@ -55,14 +59,14 @@ class AddExpenseActivity : BaseActivityK() {
     override fun onCreate(savedInstanceState: Bundle?) {
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         super.onCreate(savedInstanceState)
+
+        // 🔐 Инициализация Firebase
+        auth = FirebaseAuth.getInstance()
+        signInAnonymously()
+
         isFromMainTab = intent.getBooleanExtra("from_main_tab", false)
+        setContentView(if (isFromMainTab) R.layout.activity_edit_expense_simple else R.layout.activity_add_expense)
 
-        setContentView(
-            if (isFromMainTab) R.layout.activity_edit_expense_simple
-            else R.layout.activity_add_expense
-        )
-
-        // 🔙 Назад-кнопка (только если обычная форма)
         if (!isFromMainTab) {
             val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
             setSupportActionBar(toolbar)
@@ -110,9 +114,7 @@ class AddExpenseActivity : BaseActivityK() {
             startActivityForResult(intent, EDIT_CATEGORY_REQUEST_CODE)
         }
 
-        cancelButton?.setOnClickListener {
-            finish()
-        }
+        cancelButton?.setOnClickListener { finish() }
 
         selectedExpenseId = intent.getIntExtra("expense_id", -1).takeIf { it != -1 }
         selectedExpenseId?.let { id ->
@@ -168,11 +170,21 @@ class AddExpenseActivity : BaseActivityK() {
         }
     }
 
+    private fun signInAnonymously() {
+        if (auth.currentUser == null) {
+            auth.signInAnonymously()
+                .addOnCompleteListener(this) { task ->
+                    if (!task.isSuccessful) {
+                        Toast.makeText(this, "Ошибка входа в Firebase", Toast.LENGTH_SHORT).show()
+                    }
+                }
+        }
+    }
+
     private fun showCategoryDetails() {
         categoryLayout?.visibility = View.VISIBLE
         categoryName?.text = selectedCategory
         categoryIcon?.setImageResource(selectedIconResId)
-
         val color = CategoryColorHelper.getColorForCategoryKey(selectedIconName, isIncome)
         categoryIcon?.background?.mutate()?.let { bg ->
             DrawableCompat.setTint(DrawableCompat.wrap(bg), color)

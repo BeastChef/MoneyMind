@@ -1,15 +1,10 @@
 pluginManagement {
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
-        mavenCentral()
+        // 🔥 Порядок важен: сначала google(), потом остальное
+        google() // обязательно для плагина google-services
         gradlePluginPortal()
-        maven("https://jitpack.io") // 👈 Добавили сюда
+        mavenCentral()
+        maven("https://jitpack.io")
     }
 }
 
@@ -18,7 +13,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven("https://jitpack.io") // 👈 И сюда тоже
+        maven("https://jitpack.io")
     }
 }
 

@@ -1,8 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/nav_header_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:background="?attr/colorSurface"
+    android:gravity="top">
 
     <TextView
         android:id="@+id/navSettingsTitle"
@@ -18,29 +22,37 @@
         android:id="@+id/btnChangeLanguage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/change_language" />
+        android:text="@string/change_language"
+        android:drawableStart="@drawable/ic_language"
+        android:padding="8dp"
+        android:layout_marginBottom="8dp" />
 
     <!-- 🎨 Кнопка смены темы -->
     <Button
         android:id="@+id/btnChangeTheme"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Сменить тему" />
+        android:text="@string/change_theme"
+        android:drawableStart="@drawable/ic_theme"
+        android:padding="8dp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- 🔐 Вход через Google -->
+    <Button
+        android:id="@+id/googleSignInButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_in_with_google"
+        android:drawableStart="@drawable/ic_google"
+        android:backgroundTint="?attr/colorPrimary"
+        android:textColor="?attr/colorOnPrimary"
+        android:padding="8dp"
+        android:layout_marginBottom="12dp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#CCCCCC"
         android:layout_marginVertical="12dp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Будущие функции:"
-        android:textStyle="italic" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="- Цветные темы\n- Экспорт данных" />
+    
 </LinearLayout>

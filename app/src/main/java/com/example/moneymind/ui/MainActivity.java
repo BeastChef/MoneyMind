@@ -43,17 +43,28 @@ import com.example.moneymind.utils.LocaleHelper;
 import com.example.moneymind.utils.OnSwipeTouchListener;
 import com.example.moneymind.viewmodel.ExpenseViewModel;
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.navigation.NavigationView;
-
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends BaseActivityJ {
-
+    private FirebaseAuth auth;
+    private GoogleSignInClient googleSignInClient;
+    private static final int RC_SIGN_IN = 1002;
     private static final int REQUEST_CHOOSE_CATEGORY = 1001;
 
     private ExpenseViewModel viewModel;
@@ -79,6 +90,20 @@ public class MainActivity extends BaseActivityJ {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        // Инициализация FirebaseAuth
+        auth = FirebaseAuth.getInstance();
+
+// Настройка GoogleSignInOptions
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))  // Токен из Firebase Console
+                .requestEmail()
+                .build();
+
+// Инициализация GoogleSignInClient
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
+
+
+
 
         // 🧠 Вот здесь вызываем обновление категорий
         DefaultCategoryInitializer.INSTANCE.updateCategoriesIfNeeded(this);
@@ -211,7 +236,6 @@ public class MainActivity extends BaseActivityJ {
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         });
 
-
         btnChooseExpense.setOnClickListener(v -> {
             Intent intent = new Intent(this, ChooseExpenseCategoryActivity.class);
             startActivityForResult(intent, REQUEST_CHOOSE_CATEGORY);
@@ -227,9 +251,15 @@ public class MainActivity extends BaseActivityJ {
         });
 
         View navView = navigationView.getHeaderView(0);
-        if (navView == null && navigationView.getChildCount() > 0)
-            navView = navigationView.getChildAt(0);
 
+// Находим кнопку для входа через Google внутри headerView
+        Button googleSignInButton = navView.findViewById(R.id.googleSignInButton);
+        googleSignInButton.setOnClickListener(v -> {
+            Intent signInIntent = googleSignInClient.getSignInIntent();
+            startActivityForResult(signInIntent, RC_SIGN_IN);
+        });
+
+// Проверка на null и установка других кнопок в навигационном меню (для языка и темы)
         if (navView != null) {
             View btnLang = navView.findViewById(R.id.btnChangeLanguage);
             if (btnLang != null) {
@@ -341,14 +371,14 @@ public class MainActivity extends BaseActivityJ {
         EditText input = dialogView.findViewById(R.id.editSearchInput);
 
         builder.setView(dialogView)
-                .setTitle(getString(R.string.search))  // Получаем строку из ресурсов
-                .setPositiveButton(getString(R.string.search_button), (dialog, which) -> {
+                .setTitle("Поиск")
+                .setPositiveButton("Найти", (dialog, which) -> {
                     String query = input.getText().toString().trim();
                     if (!query.isEmpty()) {
                         viewModel.searchExpensesByTitleOrCategory(query).observe(this, expenses -> {
                             if (expenses == null || expenses.isEmpty()) {
                                 adapter.setExpenseList(List.of()); // Пустой список
-                                Toast.makeText(this, getString(R.string.no_data_found), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, "По вашему запросу ничего не найдено", Toast.LENGTH_SHORT).show();
                             } else {
                                 adapter.setExpenseList(expenses);
                                 updateSummaryCards(expenses);
@@ -356,7 +386,7 @@ public class MainActivity extends BaseActivityJ {
                         });
                     }
                 })
-                .setNegativeButton(getString(R.string.cancel), (dialog, which) -> {
+                .setNegativeButton("Отмена", (dialog, which) -> {
                     updateFilteredData(); // Сброс — возврат к фильтрации по времени
                 })
                 .show();
@@ -365,11 +395,11 @@ public class MainActivity extends BaseActivityJ {
     private void showThemeDialog() {
         String[] themes = {
                 getString(R.string.light_theme),
-                getString(R.string.dark_theme)
+                getString(R.string.dark_theme),
         };
 
         new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.select_theme))  // Получаем строку из ресурсов
+                .setTitle("Выберите тему")
                 .setItems(themes, (dialog, which) -> {
                     switch (which) {
                         case 0:
@@ -410,6 +440,35 @@ public class MainActivity extends BaseActivityJ {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        // Обрабатываем результат входа через Google
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                if (account != null) {
+                    // Получаем креденшел для Firebase
+                    AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+                    auth.signInWithCredential(credential)
+                            .addOnCompleteListener(this, task1 -> {
+                                if (task1.isSuccessful()) {
+                                    // Успешный вход
+                                    FirebaseUser user = auth.getCurrentUser();
+                                    Toast.makeText(MainActivity.this, "Вход через Google успешен", Toast.LENGTH_SHORT).show();
+                                    // Здесь можно обновить UI или сохранить данные пользователя
+                                } else {
+                                    // Ошибка входа через Google
+                                    Toast.makeText(MainActivity.this, "Ошибка входа через Google", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                }
+            } catch (ApiException e) {
+                // Ошибка при получении данных от Google
+                Toast.makeText(MainActivity.this, "Ошибка: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        // Обработка результата выбора категории (оставь как есть)
         if (requestCode == REQUEST_CHOOSE_CATEGORY && resultCode == RESULT_OK && data != null) {
             int categoryId = data.getIntExtra("selected_category_id", -1);
             if (categoryId != -1) {

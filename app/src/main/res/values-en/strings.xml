@@ -127,4 +127,5 @@
     <!-- ChartPagerAdapter -->
     <string name="balance_per_day">Balance per day</string>
     <string name="unknown_category">Unknown category</string>
+    <string name="sign_in_with_google">Login with Google</string>
 </resources>

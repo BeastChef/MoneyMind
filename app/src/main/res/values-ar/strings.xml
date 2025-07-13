@@ -128,4 +128,5 @@
     <!-- ChartPagerAdapter -->
     <string name="balance_per_day">الرصيد حسب الأيام</string>
     <string name="unknown_category">فئة غير معروفة </string>
+    <string name="sign_in_with_google">تسجيل الدخول باستخدام جوجل</string>
 </resources>

@@ -127,4 +127,5 @@
     <!-- ChartPagerAdapter -->
     <string name="balance_per_day">Saldo pro Tag</string>
     <string name="unknown_category">Unbekannte Kategorie</string>
+    <string name="sign_in_with_google">Mit Google anmelden</string>
 </resources>

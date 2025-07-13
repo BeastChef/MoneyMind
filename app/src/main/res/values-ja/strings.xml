@@ -127,4 +127,5 @@
     <!-- ChartPagerAdapter -->
     <string name="balance_per_day">日ごとの残高</string>
     <string name="unknown_category">不明なカテゴリ </string>
+    <string name="sign_in_with_google">Googleでログイン</string>
 </resources>

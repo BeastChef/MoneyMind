@@ -127,4 +127,5 @@
     <!-- ChartPagerAdapter -->
     <string name="balance_per_day">Günlük bakiye</string>
     <string name="unknown_category">Bilinmeyen kategori </string>
+    <string name="sign_in_with_google">Google ile giriş yapın</string>
 </resources>
