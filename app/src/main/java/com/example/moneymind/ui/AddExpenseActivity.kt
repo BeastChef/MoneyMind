@@ -96,7 +96,7 @@ class AddExpenseActivity : BaseActivityK() {
         selectedIconResId = resources.getIdentifier(selectedIconName, "drawable", packageName)
             .takeIf { it != 0 } ?: R.drawable.ic_category_default
 
-        val formatter = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
+        val formatter = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
         dateInput.setText(formatter.format(Date(selectedDateMillis)))
         dateInput.setOnClickListener { showDatePickerDialog() }
 
@@ -140,7 +140,7 @@ class AddExpenseActivity : BaseActivityK() {
             val amount = amountInput.text.toString().toDoubleOrNull()
 
             if (amount == null || amount <= 0) {
-                Toast.makeText(this, "Введите корректную сумму", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.enter_valid_amount), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -150,7 +150,7 @@ class AddExpenseActivity : BaseActivityK() {
                 id = selectedExpenseId ?: 0,
                 title = title,
                 amount = amount,
-                category = selectedCategory ?: "Категория",
+                category = selectedCategory ?: getString(R.string.category),
                 date = selectedDateMillis,
                 type = if (isIncome) "income" else "expense",
                 iconName = selectedIconName,
@@ -160,10 +160,10 @@ class AddExpenseActivity : BaseActivityK() {
             lifecycleScope.launch {
                 if (selectedExpenseId != null) {
                     viewModel.update(expense)
-                    Snackbar.make(saveButton, "Обновлено", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(saveButton, getString(R.string.updated), Snackbar.LENGTH_SHORT).show()
                 } else {
                     viewModel.insert(expense)
-                    Snackbar.make(saveButton, "Сохранено", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(saveButton, getString(R.string.saved), Snackbar.LENGTH_SHORT).show()
                 }
                 finish()
             }
@@ -175,7 +175,7 @@ class AddExpenseActivity : BaseActivityK() {
             auth.signInAnonymously()
                 .addOnCompleteListener(this) { task ->
                     if (!task.isSuccessful) {
-                        Toast.makeText(this, "Ошибка входа в Firebase", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, getString(R.string.firebase_signin_error), Toast.LENGTH_SHORT).show()
                     }
                 }
         }
@@ -196,7 +196,7 @@ class AddExpenseActivity : BaseActivityK() {
         if (requestCode == EDIT_CATEGORY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             val type = data.getStringExtra("deleted_type") ?: data.getStringExtra("edited_type")
             if (type != null) {
-                Toast.makeText(this, "Категория изменена", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.category_updated), Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
@@ -208,7 +208,7 @@ class AddExpenseActivity : BaseActivityK() {
         val listener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
             calendar.set(year, month, dayOfMonth)
             selectedDateMillis = calendar.timeInMillis
-            val formatter = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
+            val formatter = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
             dateInput.setText(formatter.format(calendar.time))
         }
 

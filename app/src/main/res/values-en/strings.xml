@@ -128,4 +128,8 @@
     <string name="balance_per_day">Balance per day</string>
     <string name="unknown_category">Unknown category</string>
     <string name="sign_in_with_google">Login with Google</string>
+    <string name="google_signin_success">You have successfully signed in with Google</string>
+    <string name="google_signin_failed">Google sign-in failed</string>
+    <string name="google_signin_error">Error retrieving data from Google</string>
+    <string name="firebase_signin_error">Firebase sign-in failed</string>
 </resources>

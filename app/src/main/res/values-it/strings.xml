@@ -128,4 +128,8 @@
     <string name="balance_per_day">Saldo per giorno</string>
     <string name="unknown_category">Categoria sconosciuta </string>
     <string name="sign_in_with_google">Accedi con Google</string>
+    <string name="google_signin_success">Accesso a Google effettuato con successo</string>
+    <string name="google_signin_failed">Accesso a Google non riuscito</string>
+    <string name="google_signin_error">Errore durante il recupero dei dati da Google</string>
+    <string name="firebase_signin_error">Accesso a Firebase non riuscito</string>
 </resources>

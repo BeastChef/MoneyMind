@@ -128,4 +128,9 @@
     <string name="balance_per_day">Saldo pro Tag</string>
     <string name="unknown_category">Unbekannte Kategorie</string>
     <string name="sign_in_with_google">Mit Google anmelden</string>
+    <string name="google_signin_success">Sie haben sich erfolgreich bei Google angemeldet</string>
+    <string name="google_signin_failed">Fehler bei der Google-Anmeldung</string>
+    <string name="google_signin_error">Fehler beim Abrufen der Daten von Google</string>
+    <string name="firebase_signin_error">Fehler bei der Anmeldung bei Firebase</string>
+
 </resources>

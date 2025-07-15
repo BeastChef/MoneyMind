@@ -92,4 +92,7 @@ class ExpenseViewModel(private val repository: ExpenseRepository) : ViewModel() 
     fun getExpensesBetweenDates(start: Long, end: Long): LiveData<List<Expense>> {
         return repository.getExpensesBetweenDates(start, end)
     }
+    fun getExpensesBetweenDates(startDate: Long, endDate: Long, type: String): LiveData<List<Expense>> {
+        return repository.getExpensesBetweenDates(startDate, endDate, type)
+    }
 }

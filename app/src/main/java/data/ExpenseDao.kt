@@ -72,4 +72,6 @@ interface ExpenseDao {
     // Запрос для получения расходов по категории и диапазону дат
     @Query("SELECT * FROM expenses WHERE date BETWEEN :startDate AND :endDate AND category = :category ORDER BY date DESC")
     fun getExpensesByDateAndCategory(startDate: Long, endDate: Long, category: String): LiveData<List<Expense>>
+    @Query("SELECT * FROM expenses WHERE date >= :startDate AND date <= :endDate AND type = :type ORDER BY date DESC")
+    fun getExpensesBetweenDates(startDate: Long, endDate: Long, type: String): LiveData<List<Expense>>
 }

@@ -64,7 +64,7 @@ class AddCustomCategoryActivity : BaseActivityK() {
         btnSave.setOnClickListener {
             val name = inputCategoryName.text.toString().trim()
             if (name.isEmpty()) {
-                Toast.makeText(this, "Введите название", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.enter_category_name), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -79,7 +79,7 @@ class AddCustomCategoryActivity : BaseActivityK() {
 
             lifecycleScope.launch {
                 viewModel.insertCustom(category)
-                Toast.makeText(this@AddCustomCategoryActivity, "Категория добавлена", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@AddCustomCategoryActivity, getString(R.string.category_added), Toast.LENGTH_SHORT).show()
                 setResult(RESULT_OK)
                 finish()
             }

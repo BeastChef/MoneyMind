@@ -103,8 +103,6 @@ public class MainActivity extends BaseActivityJ {
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
 
-
-
         // 🧠 Вот здесь вызываем обновление категорий
         DefaultCategoryInitializer.INSTANCE.updateCategoriesIfNeeded(this);
         DefaultCategoryInitializer.INSTANCE.updateNamesAsync(this);
@@ -138,7 +136,7 @@ public class MainActivity extends BaseActivityJ {
 
         topAppBar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_calendar) {
-                openDatePicker();
+                openDatePicker();  // Здесь вызываем метод для открытия календаря
                 return true;
             } else if (item.getItemId() == R.id.action_search) {
                 showSearchDialog();
@@ -146,6 +144,7 @@ public class MainActivity extends BaseActivityJ {
             }
             return false;
         });
+
 
         String[] filterOptions = getResources().getStringArray(R.array.filter_options);
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(
@@ -292,70 +291,72 @@ public class MainActivity extends BaseActivityJ {
 
     private void openDatePicker() {
         MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
-        builder.setTitleText(getString(R.string.select_period_title));
+        builder.setTitleText(getString(R.string.select_period_title));  // Устанавливаем заголовок для выбора периода
 
+        // Создаем и показываем MaterialDatePicker
         MaterialDatePicker<Pair<Long, Long>> picker = builder.build();
         picker.show(getSupportFragmentManager(), picker.toString());
 
-        // ✅ Пользователь нажал OK
+        // Пользователь выбрал диапазон дат
         picker.addOnPositiveButtonClickListener(selection -> {
             if (selection != null) {
                 customStartDate = selection.first;
                 customEndDate = selection.second;
-                customRangeActive = true;
-                updateFilteredData();
+                customRangeActive = true;  // Включаем пользовательский диапазон дат
+                updateFilteredData();  // Обновляем данные с учётом выбранных дат
             }
         });
 
-        // ✅ Пользователь нажал "Отмена"
+        // Пользователь отменил выбор
         picker.addOnNegativeButtonClickListener(dialog -> {
-            customRangeActive = false;
-            updateFilteredData(); // ← сбрасываем кастомный фильтр
+            customRangeActive = false;  // Отключаем пользовательский диапазон
+            updateFilteredData();  // Обновляем данные с учётом сброса фильтра
         });
 
-        // ✅ Пользователь тапнул вне календаря
+        // Пользователь закрыл окно, не выбрав даты
         picker.addOnCancelListener(dialog -> {
-            customRangeActive = false;
-            updateFilteredData(); // ← сбрасываем кастомный фильтр
+            customRangeActive = false;  // Сбрасываем флаг
+            updateFilteredData();  // Обновляем данные с учётом сброса фильтра
         });
     }
 
     private void updateFilteredData() {
         LiveData<List<Expense>> data;
-        boolean isExpense = selectedTypeFilter == R.id.filterExpenses;  // Проверяем, выбран ли фильтр "Расходы"
-        boolean isIncome = selectedTypeFilter == R.id.filterIncomes;    // Проверяем, выбран ли фильтр "Доходы"
+        boolean isExpense = selectedTypeFilter == R.id.filterExpenses;
+        boolean isIncome = selectedTypeFilter == R.id.filterIncomes;
 
-        // Если выбран произвольный диапазон дат
         if (customRangeActive) {
+            // Если выбран кастомный диапазон
             if (isExpense) {
-                // Фильтруем только "Расходы" за выбранный диапазон дат
-                data = viewModel.getExpensesByDateAndCategory(customStartDate, customEndDate, "expense");
+                data = viewModel.getExpensesBetweenDates(customStartDate, customEndDate, "expense");  // Фильтруем только по расходам
             } else if (isIncome) {
-                // Фильтруем только "Доходы" за выбранный диапазон дат
-                data = viewModel.getExpensesByDateAndCategory(customStartDate, customEndDate, "income");
+                data = viewModel.getExpensesBetweenDates(customStartDate, customEndDate, "income");  // Фильтруем только по доходам
             } else {
-                // Фильтруем все записи (и доходы, и расходы) за выбранный диапазон дат
-                data = viewModel.getExpensesBetween(customStartDate, customEndDate);
+                data = viewModel.getExpensesBetweenDates(customStartDate, customEndDate);  // Фильтруем по всем
             }
         } else {
-            // Если выбран стандартный фильтр по времени (например, последние 7 или 30 дней)
+            // Стандартная фильтрация по времени
             switch (selectedDateFilter) {
-                case 1: // Последние 7 дней
-                    data = isExpense ? viewModel.getLast7DaysExpensesOnly() : isIncome ? viewModel.getLast7DaysIncomes() : viewModel.getLast7DaysAll();
+                case 1:
+                    data = isExpense ? viewModel.getLast7DaysExpensesOnly()
+                            : isIncome ? viewModel.getLast7DaysIncomes()
+                            : viewModel.getLast7DaysAll();
                     break;
-                case 2: // Последние 30 дней
-                    data = isExpense ? viewModel.getLast30DaysExpensesOnly() : isIncome ? viewModel.getLast30DaysIncomes() : viewModel.getLast30DaysAll();
+                case 2:
+                    data = isExpense ? viewModel.getLast30DaysExpensesOnly()
+                            : isIncome ? viewModel.getLast30DaysIncomes()
+                            : viewModel.getLast30DaysAll();
                     break;
                 default:
-                    // Для всех других случаев (например, все расходы, все доходы и т.д.)
-                    data = isExpense ? viewModel.getAllExpensesOnly() : isIncome ? viewModel.getAllIncomes() : viewModel.getAllExpenses();
+                    data = isExpense ? viewModel.getAllExpensesOnly()
+                            : isIncome ? viewModel.getAllIncomes()
+                            : viewModel.getAllExpenses();
             }
         }
 
-        // Наблюдаем за изменениями данных и обновляем адаптер
         data.observe(this, expenses -> {
             adapter.setExpenseList(expenses);
-            updateSummaryCards(expenses);  // Обновляем суммарную информацию (Доходы, Расходы, Баланс)
+            updateSummaryCards(expenses);
         });
     }
 
@@ -378,14 +379,14 @@ public class MainActivity extends BaseActivityJ {
         EditText input = dialogView.findViewById(R.id.editSearchInput);
 
         builder.setView(dialogView)
-                .setTitle("Поиск")
-                .setPositiveButton("Найти", (dialog, which) -> {
+                .setTitle(getString(R.string.search))
+                .setPositiveButton(getString(R.string.search_button), (dialog, which) -> {
                     String query = input.getText().toString().trim();
                     if (!query.isEmpty()) {
                         viewModel.searchExpensesByTitleOrCategory(query).observe(this, expenses -> {
                             if (expenses == null || expenses.isEmpty()) {
-                                adapter.setExpenseList(List.of()); // Пустой список
-                                Toast.makeText(this, "По вашему запросу ничего не найдено", Toast.LENGTH_SHORT).show();
+                                adapter.setExpenseList(List.of());
+                                Toast.makeText(this, getString(R.string.no_data_found), Toast.LENGTH_SHORT).show();
                             } else {
                                 adapter.setExpenseList(expenses);
                                 updateSummaryCards(expenses);
@@ -393,9 +394,7 @@ public class MainActivity extends BaseActivityJ {
                         });
                     }
                 })
-                .setNegativeButton("Отмена", (dialog, which) -> {
-                    updateFilteredData(); // Сброс — возврат к фильтрации по времени
-                })
+                .setNegativeButton(getString(R.string.cancel), (dialog, which) -> updateFilteredData())
                 .show();
     }
 
@@ -403,10 +402,11 @@ public class MainActivity extends BaseActivityJ {
         String[] themes = {
                 getString(R.string.light_theme),
                 getString(R.string.dark_theme),
+
         };
 
         new AlertDialog.Builder(this)
-                .setTitle("Выберите тему")
+                .setTitle(getString(R.string.change_theme))
                 .setItems(themes, (dialog, which) -> {
                     switch (which) {
                         case 0:
@@ -448,30 +448,24 @@ public class MainActivity extends BaseActivityJ {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Обрабатываем результат входа через Google
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 if (account != null) {
-                    // Получаем креденшел для Firebase
                     AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
                     auth.signInWithCredential(credential)
                             .addOnCompleteListener(this, task1 -> {
                                 if (task1.isSuccessful()) {
-                                    // Успешный вход
                                     FirebaseUser user = auth.getCurrentUser();
-                                    Toast.makeText(MainActivity.this, "Вход через Google успешен", Toast.LENGTH_SHORT).show();
-                                    // Здесь можно обновить UI или сохранить данные пользователя
+                                    Toast.makeText(MainActivity.this, getString(R.string.google_signin_success), Toast.LENGTH_SHORT).show();
                                 } else {
-                                    // Ошибка входа через Google
-                                    Toast.makeText(MainActivity.this, "Ошибка входа через Google", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MainActivity.this, getString(R.string.google_signin_failed), Toast.LENGTH_SHORT).show();
                                 }
                             });
                 }
             } catch (ApiException e) {
-                // Ошибка при получении данных от Google
-                Toast.makeText(MainActivity.this, "Ошибка: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, getString(R.string.google_signin_error) + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
 

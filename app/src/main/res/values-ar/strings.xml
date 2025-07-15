@@ -129,4 +129,8 @@
     <string name="balance_per_day">الرصيد حسب الأيام</string>
     <string name="unknown_category">فئة غير معروفة </string>
     <string name="sign_in_with_google">تسجيل الدخول باستخدام جوجل</string>
+    <string name="google_signin_success">تم تسجيل الدخول إلى حساب Google بنجاح</string>
+    <string name="google_signin_failed">فشل تسجيل الدخول عبر Google</string>
+    <string name="google_signin_error">حدث خطأ أثناء استلام البيانات من Google</string>
+    <string name="firebase_signin_error">فشل تسجيل الدخول إلى Firebase</string>
 </resources>

@@ -128,4 +128,8 @@
     <string name="balance_per_day">Günlük bakiye</string>
     <string name="unknown_category">Bilinmeyen kategori </string>
     <string name="sign_in_with_google">Google ile giriş yapın</string>
+    <string name="google_signin_success">Google hesabına başarıyla giriş yapıldı</string>
+    <string name="google_signin_failed">Google ile giriş başarısız</string>
+    <string name="google_signin_error">Google dan veri alınırken bir hata oluştu</string>
+    <string name="firebase_signin_error">Firebase giriş hatası</string>
 </resources>

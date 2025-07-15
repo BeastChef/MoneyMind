@@ -128,4 +128,8 @@
     <string name="balance_per_day">日ごとの残高</string>
     <string name="unknown_category">不明なカテゴリ </string>
     <string name="sign_in_with_google">Googleでログイン</string>
+    <string name="google_signin_success">Googleアカウントへのサインインに成功しました</string>
+    <string name="google_signin_failed">Googleへのサインインに失敗しました</string>
+    <string name="google_signin_error">Googleからのデータ取得中にエラーが発生しました</string>
+    <string name="firebase_signin_error">Firebaseへのサインインに失敗しました</string>
 </resources>
