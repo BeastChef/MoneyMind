@@ -264,8 +264,9 @@ class ChartPagerAdapter(
 
                 val details = filtered.map {
                     val sign = if (it.type == "income") "+ " else "- "
-                    "• ${it.title} — $sign${it.amount} ₽"
+                    "• ${it.category}. ${it.title} : $sign${it.amount} "
                 }
+
 
                 AlertDialog.Builder(context)
                     .setTitle(label)

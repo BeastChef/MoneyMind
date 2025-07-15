@@ -54,5 +54,5 @@
         android:layout_height="1dp"
         android:background="#CCCCCC"
         android:layout_marginVertical="12dp" />
-    
+
 </LinearLayout>

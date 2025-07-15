@@ -322,33 +322,40 @@ public class MainActivity extends BaseActivityJ {
 
     private void updateFilteredData() {
         LiveData<List<Expense>> data;
-        boolean isExpense = selectedTypeFilter == R.id.filterExpenses;
-        boolean isIncome = selectedTypeFilter == R.id.filterIncomes;
+        boolean isExpense = selectedTypeFilter == R.id.filterExpenses;  // Проверяем, выбран ли фильтр "Расходы"
+        boolean isIncome = selectedTypeFilter == R.id.filterIncomes;    // Проверяем, выбран ли фильтр "Доходы"
 
+        // Если выбран произвольный диапазон дат
         if (customRangeActive) {
-            data = viewModel.getExpensesBetweenDates(customStartDate, customEndDate);
+            if (isExpense) {
+                // Фильтруем только "Расходы" за выбранный диапазон дат
+                data = viewModel.getExpensesByDateAndCategory(customStartDate, customEndDate, "expense");
+            } else if (isIncome) {
+                // Фильтруем только "Доходы" за выбранный диапазон дат
+                data = viewModel.getExpensesByDateAndCategory(customStartDate, customEndDate, "income");
+            } else {
+                // Фильтруем все записи (и доходы, и расходы) за выбранный диапазон дат
+                data = viewModel.getExpensesBetween(customStartDate, customEndDate);
+            }
         } else {
+            // Если выбран стандартный фильтр по времени (например, последние 7 или 30 дней)
             switch (selectedDateFilter) {
-                case 1:
-                    data = isExpense ? viewModel.getLast7DaysExpensesOnly()
-                            : isIncome ? viewModel.getLast7DaysIncomes()
-                            : viewModel.getLast7DaysAll();
+                case 1: // Последние 7 дней
+                    data = isExpense ? viewModel.getLast7DaysExpensesOnly() : isIncome ? viewModel.getLast7DaysIncomes() : viewModel.getLast7DaysAll();
                     break;
-                case 2:
-                    data = isExpense ? viewModel.getLast30DaysExpensesOnly()
-                            : isIncome ? viewModel.getLast30DaysIncomes()
-                            : viewModel.getLast30DaysAll();
+                case 2: // Последние 30 дней
+                    data = isExpense ? viewModel.getLast30DaysExpensesOnly() : isIncome ? viewModel.getLast30DaysIncomes() : viewModel.getLast30DaysAll();
                     break;
                 default:
-                    data = isExpense ? viewModel.getAllExpensesOnly()
-                            : isIncome ? viewModel.getAllIncomes()
-                            : viewModel.getAllExpenses();
+                    // Для всех других случаев (например, все расходы, все доходы и т.д.)
+                    data = isExpense ? viewModel.getAllExpensesOnly() : isIncome ? viewModel.getAllIncomes() : viewModel.getAllExpenses();
             }
         }
 
+        // Наблюдаем за изменениями данных и обновляем адаптер
         data.observe(this, expenses -> {
             adapter.setExpenseList(expenses);
-            updateSummaryCards(expenses);
+            updateSummaryCards(expenses);  // Обновляем суммарную информацию (Доходы, Расходы, Баланс)
         });
     }
 

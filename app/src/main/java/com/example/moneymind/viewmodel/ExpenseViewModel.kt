@@ -60,16 +60,25 @@ class ExpenseViewModel(private val repository: ExpenseRepository) : ViewModel() 
     fun getExpensesByExactDate(date: Long): LiveData<List<Expense>> {
         return repository.getExpensesByExactDate(date)
     }
+
     fun searchExpensesByTitle(query: String): LiveData<List<Expense>> {
         return repository.searchExpensesByTitle(query)
     }
+
+    // Функция для поиска по названию или категории
     fun searchExpensesByTitleOrCategory(query: String): LiveData<List<Expense>> {
         return repository.searchExpensesByTitleOrCategory(query)
     }
+
+    // Метод для получения расходов по диапазону дат и категории
+    fun getExpensesByDateAndCategory(startDate: Long, endDate: Long, category: String): LiveData<List<Expense>> {
+        return repository.getExpensesByDateAndCategory(startDate, endDate, category)
+    }
+
     private fun daysAgo(days: Int): Long {
         return System.currentTimeMillis() - days * 24L * 60 * 60 * 1000
-
     }
+
     fun getExpensesLast7Days(): LiveData<List<Expense>> {
         val sevenDaysAgo = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000
         return repository.getExpensesBetweenDates(sevenDaysAgo, System.currentTimeMillis())
@@ -79,6 +88,7 @@ class ExpenseViewModel(private val repository: ExpenseRepository) : ViewModel() 
         val thirtyDaysAgo = System.currentTimeMillis() - 30 * 24 * 60 * 60 * 1000
         return repository.getExpensesBetweenDates(thirtyDaysAgo, System.currentTimeMillis())
     }
+
     fun getExpensesBetweenDates(start: Long, end: Long): LiveData<List<Expense>> {
         return repository.getExpensesBetweenDates(start, end)
     }

@@ -230,7 +230,7 @@ public class StatsActivity extends BaseActivityJ {
             String shortDate = sdfShort.format(new Date(exp.getDate()));
             if (shortDate.equals(label)) {
                 String prefix = exp.getType().equals("income") ? "+ " : "- ";
-                details.add("• " + exp.getTitle() + " — " + prefix + exp.getAmount() + " ₽");
+                details.add(exp.getCategory()+". " + exp.getTitle() +" : " + prefix + exp.getAmount());
             }
         }
 
