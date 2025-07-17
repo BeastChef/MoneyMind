@@ -69,7 +69,7 @@ public class MainActivity extends BaseActivityJ {
 
     private ExpenseViewModel viewModel;
     private ExpenseAdapter adapter;
-
+    private TextView accountStatusText;
     private TextView incomeAmountText, expenseAmountText, balanceAmountText;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -92,6 +92,15 @@ public class MainActivity extends BaseActivityJ {
         setContentView(R.layout.activity_main);
         // Инициализация FirebaseAuth
         auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() == null) {
+            auth.signInAnonymously()
+                    .addOnCompleteListener(task -> {
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(this, "Ошибка при входе как гость", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+
 
 // Настройка GoogleSignInOptions
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -253,6 +262,35 @@ public class MainActivity extends BaseActivityJ {
 
 // Находим кнопку для входа через Google внутри headerView
         Button googleSignInButton = navView.findViewById(R.id.googleSignInButton);
+        accountStatusText = navView.findViewById(R.id.accountStatusText);
+        updateAccountStatus(accountStatusText);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            if (user.isAnonymous()) {
+                accountStatusText.setText("Вы вошли как: Гость");
+            } else {
+                accountStatusText.setText("Вы вошли как: " + user.getDisplayName());
+            }
+        }
+        Button logoutButton = navView.findViewById(R.id.btnLogout);
+        logoutButton.setOnClickListener(v -> {
+            googleSignInClient.signOut().addOnCompleteListener(task -> {
+                FirebaseAuth.getInstance().signOut();
+                FirebaseAuth.getInstance().signInAnonymously()
+                        .addOnCompleteListener(authTask -> {
+                            if (authTask.isSuccessful()) {
+                                Toast.makeText(this, "Вы вышли. Вход как гость.", Toast.LENGTH_SHORT).show();
+                                updateAccountStatus(accountStatusText); // 🟢 обновляем текст
+                                recreate(); // 🔄 перезапуск для обновления UI
+                            } else {
+                                Toast.makeText(this, "Ошибка выхода", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            });
+        });
+
+
         googleSignInButton.setOnClickListener(v -> {
             Intent signInIntent = googleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -443,6 +481,18 @@ public class MainActivity extends BaseActivityJ {
         startActivity(refresh);
         finish();
     }
+    private void updateAccountStatus(TextView accountStatusText) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            if (user.isAnonymous()) {
+                accountStatusText.setText("Вы вошли как: Гость");
+            } else {
+                accountStatusText.setText("Вы вошли как: " + user.getDisplayName());
+            }
+        } else {
+            accountStatusText.setText("Пользователь не найден");
+        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -459,6 +509,10 @@ public class MainActivity extends BaseActivityJ {
                                 if (task1.isSuccessful()) {
                                     FirebaseUser user = auth.getCurrentUser();
                                     Toast.makeText(MainActivity.this, getString(R.string.google_signin_success), Toast.LENGTH_SHORT).show();
+
+                                    // 🔽 Обновляем надпись "Вы вошли как ..."
+                                    updateAccountStatus(accountStatusText);
+
                                 } else {
                                     Toast.makeText(MainActivity.this, getString(R.string.google_signin_failed), Toast.LENGTH_SHORT).show();
                                 }

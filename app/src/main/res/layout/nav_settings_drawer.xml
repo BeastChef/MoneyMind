@@ -17,6 +17,17 @@
         android:textSize="18sp"
         android:paddingBottom="12dp" />
 
+    <!-- 🧾 Статус аккаунта -->
+    <TextView
+        android:id="@+id/accountStatusText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Вы вошли как: ..."
+        android:padding="8dp"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginBottom="8dp" />
+
     <!-- 🌍 Кнопка смены языка -->
     <Button
         android:id="@+id/btnChangeLanguage"
@@ -48,6 +59,17 @@
         android:textColor="?attr/colorOnPrimary"
         android:padding="8dp"
         android:layout_marginBottom="12dp" />
+
+    <!-- 🚪 Кнопка выхода -->
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Выйти"
+        android:layout_marginTop="4dp"
+        android:backgroundTint="@color/expense_color"
+        android:textColor="@android:color/white"
+        android:padding="8dp" />
 
     <View
         android:layout_width="match_parent"
