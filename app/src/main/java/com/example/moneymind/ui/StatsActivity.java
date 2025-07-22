@@ -1,5 +1,6 @@
 package com.example.moneymind.ui;
-
+import com.example.moneymind.data.ExpenseRepository;
+import com.example.moneymind.data.CategoryRepository;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
@@ -19,6 +20,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
+
 
 import com.example.moneymind.MoneyMindApp;
 import com.example.moneymind.R;
@@ -88,8 +90,12 @@ public class StatsActivity extends BaseActivityJ {
 
         viewModel = new ViewModelProvider(
                 this,
-                new ExpenseViewModelFactory(((MoneyMindApp) getApplication()).getRepository())
+                new ExpenseViewModelFactory(
+                        ((MoneyMindApp) getApplication()).getExpenseRepositoryInstance(),  // Используем новый геттер
+                        ((MoneyMindApp) getApplication()).getCategoryRepositoryInstance()  // Используем новый геттер
+                )
         ).get(ExpenseViewModel.class);
+
     }
 
     private void disableTooltips() {

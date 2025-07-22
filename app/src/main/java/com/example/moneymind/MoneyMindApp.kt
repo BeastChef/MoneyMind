@@ -8,26 +8,37 @@ import com.example.moneymind.data.CategoryRepository
 import com.example.moneymind.data.ExpenseRepository
 import com.example.moneymind.utils.DefaultCategoryInitializer
 import com.example.moneymind.utils.LocaleHelper
+import com.google.firebase.FirebaseApp
 
 class MoneyMindApp : Application() {
+
 
     val database: AppDatabase by lazy {
         AppDatabase.getDatabase(this)
     }
 
-    val repository: ExpenseRepository by lazy {
+    val expenseRepository: ExpenseRepository by lazy {
         ExpenseRepository(database.expenseDao())
     }
 
     val categoryRepository: CategoryRepository by lazy {
-        CategoryRepository(
-            database.categoryDao(),
-            database.customCategoryDao()
-        )
+        CategoryRepository(database.categoryDao(), database.customCategoryDao())
+    }
+
+    // Изменяем имена геттеров для предотвращения неоднозначности
+    fun getExpenseRepositoryInstance(): ExpenseRepository {
+        return expenseRepository
+    }
+
+    fun getCategoryRepositoryInstance(): CategoryRepository {
+        return categoryRepository
     }
 
     override fun onCreate() {
         super.onCreate()
+
+        // Инициализация Firebase
+        FirebaseApp.initializeApp(this)
 
         // 🌍 Устанавливаем язык один раз
         val prefs = getSharedPreferences("settings", MODE_PRIVATE)

@@ -29,8 +29,7 @@ class AddExpenseActivity : BaseActivityK() {
         private const val EDIT_CATEGORY_REQUEST_CODE = 1001
     }
 
-    // 🔐 Firebase
-    private lateinit var auth: FirebaseAuth
+
 
     private lateinit var titleInput: TextInputEditText
     private lateinit var amountInput: TextInputEditText
@@ -53,16 +52,18 @@ class AddExpenseActivity : BaseActivityK() {
     private var isFromMainTab: Boolean = false
 
     private val viewModel: ExpenseViewModel by viewModels {
-        ExpenseViewModelFactory((application as MoneyMindApp).repository)
+        ExpenseViewModelFactory(
+            (application as MoneyMindApp).expenseRepository,  // передаем ExpenseRepository
+            (application as MoneyMindApp).categoryRepository // передаем CategoryRepository
+        )
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         super.onCreate(savedInstanceState)
 
-        // 🔐 Инициализация Firebase
-        auth = FirebaseAuth.getInstance()
-        signInAnonymously()
+
 
         isFromMainTab = intent.getBooleanExtra("from_main_tab", false)
         setContentView(if (isFromMainTab) R.layout.activity_edit_expense_simple else R.layout.activity_add_expense)
@@ -170,16 +171,7 @@ class AddExpenseActivity : BaseActivityK() {
         }
     }
 
-    private fun signInAnonymously() {
-        if (auth.currentUser == null) {
-            auth.signInAnonymously()
-                .addOnCompleteListener(this) { task ->
-                    if (!task.isSuccessful) {
-                        Toast.makeText(this, getString(R.string.firebase_signin_error), Toast.LENGTH_SHORT).show()
-                    }
-                }
-        }
-    }
+
 
     private fun showCategoryDetails() {
         categoryLayout?.visibility = View.VISIBLE

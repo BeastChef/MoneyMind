@@ -71,4 +71,5 @@ class CategoryRepository(
     suspend fun getCustomCategoriesNow(isIncome: Boolean): List<CustomCategoryEntity> {
         return customCategoryDao.getAllNow(isIncome)
     }
+
 }

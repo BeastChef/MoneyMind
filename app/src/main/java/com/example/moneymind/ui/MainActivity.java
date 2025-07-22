@@ -37,8 +37,11 @@ import com.example.moneymind.MoneyMindApp;
 import com.example.moneymind.R;
 import com.example.moneymind.data.AppDatabase;
 import com.example.moneymind.data.Category;
+import com.example.moneymind.data.CategoryRepository;
 import com.example.moneymind.data.Expense;
+import com.example.moneymind.data.ExpenseRepository;
 import com.example.moneymind.utils.DefaultCategoryInitializer;
+import com.example.moneymind.utils.FirestoreHelper;
 import com.example.moneymind.utils.LocaleHelper;
 import com.example.moneymind.utils.OnSwipeTouchListener;
 import com.example.moneymind.viewmodel.ExpenseViewModel;
@@ -62,6 +65,7 @@ import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends BaseActivityJ {
+    private ExpenseViewModel expenseViewModel;
     private FirebaseAuth auth;
     private GoogleSignInClient googleSignInClient;
     private static final int RC_SIGN_IN = 1002;
@@ -90,16 +94,12 @@ public class MainActivity extends BaseActivityJ {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        // Инициализация FirebaseAuth
-        auth = FirebaseAuth.getInstance();
-        if (auth.getCurrentUser() == null) {
-            auth.signInAnonymously()
-                    .addOnCompleteListener(task -> {
-                        if (!task.isSuccessful()) {
-                            Toast.makeText(this, "Ошибка при входе как гость", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }
+
+
+
+
+
+
 
 
 // Настройка GoogleSignInOptions
@@ -127,9 +127,27 @@ public class MainActivity extends BaseActivityJ {
             return insets;
         });
 
-        viewModel = new ViewModelProvider(this,
-                new ExpenseViewModelFactory(((MoneyMindApp) getApplication()).getRepository()))
-                .get(ExpenseViewModel.class);
+        ExpenseRepository expenseRepository = new ExpenseRepository(AppDatabase.getDatabase(this).expenseDao());
+        CategoryRepository categoryRepository = new CategoryRepository(AppDatabase.getDatabase(this).categoryDao(), AppDatabase.getDatabase(this).customCategoryDao());
+        ExpenseViewModelFactory factory = new ExpenseViewModelFactory(expenseRepository, categoryRepository);
+        expenseViewModel = new ViewModelProvider(this, factory).get(ExpenseViewModel.class);
+        viewModel = expenseViewModel;  // 🔥 Делаем так, чтобы viewModel не была null
+        // Инициализация FirebaseAuth
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser != null && !currentUser.isAnonymous()) {
+            expenseViewModel.restoreFromFirebase();  // 🔥 авто-загрузка из Firestore
+        }
+        if (auth.getCurrentUser() == null) {
+            auth.signInAnonymously()
+                    .addOnCompleteListener(task -> {
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(this, "Ошибка при входе как гость", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+        // Синхронизация данных при старте
+        synchronizeData();
 
         topAppBar = findViewById(R.id.topAppBar);
         filterSpinner = findViewById(R.id.filterSpinner);
@@ -326,6 +344,40 @@ public class MainActivity extends BaseActivityJ {
 
         updateFilteredData();
     }
+    // Метод синхронизации данных с Firestore
+    private void synchronizeData() {
+        // Загружаем расходы из Firestore
+        FirestoreHelper.loadExpensesFromFirestore(new FirestoreHelper.ExpenseDataCallback() {
+            @Override
+            public void onExpensesLoaded(List<Expense> expenses) {
+                // Обновляем локальную базу данными из Firestore
+                for (Expense expense : expenses) {
+                    expenseViewModel.insertExpense(expense); // Сохраняем данные в локальную базу
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(MainActivity.this, "Ошибка загрузки расходов", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Загружаем категории из Firestore
+        FirestoreHelper.loadCategoriesFromFirestore(new FirestoreHelper.CategoryDataCallback() {
+            @Override
+            public void onCategoriesLoaded(List<Category> categories) {
+                // Обновляем локальную базу данными из Firestore
+                for (Category category : categories) {
+                    expenseViewModel.insertCategory(category); // Сохраняем категории в локальную базу
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(MainActivity.this, "Ошибка загрузки категорий", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     private void openDatePicker() {
         MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
@@ -366,9 +418,9 @@ public class MainActivity extends BaseActivityJ {
         if (customRangeActive) {
             // Если выбран кастомный диапазон
             if (isExpense) {
-                data = viewModel.getExpensesBetweenDates(customStartDate, customEndDate, "expense");  // Фильтруем только по расходам
+                data = viewModel.getExpensesBetweenDates(customStartDate, customEndDate);  // Фильтруем только по расходам
             } else if (isIncome) {
-                data = viewModel.getExpensesBetweenDates(customStartDate, customEndDate, "income");  // Фильтруем только по доходам
+                data = viewModel.getExpensesBetweenDates(customStartDate, customEndDate);  // Фильтруем только по доходам
             } else {
                 data = viewModel.getExpensesBetweenDates(customStartDate, customEndDate);  // Фильтруем по всем
             }
@@ -513,6 +565,9 @@ public class MainActivity extends BaseActivityJ {
                                     // 🔽 Обновляем надпись "Вы вошли как ..."
                                     updateAccountStatus(accountStatusText);
 
+                                    // 🔄 Переносим данные из guest в текущий аккаунт
+                                    FirestoreHelper.copyDataBetweenUsers("guest", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                    expenseViewModel.restoreFromFirebase();
                                 } else {
                                     Toast.makeText(MainActivity.this, getString(R.string.google_signin_failed), Toast.LENGTH_SHORT).show();
                                 }
