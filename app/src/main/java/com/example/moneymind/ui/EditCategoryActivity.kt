@@ -15,6 +15,7 @@ import com.example.moneymind.data.Category
 import com.example.moneymind.data.CategoryRepository
 import com.example.moneymind.model.CustomCategoryEntity
 import com.example.moneymind.ui.adapter.IconAdapter
+import com.example.moneymind.utils.FirestoreHelper
 import com.example.moneymind.viewmodel.CategoryViewModel
 import com.example.moneymind.viewmodel.CategoryViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -122,7 +123,26 @@ class EditCategoryActivity : BaseActivityK() {
                 .setTitle(getString(R.string.delete_category))
                 .setMessage(getString(R.string.delete_category_message))
                 .setPositiveButton(getString(R.string.delete)) { _, _ ->
-                    // Действия при удалении
+                    lifecycleScope.launch {
+                        if (isCustom && categoryToEdit != null) {
+                            // Удаляем кастомную категорию
+                            viewModel.deleteCustom(categoryToEdit!!)
+                            Toast.makeText(this@EditCategoryActivity, getString(R.string.category_deleted), Toast.LENGTH_SHORT).show()
+                        } else if (categoryDefault != null) {
+                            // Удаляем дефолтную категорию
+                            viewModel.deleteCategory(categoryDefault!!)
+                            Toast.makeText(this@EditCategoryActivity, getString(R.string.category_deleted), Toast.LENGTH_SHORT).show()
+                        }
+
+                        // Перенаправляем пользователя в нужную активность
+                        val intent = if (isIncome) {
+                            Intent(this@EditCategoryActivity, ChooseIncomeCategoryActivity::class.java) // Если доход, то в раздел доходов
+                        } else {
+                            Intent(this@EditCategoryActivity, ChooseExpenseCategoryActivity::class.java) // Если расход, то в раздел расходов
+                        }
+                        startActivity(intent)
+                        finish() // Закрываем текущую активность
+                    }
                 }
                 .setNegativeButton(getString(R.string.cancel), null)
                 .show()

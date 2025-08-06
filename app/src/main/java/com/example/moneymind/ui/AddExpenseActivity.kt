@@ -12,6 +12,7 @@ import com.example.moneymind.MoneyMindApp
 import com.example.moneymind.R
 import com.example.moneymind.data.Expense
 import com.example.moneymind.utils.CategoryColorHelper
+import com.example.moneymind.utils.FirestoreHelper
 import com.example.moneymind.viewmodel.ExpenseViewModel
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
@@ -165,6 +166,7 @@ class AddExpenseActivity : BaseActivityK() {
                 } else {
                     viewModel.insert(expense)
                     Snackbar.make(saveButton, getString(R.string.saved), Snackbar.LENGTH_SHORT).show()
+                    FirestoreHelper.saveExpenseToFirestore(expense)
                 }
                 finish()
             }

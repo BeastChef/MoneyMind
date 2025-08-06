@@ -1,11 +1,14 @@
 package com.example.moneymind.ui;
 
+import static android.content.ContentValues.TAG;
+
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -59,6 +62,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -95,13 +101,6 @@ public class MainActivity extends BaseActivityJ {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-
-
-
-
-
-
-
 // Настройка GoogleSignInOptions
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))  // Токен из Firebase Console
@@ -110,7 +109,6 @@ public class MainActivity extends BaseActivityJ {
 
 // Инициализация GoogleSignInClient
         googleSignInClient = GoogleSignIn.getClient(this, gso);
-
 
         // 🧠 Вот здесь вызываем обновление категорий
         DefaultCategoryInitializer.INSTANCE.updateCategoriesIfNeeded(this);
@@ -127,27 +125,29 @@ public class MainActivity extends BaseActivityJ {
             return insets;
         });
 
+        // Инициализация FirebaseAuth
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser(); // Проверяем, авторизован ли пользователь
+
+        if (currentUser == null) {
+            // Пользователь не авторизован, продолжаем в режиме гостя
+            setupUI(); // Инициализация UI для гостевого пользователя
+        } else {
+            // Пользователь авторизован, выполняем синхронизацию данных с Firebase
+            initializeEverything(); // Синхронизация данных
+        }
+
+        // Слушатели и UI элементы
+        setupUI(); // Инициализация UI, которая теперь также зависит от состояния пользователя
+
+    }
+    private void setupUI() {
+        // ✅ ViewModel
         ExpenseRepository expenseRepository = new ExpenseRepository(AppDatabase.getDatabase(this).expenseDao());
         CategoryRepository categoryRepository = new CategoryRepository(AppDatabase.getDatabase(this).categoryDao(), AppDatabase.getDatabase(this).customCategoryDao());
         ExpenseViewModelFactory factory = new ExpenseViewModelFactory(expenseRepository, categoryRepository);
         expenseViewModel = new ViewModelProvider(this, factory).get(ExpenseViewModel.class);
         viewModel = expenseViewModel;  // 🔥 Делаем так, чтобы viewModel не была null
-        // Инициализация FirebaseAuth
-        auth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if (currentUser != null && !currentUser.isAnonymous()) {
-            expenseViewModel.restoreFromFirebase();  // 🔥 авто-загрузка из Firestore
-        }
-        if (auth.getCurrentUser() == null) {
-            auth.signInAnonymously()
-                    .addOnCompleteListener(task -> {
-                        if (!task.isSuccessful()) {
-                            Toast.makeText(this, "Ошибка при входе как гость", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }
-        // Синхронизация данных при старте
-        synchronizeData();
 
         topAppBar = findViewById(R.id.topAppBar);
         filterSpinner = findViewById(R.id.filterSpinner);
@@ -171,7 +171,6 @@ public class MainActivity extends BaseActivityJ {
             }
             return false;
         });
-
 
         String[] filterOptions = getResources().getStringArray(R.array.filter_options);
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(
@@ -308,7 +307,6 @@ public class MainActivity extends BaseActivityJ {
             });
         });
 
-
         googleSignInButton.setOnClickListener(v -> {
             Intent signInIntent = googleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -343,41 +341,58 @@ public class MainActivity extends BaseActivityJ {
         });
 
         updateFilteredData();
+
     }
     // Метод синхронизации данных с Firestore
-    private void synchronizeData() {
-        // Загружаем расходы из Firestore
-        FirestoreHelper.loadExpensesFromFirestore(new FirestoreHelper.ExpenseDataCallback() {
-            @Override
-            public void onExpensesLoaded(List<Expense> expenses) {
-                // Обновляем локальную базу данными из Firestore
-                for (Expense expense : expenses) {
-                    expenseViewModel.insertExpense(expense); // Сохраняем данные в локальную базу
-                }
-            }
+    private void initializeEverything() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            // Если пользователь авторизован, синхронизируем данные
+            synchronizeData();  // Ты можешь использовать свою логику синхронизации данных
+        }
+    }
 
-            @Override
-            public void onError(Exception e) {
-                Toast.makeText(MainActivity.this, "Ошибка загрузки расходов", Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void synchronizeData() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            return; // Пользователь не авторизован
+        }
+
+// Сохраняем данные пользователя в Firestore (email, баланс, категории)
+        FirestoreHelper.saveUserDataToFirestore(currentUser.getUid(), currentUser.getEmail());  // Данные о пользователе
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = currentUser.getUid();
+
+        // Загружаем расходы из Firestore
+        db.collection("users").document(userId).collection("expenses")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        Expense expense = document.toObject(Expense.class);
+                        // Сохраняем данные в локальную базу
+                        expenseViewModel.insertExpense(expense);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Error loading expenses", e);
+                });
 
         // Загружаем категории из Firestore
-        FirestoreHelper.loadCategoriesFromFirestore(new FirestoreHelper.CategoryDataCallback() {
-            @Override
-            public void onCategoriesLoaded(List<Category> categories) {
-                // Обновляем локальную базу данными из Firestore
-                for (Category category : categories) {
-                    expenseViewModel.insertCategory(category); // Сохраняем категории в локальную базу
-                }
-            }
-
-            @Override
-            public void onError(Exception e) {
-                Toast.makeText(MainActivity.this, "Ошибка загрузки категорий", Toast.LENGTH_SHORT).show();
-            }
-        });
+        db.collection("users").document(userId).collection("categories")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        Category category = document.toObject(Category.class);
+                        // Сохраняем категории в локальную базу
+                        expenseViewModel.insertCategory(category);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Error loading categories", e);
+                });
     }
+
 
     private void openDatePicker() {
         MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
@@ -561,13 +576,17 @@ public class MainActivity extends BaseActivityJ {
                                 if (task1.isSuccessful()) {
                                     FirebaseUser user = auth.getCurrentUser();
                                     Toast.makeText(MainActivity.this, getString(R.string.google_signin_success), Toast.LENGTH_SHORT).show();
-
-                                    // 🔽 Обновляем надпись "Вы вошли как ..."
                                     updateAccountStatus(accountStatusText);
 
-                                    // 🔄 Переносим данные из guest в текущий аккаунт
-                                    FirestoreHelper.copyDataBetweenUsers("guest", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                                    expenseViewModel.restoreFromFirebase();
+                                    // Сохраняем данные пользователя в Firestore
+                                    FirestoreHelper.saveUserDataToFirestore(user.getUid(), user.getEmail());
+
+                                    // Восстанавливаем данные из предыдущего аккаунта (гостевого)
+                                    String fromUid = "guest"; // Можно также использовать UID гостевого пользователя
+                                    FirestoreHelper.checkAndRestoreData(fromUid); // Восстанавливаем данные
+
+                                    // Загружаем данные пользователя из Firestore после восстановления
+                                    expenseViewModel.restoreFromFirebase();  // Загрузить данные для расходов
                                 } else {
                                     Toast.makeText(MainActivity.this, getString(R.string.google_signin_failed), Toast.LENGTH_SHORT).show();
                                 }
@@ -577,7 +596,6 @@ public class MainActivity extends BaseActivityJ {
                 Toast.makeText(MainActivity.this, getString(R.string.google_signin_error) + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
-
         // Обработка результата выбора категории (оставь как есть)
         if (requestCode == REQUEST_CHOOSE_CATEGORY && resultCode == RESULT_OK && data != null) {
             int categoryId = data.getIntExtra("selected_category_id", -1);

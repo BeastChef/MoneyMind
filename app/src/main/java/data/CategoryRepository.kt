@@ -60,6 +60,10 @@ class CategoryRepository(
         customCategoryDao.update(category)
     }
 
+    suspend fun deleteCustom(category: CustomCategoryEntity) {
+        customCategoryDao.delete(category)
+    }
+
     suspend fun deleteCustomById(id: Int) {
         customCategoryDao.deleteById(id)
     }
@@ -71,5 +75,4 @@ class CategoryRepository(
     suspend fun getCustomCategoriesNow(isIncome: Boolean): List<CustomCategoryEntity> {
         return customCategoryDao.getAllNow(isIncome)
     }
-
 }

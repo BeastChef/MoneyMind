@@ -12,7 +12,6 @@ import com.google.firebase.FirebaseApp
 
 class MoneyMindApp : Application() {
 
-
     val database: AppDatabase by lazy {
         AppDatabase.getDatabase(this)
     }

@@ -35,6 +35,9 @@ object DefaultCategoryInitializer {
                 // Добавляем новые дефолтные категории на нужном языке
                 dao.insertAll(getDefaultCategories(context.resources))
 
+                // Сохраняем дефолтные категории в Firestore
+                FirestoreHelper.saveDefaultCategoriesToFirestore(context)
+
                 // Сохраняем текущий язык
                 prefs.edit().putString(KEY_LAST_LANG, currentLang).apply()
             }
@@ -90,8 +93,8 @@ object DefaultCategoryInitializer {
             dao.updateAll(updated)
         }
     }
-
-    private fun getDefaultCategories(res: Resources): List<Category> {
+    @JvmStatic
+    fun getDefaultCategories(res: Resources): List<Category> {
         return listOf(
             // Доходы
             Category(0, res.getString(R.string.category_salary), "ic_salary", R.drawable.ic_salary, true),
@@ -104,7 +107,6 @@ object DefaultCategoryInitializer {
             Category(0, res.getString(R.string.category_medical), "ic_medical", R.drawable.ic_medical, false),
             Category(0, res.getString(R.string.category_shopping), "ic_shopping", R.drawable.ic_shopping, false),
             Category(0, res.getString(R.string.category_home), "ic_myhome", R.drawable.ic_myhome, false),
-            Category(0, res.getString(R.string.category_gift), "ic_gift", R.drawable.ic_gift, false),
             Category(0, res.getString(R.string.category_entertainment), "ic_entertainment", R.drawable.ic_entertainment, false)
         )
     }

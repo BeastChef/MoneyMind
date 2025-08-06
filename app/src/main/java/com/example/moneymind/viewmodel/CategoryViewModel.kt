@@ -11,7 +11,6 @@ class CategoryViewModel(
 ) : ViewModel() {
 
     // ---------- Обычные (дефолтные) категории ----------
-
     val allCategories: LiveData<List<Category>> = repository.allCategories
 
     fun insert(category: Category) = viewModelScope.launch {
@@ -39,7 +38,6 @@ class CategoryViewModel(
     }
 
     // ---------- Кастомные категории (CustomCategoryEntity) ----------
-
     fun insertCustom(category: CustomCategoryEntity) = viewModelScope.launch {
         repository.insertCustom(category)
     }
@@ -50,6 +48,20 @@ class CategoryViewModel(
 
     fun deleteCustomById(id: Int) = viewModelScope.launch {
         repository.deleteCustomById(id)
+    }
+
+    // Удаляем кастомную категорию
+    fun deleteCustom(category: CustomCategoryEntity) = viewModelScope.launch {
+        repository.deleteCustom(category) // Вызываем репозиторий для удаления кастомной категории
+    }
+
+    // Универсальный метод для удаления категорий (и кастомных, и обычных)
+    fun deleteCategory(category: Any) = viewModelScope.launch {
+        when (category) {
+            is Category -> repository.delete(category) // Если это обычная категория
+            is CustomCategoryEntity -> repository.deleteCustom(category) // Если это кастомная категория
+            else -> throw IllegalArgumentException("Unsupported category type")
+        }
     }
 
     fun getCustomCategories(isIncome: Boolean): LiveData<List<CustomCategoryEntity>> {
@@ -68,3 +80,4 @@ class CategoryViewModelFactory(
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+

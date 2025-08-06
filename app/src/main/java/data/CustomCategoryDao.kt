@@ -26,4 +26,6 @@ interface CustomCategoryDao {
     // Удаление категории по ID
     @Query("DELETE FROM custom_categories WHERE id = :id")
     suspend fun deleteById(id: Int)
+    @Delete
+    suspend fun delete(category: CustomCategoryEntity)
 }

@@ -55,7 +55,6 @@
             android:layout_marginTop="?attr/actionBarSize">
 
 
-
             <!-- Вкладки "Свести / Доходы / Расходы" -->
             <RadioGroup
                 android:id="@+id/typeFilterGroup"
@@ -94,9 +93,15 @@
                 android:padding="16dp"
                 android:layout_marginTop="8dp">
 
-                <include layout="@layout/card_income" />
-                <include layout="@layout/card_expense" />
-                <include layout="@layout/card_balance" />
+                <include
+                    android:id="@+id/includeIncomeCard"
+                    layout="@layout/card_income" />
+                <include
+                    android:id="@+id/includeExpenseCard"
+                    layout="@layout/card_expense" />
+                <include
+                    android:id="@+id/includeBalanceCard"
+                    layout="@layout/card_balance" />
             </LinearLayout>
 
             <!-- Список -->

@@ -1,4 +1,6 @@
 package com.example.moneymind.viewmodel
+
+import android.util.Log
 import com.example.moneymind.utils.FirestoreHelper
 import androidx.lifecycle.*
 import com.example.moneymind.data.Category
@@ -29,7 +31,6 @@ class ExpenseViewModel(
         expenseRepository.update(expense)
         FirestoreHelper.updateExpenseInFirestore(expense)  // 🔥 сохраняем в Firestore
     }
-
 
     fun delete(expense: Expense) = viewModelScope.launch {
         expenseRepository.delete(expense)
@@ -82,11 +83,13 @@ class ExpenseViewModel(
     fun insertExpense(expense: Expense) = viewModelScope.launch {
         expenseRepository.insert(expense)
         FirestoreHelper.saveExpenseToFirestore(expense)
+        Log.d("Firestore", "Saving expense and category to Firestore...");
     }
 
     fun insertCategory(category: Category) = viewModelScope.launch {
         categoryRepository.insert(category)
         FirestoreHelper.saveCategoryToFirestore(category)
+        Log.d("Firestore", "Saving expense and category to Firestore...");
     }
 
     // Метод для получения всех расходов и категорий
@@ -107,8 +110,43 @@ class ExpenseViewModel(
     fun getExpensesBetweenDates(startDate: Long, endDate: Long): LiveData<List<Expense>> {
         return expenseRepository.getExpensesBetweenDates(startDate, endDate)
     }
+
+    // Метод восстановления данных с Firebase
     @JvmOverloads
     fun restoreFromFirebase() {
+        FirestoreHelper.loadCategoriesFromFirestore(object : FirestoreHelper.CategoryDataCallback {
+            override fun onCategoriesLoaded(categories: List<Category>) {
+                viewModelScope.launch {
+                    for (category in categories) {
+                        categoryRepository.insert(category)
+                    }
+                }
+            }
+
+            override fun onIncomeCategoriesLoaded(incomeCategories: List<Category>) {
+                // Обработать доходные категории
+                viewModelScope.launch {
+                    for (category in incomeCategories) {
+                        categoryRepository.insert(category)  // Вставляем доходные категории
+                    }
+                }
+            }
+
+            override fun onExpenseCategoriesLoaded(expenseCategories: List<Category>) {
+                // Обработать расходные категории
+                viewModelScope.launch {
+                    for (category in expenseCategories) {
+                        categoryRepository.insert(category)  // Вставляем расходные категории
+                    }
+                }
+            }
+
+            override fun onError(e: Exception) {
+                // Обработать ошибку
+                Log.e("FirestoreHelper", "Error loading categories: ${e.message}")
+            }
+        })
+
         FirestoreHelper.loadExpensesFromFirestore(object : FirestoreHelper.ExpenseDataCallback {
             override fun onExpensesLoaded(expenses: List<Expense>) {
                 viewModelScope.launch {
@@ -119,22 +157,10 @@ class ExpenseViewModel(
             }
 
             override fun onError(e: Exception) {
-                // Обработка ошибки
-            }
-        })
-
-        FirestoreHelper.loadCategoriesFromFirestore(object : FirestoreHelper.CategoryDataCallback {
-            override fun onCategoriesLoaded(categories: List<Category>) {
-                viewModelScope.launch {
-                    for (category in categories) {
-                        categoryRepository.insert(category)
-                    }
-                }
-            }
-
-            override fun onError(e: Exception) {
-                // Обработка ошибки
+                Log.e("FirestoreHelper", "Error loading expenses: ${e.message}")
             }
         })
     }
+
+
 }

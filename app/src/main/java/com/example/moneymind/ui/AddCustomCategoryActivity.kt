@@ -12,6 +12,7 @@ import com.example.moneymind.data.AppDatabase
 import com.example.moneymind.data.CategoryRepository
 import com.example.moneymind.model.CustomCategoryEntity
 import com.example.moneymind.ui.adapter.IconAdapter
+import com.example.moneymind.utils.FirestoreHelper
 import com.example.moneymind.viewmodel.CategoryViewModel
 import com.example.moneymind.viewmodel.CategoryViewModelFactory
 import com.google.android.material.textfield.TextInputEditText
@@ -79,8 +80,10 @@ class AddCustomCategoryActivity : BaseActivityK() {
 
             lifecycleScope.launch {
                 viewModel.insertCustom(category)
+                FirestoreHelper.saveCustomCategoryToFirestore(category)
                 Toast.makeText(this@AddCustomCategoryActivity, getString(R.string.category_added), Toast.LENGTH_SHORT).show()
                 setResult(RESULT_OK)
+
                 finish()
             }
         }
