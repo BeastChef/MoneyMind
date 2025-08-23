@@ -19,7 +19,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.auth.FirebaseAuth
+
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*

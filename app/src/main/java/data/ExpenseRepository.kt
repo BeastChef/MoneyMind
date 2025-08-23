@@ -1,7 +1,7 @@
 package com.example.moneymind.data
 
 import androidx.lifecycle.LiveData
-import java.util.Calendar
+
 
 class ExpenseRepository(private val expenseDao: ExpenseDao) {
 
@@ -25,60 +25,33 @@ class ExpenseRepository(private val expenseDao: ExpenseDao) {
         return expenseDao.getIncomesFromDate(fromDate)
     }
 
-    fun getCategoryTotals(): LiveData<List<CategoryTotal>> {
-        return expenseDao.getCategoryTotals()
-    }
 
-    fun getCategoryTotalsOnly(): LiveData<List<CategoryTotal>> {
-        return expenseDao.getCategoryTotalsOnly()
-    }
 
-    fun getCategoryTotalsFromDateOnly(fromDate: Long): LiveData<List<CategoryTotal>> {
-        return expenseDao.getCategoryTotalsFromDateOnly(fromDate)
-    }
+
+
+
 
     fun getExpenseById(id: Int): LiveData<Expense> {
         return expenseDao.getById(id)
     }
 
-    fun getExpensesByCategory(category: String): LiveData<List<Expense>> {
-        return expenseDao.getExpensesByCategory(category)
-    }
 
-    // ✅ Метод для поиска по названию
-    fun searchExpensesByTitle(query: String): LiveData<List<Expense>> {
-        return expenseDao.searchByTitle("%$query%")
-    }
+
+
 
     // ✅ Метод для поиска по названию или категории
     fun searchExpensesByTitleOrCategory(query: String): LiveData<List<Expense>> {
         return expenseDao.searchByTitleOrCategory("%$query%")
     }
 
-    // ✅ Метод для получения расходов по точной дате (с 00:00 до 23:59)
-    fun getExpensesByExactDate(date: Long): LiveData<List<Expense>> {
-        val calendar = Calendar.getInstance().apply {
-            timeInMillis = date
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-        val start = calendar.timeInMillis
-        calendar.add(Calendar.DAY_OF_MONTH, 1)
-        val end = calendar.timeInMillis - 1
-        return expenseDao.getByExactDateRange(start, end)
-    }
+
 
     // ✅ Метод для получения транзакций в интервале между двумя датами
     fun getExpensesBetweenDates(start: Long, end: Long): LiveData<List<Expense>> {
         return expenseDao.getExpensesBetweenDates(start, end)
     }
 
-    // ✅ Метод для фильтрации по диапазону дат и категории
-    fun getExpensesByDateAndCategory(startDate: Long, endDate: Long, category: String): LiveData<List<Expense>> {
-        return expenseDao.getExpensesByDateAndCategory(startDate, endDate, category)
-    }
+
 
     // ✅ Вставка, обновление, удаление
     suspend fun insert(expense: Expense) {
@@ -93,8 +66,6 @@ class ExpenseRepository(private val expenseDao: ExpenseDao) {
         expenseDao.delete(expense)
     }
 
-    fun getExpensesBetweenDates(startDate: Long, endDate: Long, type: String): LiveData<List<Expense>> {
-        return expenseDao.getExpensesBetweenDates(startDate, endDate, type)
-    }
+
 
 }

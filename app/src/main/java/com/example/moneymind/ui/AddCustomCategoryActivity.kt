@@ -2,7 +2,7 @@ package com.example.moneymind.ui
 
 import android.os.Bundle
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
+
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -70,6 +70,8 @@ class AddCustomCategoryActivity : BaseActivityK() {
             }
 
             val iconName = resources.getResourceEntryName(selectedIconResId)
+
+            // Создаем категорию
             val category = CustomCategoryEntity(
                 id = 0,
                 name = name,
@@ -79,12 +81,22 @@ class AddCustomCategoryActivity : BaseActivityK() {
             )
 
             lifecycleScope.launch {
-                viewModel.insertCustom(category)
-                FirestoreHelper.saveCustomCategoryToFirestore(category)
-                Toast.makeText(this@AddCustomCategoryActivity, getString(R.string.category_added), Toast.LENGTH_SHORT).show()
-                setResult(RESULT_OK)
+                // Проверяем, существует ли уже такая категория в базе данных
+                val existingCategory = viewModel.getCategoryByNameAndIcon(name, iconName)
+                if (existingCategory != null) {
+                    Toast.makeText(this@AddCustomCategoryActivity, getString(R.string.updated), Toast.LENGTH_SHORT).show()
+                } else {
+                    // Вставляем категорию в базу данных
+                    viewModel.insertCustom(category)
 
-                finish()
+                    // Сохраняем категорию в Firestore
+                    FirestoreHelper.saveCustomCategoryToFirestore(category)
+
+                    Toast.makeText(this@AddCustomCategoryActivity, getString(R.string.category_added), Toast.LENGTH_SHORT).show()
+                    setResult(RESULT_OK)
+
+                    finish()
+                }
             }
         }
     }

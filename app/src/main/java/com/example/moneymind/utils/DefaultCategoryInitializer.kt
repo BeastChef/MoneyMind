@@ -27,13 +27,21 @@ object DefaultCategoryInitializer {
                 val db = AppDatabase.getDatabase(context)
                 val dao = db.categoryDao()
 
-                // Удаляем только дефолтные (по iconName)
-                val defaultIconNames = getDefaultCategories(context.resources).map { it.iconName }.toSet()
-                val toDelete = dao.getAllNow().filter { it.iconName in defaultIconNames }
-                toDelete.forEach { dao.delete(it) }
+                // Получаем текущие категории
+                val existingCategories = dao.getAllNow()
 
-                // Добавляем новые дефолтные категории на нужном языке
-                dao.insertAll(getDefaultCategories(context.resources))
+                // Получаем дефолтные категории для текущего языка
+                val defaultCategories = getDefaultCategories(context.resources)
+
+                // Обновляем или добавляем новые категории
+                defaultCategories.forEach { newCategory ->
+                    val existingCategory = existingCategories.find { it.iconName == newCategory.iconName }
+                    if (existingCategory == null) {
+                        dao.insert(newCategory)  // Если нет категории, добавляем новую
+                    } else if (existingCategory.name != newCategory.name) {
+                        dao.update(existingCategory.copy(name = newCategory.name))  // Обновляем название категории
+                    }
+                }
 
                 // Сохраняем дефолтные категории в Firestore
                 FirestoreHelper.saveDefaultCategoriesToFirestore(context)
@@ -43,6 +51,7 @@ object DefaultCategoryInitializer {
             }
         }
     }
+
 
     // Обновление категорий при изменении языка
     @JvmStatic
@@ -54,13 +63,13 @@ object DefaultCategoryInitializer {
             val res = context.resources
             val defaultCategories = getDefaultCategories(res)
 
-            // Сравниваем и обновляем категории
+            // Обновление или добавление категорий
             defaultCategories.forEach { newCategory ->
                 val existingCategory = existingCategories.find { it.iconName == newCategory.iconName }
                 if (existingCategory == null) {
-                    dao.insert(newCategory)  // Если нет категории, добавляем новую
+                    dao.insert(newCategory)  // Если категории нет, добавляем
                 } else if (existingCategory.name != newCategory.name) {
-                    dao.update(existingCategory.copy(name = newCategory.name))  // Обновляем название категории
+                    dao.update(existingCategory.copy(name = newCategory.name))  // Обновляем название
                 }
             }
         }

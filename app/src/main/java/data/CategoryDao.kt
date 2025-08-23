@@ -30,13 +30,14 @@ interface CategoryDao {
     // Вставка одной категории
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(category: Category)
-    // ✅ ДОБАВЬ ВОТ ЭТО:
-    @Query("DELETE FROM categories")
-    suspend fun deleteAll()
 
     // Вставка всех категорий (например, по умолчанию)
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(categories: List<Category>)
+
+    // Удалить все категории
+    @Query("DELETE FROM categories")
+    suspend fun deleteAll()
 
     // Получить по ID
     @Query("SELECT * FROM categories WHERE id = :id LIMIT 1")
@@ -57,10 +58,16 @@ interface CategoryDao {
     // Удалить категорию полностью
     @Delete
     suspend fun delete(category: Category)
+
+    // Обновить все категории
     @Update
     fun updateAll(categories: List<Category>)
 
     // Сколько всего категорий
     @Query("SELECT COUNT(*) FROM categories")
     suspend fun getCategoryCount(): Int
+
+    // Получить категорию по имени и иконке
+    @Query("SELECT * FROM categories WHERE name = :name AND iconName = :iconName LIMIT 1")
+    suspend fun getCategoryByNameAndIcon(name: String, iconName: String): Category?
 }

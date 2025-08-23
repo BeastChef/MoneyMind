@@ -24,26 +24,10 @@ class CategoryRepository(
         categoryDao.delete(category)
     }
 
-    suspend fun deleteById(id: Int) {
-        categoryDao.getById(id)?.let {
-            categoryDao.delete(it)
-        }
-    }
 
-    suspend fun getCategoryById(id: Int): Category? {
-        return categoryDao.getById(id)
-    }
-
-    suspend fun insertAll(categories: List<Category>) {
-        categories.forEach { insert(it) }
-    }
-
-    fun getExpenseCategories(): LiveData<List<Category>> {
-        return categoryDao.getExpenseCategories()
-    }
-
-    fun getIncomeCategories(): LiveData<List<Category>> {
-        return categoryDao.getIncomeCategories()
+    // Метод для получения категории по имени и иконке
+    suspend fun getCategoryByNameAndIcon(name: String, iconName: String): Category? {
+        return categoryDao.getCategoryByNameAndIcon(name, iconName)
     }
 
     fun getCategoriesByType(isIncome: Boolean): LiveData<List<Category>> {
@@ -64,15 +48,11 @@ class CategoryRepository(
         customCategoryDao.delete(category)
     }
 
-    suspend fun deleteCustomById(id: Int) {
-        customCategoryDao.deleteById(id)
-    }
+
+
 
     fun getCustomCategories(isIncome: Boolean): LiveData<List<CustomCategoryEntity>> {
         return customCategoryDao.getCategories(isIncome)
     }
 
-    suspend fun getCustomCategoriesNow(isIncome: Boolean): List<CustomCategoryEntity> {
-        return customCategoryDao.getAllNow(isIncome)
-    }
 }

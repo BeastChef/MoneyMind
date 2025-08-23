@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -86,12 +86,10 @@ class ChooseExpenseCategoryActivity : BaseActivityK() {
     }
 
     private fun observeCategories() {
-        val db = AppDatabase.getDatabase(applicationContext)
-        val repository = CategoryRepository(db.categoryDao(), db.customCategoryDao())
-
         categoryViewModel.getCategories(isIncome = false).observe(this) { defaultList ->
             categoryViewModel.getCustomCategories(isIncome = false).observe(this) { customList ->
                 val combined = (defaultList.map { it.toCategoryItem() } + customList.map { it.toCategoryItem() })
+                    .distinctBy { it.name }  // Убираем дубликаты по имени категории
                 adapter.submitList(combined)
             }
         }

@@ -5,7 +5,7 @@ import com.example.moneymind.utils.FirestoreHelper
 import androidx.lifecycle.*
 import com.example.moneymind.data.Category
 import com.example.moneymind.data.CategoryRepository
-import com.example.moneymind.data.CategoryTotal
+
 import com.example.moneymind.data.Expense
 import com.example.moneymind.data.ExpenseRepository
 import kotlinx.coroutines.launch
@@ -18,10 +18,8 @@ class ExpenseViewModel(
     val allExpensesOnly: LiveData<List<Expense>> = expenseRepository.allExpensesOnly
     val allIncomes: LiveData<List<Expense>> = expenseRepository.allIncomes
 
-    private val _categoryTotals: LiveData<List<CategoryTotal>> = expenseRepository.getCategoryTotalsOnly()
-    fun getCategoryTotals(): LiveData<List<CategoryTotal>> = _categoryTotals
 
-    fun getExpenses(): LiveData<List<Expense>> = allExpensesOnly
+
 
     fun insert(expense: Expense) = viewModelScope.launch {
         expenseRepository.insert(expense)
@@ -57,23 +55,15 @@ class ExpenseViewModel(
     fun getLast90DaysIncomes(): LiveData<List<Expense>> = expenseRepository.getIncomesFromDate(daysAgo(90))
     fun getLast365DaysIncomes(): LiveData<List<Expense>> = expenseRepository.getIncomesFromDate(daysAgo(365))
 
-    // Методы для работы с категориями
-    fun getCategoryTotalsOnly(): LiveData<List<CategoryTotal>> = expenseRepository.getCategoryTotalsOnly()
-    fun getExpensesByCategory(category: String): LiveData<List<Expense>> = expenseRepository.getExpensesByCategory(category)
 
     // Методы для работы с произвольным диапазоном дат (для календаря)
     fun getExpensesBetween(startDate: Long, endDate: Long): LiveData<List<Expense>> {
         return expenseRepository.getExpensesBetweenDates(startDate, endDate)
     }
 
-    fun getExpensesByExactDate(date: Long): LiveData<List<Expense>> {
-        return expenseRepository.getExpensesByExactDate(date)
-    }
 
-    // Методы для поиска по названию и категории
-    fun searchExpensesByTitle(query: String): LiveData<List<Expense>> {
-        return expenseRepository.searchExpensesByTitle(query)
-    }
+
+
 
     fun searchExpensesByTitleOrCategory(query: String): LiveData<List<Expense>> {
         return expenseRepository.searchExpensesByTitleOrCategory(query)
@@ -92,12 +82,7 @@ class ExpenseViewModel(
         Log.d("Firestore", "Saving expense and category to Firestore...");
     }
 
-    // Метод для получения всех расходов и категорий
-    fun getAllExpensesData(): LiveData<List<Expense>> = expenseRepository.allExpenses
 
-    fun getAllCategories(): LiveData<List<Category>> {
-        return categoryRepository.allCategories
-    }
 
     // Методы для работы с последними расходами (все за последние 7, 30 дней)
     fun getLast7DaysAll(): LiveData<List<Expense>> = expenseRepository.getExpensesFromDate(daysAgo(7))

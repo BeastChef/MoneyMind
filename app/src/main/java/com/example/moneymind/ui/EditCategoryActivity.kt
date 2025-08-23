@@ -4,7 +4,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
+
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -15,7 +15,7 @@ import com.example.moneymind.data.Category
 import com.example.moneymind.data.CategoryRepository
 import com.example.moneymind.model.CustomCategoryEntity
 import com.example.moneymind.ui.adapter.IconAdapter
-import com.example.moneymind.utils.FirestoreHelper
+
 import com.example.moneymind.viewmodel.CategoryViewModel
 import com.example.moneymind.viewmodel.CategoryViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialog

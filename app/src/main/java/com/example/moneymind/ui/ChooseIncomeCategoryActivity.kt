@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -84,9 +84,6 @@ class ChooseIncomeCategoryActivity : BaseActivityK() {
     }
 
     private fun observeCategories() {
-        val db = AppDatabase.getDatabase(applicationContext)
-        val repository = CategoryRepository(db.categoryDao(), db.customCategoryDao())
-
         // Получаем и дефолтные, и кастомные категории
         categoryViewModel.getCategories(isIncome = true).observe(this) { defaultList ->
             categoryViewModel.getCustomCategories(isIncome = true).observe(this) { customList ->

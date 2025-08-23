@@ -3,7 +3,7 @@ package com.example.moneymind.ui;
 import static android.content.ContentValues.TAG;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -36,7 +36,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.moneymind.MoneyMindApp;
+
 import com.example.moneymind.R;
 import com.example.moneymind.data.AppDatabase;
 import com.example.moneymind.data.Category;
@@ -47,6 +47,8 @@ import com.example.moneymind.utils.DefaultCategoryInitializer;
 import com.example.moneymind.utils.FirestoreHelper;
 import com.example.moneymind.utils.LocaleHelper;
 import com.example.moneymind.utils.OnSwipeTouchListener;
+import com.example.moneymind.viewmodel.CategoryViewModel;
+import com.example.moneymind.viewmodel.CategoryViewModelFactory;
 import com.example.moneymind.viewmodel.ExpenseViewModel;
 import com.example.moneymind.viewmodel.ExpenseViewModelFactory;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -65,9 +67,9 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.Calendar;
+
 import java.util.List;
-import java.util.Locale;
+
 import java.util.concurrent.Executors;
 
 public class MainActivity extends BaseActivityJ {
@@ -90,6 +92,9 @@ public class MainActivity extends BaseActivityJ {
     private RadioGroup typeFilterGroup;
     private int selectedDateFilter = 0;
     private int selectedTypeFilter = R.id.filterAll;
+
+    private CategoryViewModel categoryViewModel;
+    private FirestoreHelper firestoreHelper;
 
     private long customStartDate = 0;
     private long customEndDate = 0;
@@ -128,6 +133,15 @@ public class MainActivity extends BaseActivityJ {
         // Инициализация FirebaseAuth
         auth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = auth.getCurrentUser(); // Проверяем, авторизован ли пользователь
+        // ✅ ViewModel
+        ExpenseRepository expenseRepository = new ExpenseRepository(AppDatabase.getDatabase(this).expenseDao());
+        CategoryRepository categoryRepository = new CategoryRepository(AppDatabase.getDatabase(this).categoryDao(), AppDatabase.getDatabase(this).customCategoryDao());
+        ExpenseViewModelFactory factory = new ExpenseViewModelFactory(expenseRepository, categoryRepository);
+        expenseViewModel = new ViewModelProvider(this, factory).get(ExpenseViewModel.class);
+        viewModel = expenseViewModel;  // 🔥 Делаем так, чтобы viewModel не была null
+
+        CategoryViewModelFactory categoryFactory = new CategoryViewModelFactory(categoryRepository);
+        categoryViewModel = new ViewModelProvider(this, categoryFactory).get(CategoryViewModel.class);
 
         if (currentUser == null) {
             // Пользователь не авторизован, продолжаем в режиме гостя
@@ -142,12 +156,7 @@ public class MainActivity extends BaseActivityJ {
 
     }
     private void setupUI() {
-        // ✅ ViewModel
-        ExpenseRepository expenseRepository = new ExpenseRepository(AppDatabase.getDatabase(this).expenseDao());
-        CategoryRepository categoryRepository = new CategoryRepository(AppDatabase.getDatabase(this).categoryDao(), AppDatabase.getDatabase(this).customCategoryDao());
-        ExpenseViewModelFactory factory = new ExpenseViewModelFactory(expenseRepository, categoryRepository);
-        expenseViewModel = new ViewModelProvider(this, factory).get(ExpenseViewModel.class);
-        viewModel = expenseViewModel;  // 🔥 Делаем так, чтобы viewModel не была null
+
 
         topAppBar = findViewById(R.id.topAppBar);
         filterSpinner = findViewById(R.id.filterSpinner);
@@ -348,7 +357,10 @@ public class MainActivity extends BaseActivityJ {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             // Если пользователь авторизован, синхронизируем данные
-            synchronizeData();  // Ты можешь использовать свою логику синхронизации данных
+            synchronizeData(); // Логика синхронизации расходов
+
+            // Синхронизация категорий
+            categoryViewModel.syncCategoriesFromFirestore(this);  // Вызов метода синхронизации категорий
         }
     }
 

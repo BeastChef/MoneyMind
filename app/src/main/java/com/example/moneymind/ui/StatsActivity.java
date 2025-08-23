@@ -1,9 +1,5 @@
 package com.example.moneymind.ui;
-import com.example.moneymind.data.ExpenseRepository;
-import com.example.moneymind.data.CategoryRepository;
-import android.content.Context;
-import android.content.res.Configuration;
-import android.graphics.drawable.Drawable;
+
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;

@@ -42,7 +42,7 @@ class ChooseCategoryAdapter(
 
         // Показываем сумму, если есть
         if (category.amount != null) {
-            holder.amount.text = "${category.amount} ₽"
+            holder.amount.text = "${category.amount} "
             holder.amount.visibility = View.VISIBLE
         } else {
             holder.amount.visibility = View.GONE
