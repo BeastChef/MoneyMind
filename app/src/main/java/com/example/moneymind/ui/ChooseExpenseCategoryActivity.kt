@@ -67,7 +67,7 @@ class ChooseExpenseCategoryActivity : BaseActivityK() {
                 putExtra("category_id", category.id)
                 putExtra("is_income", category.isIncome)
                 putExtra("is_custom", category.isCustom)
-                intent.putExtra("is_custom", false)
+
             }
             startActivity(intent)
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
@@ -89,7 +89,7 @@ class ChooseExpenseCategoryActivity : BaseActivityK() {
         categoryViewModel.getCategories(isIncome = false).observe(this) { defaultList ->
             categoryViewModel.getCustomCategories(isIncome = false).observe(this) { customList ->
                 val combined = (defaultList.map { it.toCategoryItem() } + customList.map { it.toCategoryItem() })
-                    .distinctBy { it.name }  // Убираем дубликаты по имени категории
+                    .distinctBy { it.uuid } // ✅ убираем дубликаты по uuid
                 adapter.submitList(combined)
             }
         }

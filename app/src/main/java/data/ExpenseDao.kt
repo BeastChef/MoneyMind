@@ -9,11 +9,17 @@ interface ExpenseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(expense: Expense)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(expenses: List<Expense>) // ✅ добавлен метод пакетной вставки
+
     @Update
     suspend fun update(expense: Expense)
 
     @Delete
     suspend fun delete(expense: Expense)
+
+    @Query("DELETE FROM expenses")
+    suspend fun deleteAll() // ✅ добавлен метод очистки таблицы
 
     @Query("SELECT * FROM expenses ORDER BY date DESC")
     fun getAllTransactions(): LiveData<List<Expense>>
@@ -69,9 +75,9 @@ interface ExpenseDao {
     @Query("SELECT * FROM expenses WHERE title LIKE :query OR category LIKE :query ORDER BY date DESC")
     fun searchByTitleOrCategory(query: String): LiveData<List<Expense>>
 
-    // Запрос для получения расходов по категории и диапазону дат
     @Query("SELECT * FROM expenses WHERE date BETWEEN :startDate AND :endDate AND category = :category ORDER BY date DESC")
     fun getExpensesByDateAndCategory(startDate: Long, endDate: Long, category: String): LiveData<List<Expense>>
+
     @Query("SELECT * FROM expenses WHERE date >= :startDate AND date <= :endDate AND type = :type ORDER BY date DESC")
     fun getExpensesBetweenDates(startDate: Long, endDate: Long, type: String): LiveData<List<Expense>>
 }

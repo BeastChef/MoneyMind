@@ -65,7 +65,7 @@ class ChooseIncomeCategoryActivity : BaseActivityK() {
                 putExtra("category_id", category.id)
                 putExtra("is_income", category.isIncome)
                 putExtra("is_custom", category.isCustom)
-                intent.putExtra("is_custom", false)
+                putExtra("uuid", category.uuid) // 🚀 добавляем uuid
             }
             startActivity(intent)
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
@@ -84,10 +84,10 @@ class ChooseIncomeCategoryActivity : BaseActivityK() {
     }
 
     private fun observeCategories() {
-        // Получаем и дефолтные, и кастомные категории
         categoryViewModel.getCategories(isIncome = true).observe(this) { defaultList ->
             categoryViewModel.getCustomCategories(isIncome = true).observe(this) { customList ->
                 val combined = (defaultList.map { it.toCategoryItem() } + customList.map { it.toCategoryItem() })
+                    .distinctBy { it.uuid } // 🚀 фильтруем по uuid
                 adapter.submitList(combined)
             }
         }

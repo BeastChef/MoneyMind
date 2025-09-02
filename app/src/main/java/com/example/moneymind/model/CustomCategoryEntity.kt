@@ -11,5 +11,8 @@ data class CustomCategoryEntity(
     val name: String,         // Название категории
     val iconResId: Int,       // ID ресурса иконки (например, R.drawable.ic_food)
     val iconName: String,     // Имя ресурса (например, "ic_food")
+    val uuid: String,
+    val color: Int,
     val isIncome: Boolean     // Тип: true = доход, false = расход
+
 )

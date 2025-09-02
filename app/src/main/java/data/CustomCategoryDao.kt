@@ -28,4 +28,16 @@ interface CustomCategoryDao {
     suspend fun deleteById(id: Int)
     @Delete
     suspend fun delete(category: CustomCategoryEntity)
+
+    @Query("SELECT * FROM custom_categories WHERE uuid = :uuid LIMIT 1")
+    suspend fun getCustomCategoryByUuid(uuid: String): CustomCategoryEntity?
+
+    @Query("SELECT * FROM custom_categories WHERE name = :name AND isIncome = :isIncome LIMIT 1")
+    suspend fun getCategoryByNameAndType(name: String, isIncome: Boolean): CustomCategoryEntity?
+
+    @Query("DELETE FROM custom_categories")
+    fun deleteAll()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAll(categories: List<CustomCategoryEntity>)
 }

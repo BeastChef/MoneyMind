@@ -7,18 +7,13 @@ import com.example.moneymind.model.CustomCategoryEntity
 import kotlinx.coroutines.launch
 import android.content.Context
 import android.util.Log
-
-
 import com.example.moneymind.utils.FirestoreHelper
-
 
 class CategoryViewModel(
     private val repository: CategoryRepository
 ) : ViewModel() {
 
     // ---------- Обычные (дефолтные) категории ----------
-
-
     fun insert(category: Category) = viewModelScope.launch {
         repository.insert(category)
     }
@@ -26,7 +21,11 @@ class CategoryViewModel(
     fun delete(category: Category) = viewModelScope.launch {
         repository.delete(category)
     }
-
+    fun resetCategories(context: Context) {
+        viewModelScope.launch {
+            FirestoreHelper.clearAndSyncCategories(context)
+        }
+    }
     fun update(category: Category) = viewModelScope.launch {
         repository.update(category)
     }
@@ -35,7 +34,7 @@ class CategoryViewModel(
         return repository.getCategoriesByType(isIncome)
     }
 
-    // ---------- Кастомные категории (CustomCategoryEntity) ----------
+    // ---------- Кастомные категории ----------
     fun insertCustom(category: CustomCategoryEntity) = viewModelScope.launch {
         repository.insertCustom(category)
     }
@@ -44,17 +43,29 @@ class CategoryViewModel(
         repository.updateCustom(category)
     }
 
+    suspend fun getCategoryByUuid(uuid: String): CustomCategoryEntity? {
+        return repository.getCustomCategoryByUuid(uuid)
+    }
 
+    suspend fun getCategoryByNameAndType(name: String, isIncome: Boolean): CustomCategoryEntity? {
+        return repository.getCategoryByNameAndType(name, isIncome)
+    }
 
     fun deleteCustom(category: CustomCategoryEntity) = viewModelScope.launch {
         repository.deleteCustom(category)
     }
 
-    // Универсальный метод для удаления категорий (и кастомных, и обычных)
+    // ✅ ЕДИНЫЙ метод удаления категории (и обычной, и кастомной) + удаление из Firestore
     fun deleteCategory(category: Any) = viewModelScope.launch {
         when (category) {
-            is Category -> repository.delete(category) // Если это обычная категория
-            is CustomCategoryEntity -> repository.deleteCustom(category) // Если это кастомная категория
+            is Category -> {
+                repository.delete(category)                      // локально (Room)
+                FirestoreHelper.deleteCategoryFromFirestore(category) // Firestore (по uuid)
+            }
+            is CustomCategoryEntity -> {
+                repository.deleteCustom(category)                      // локально (Room)
+                FirestoreHelper.deleteCustomCategoryFromFirestore(category) // Firestore (по uuid)
+            }
             else -> throw IllegalArgumentException("Unsupported category type")
         }
     }
@@ -62,7 +73,8 @@ class CategoryViewModel(
     fun getCustomCategories(isIncome: Boolean): LiveData<List<CustomCategoryEntity>> {
         return repository.getCustomCategories(isIncome)
     }
-    // Добавляем метод для проверки существования категории по имени и иконке
+
+    // Проверка существования по имени и иконке (оставляем как есть)
     suspend fun getCategoryByNameAndIcon(name: String, iconName: String): Category? {
         return repository.getCategoryByNameAndIcon(name, iconName)
     }
@@ -72,16 +84,15 @@ class CategoryViewModel(
             FirestoreHelper.syncCategoriesFromFirestore(context, object : FirestoreHelper.CategorySyncCallback {
                 override fun onCategoriesLoaded(categories: List<Category>) {
                     categories.forEach { category ->
-                        insert(category) // Вставляем категории в локальную базу данных
+                        insert(category) // вставка в локальную БД
                     }
                 }
-
                 override fun onError(e: Exception) {
                     Log.e("CategoryViewModel", "Ошибка синхронизации категорий", e)
                 }
-        })
+            })
+        }
     }
-}
 }
 
 class CategoryViewModelFactory(
@@ -95,4 +106,3 @@ class CategoryViewModelFactory(
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
-

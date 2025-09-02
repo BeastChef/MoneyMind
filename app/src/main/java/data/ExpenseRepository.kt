@@ -1,5 +1,9 @@
 package com.example.moneymind.data
-
+import com.example.moneymind.utils.FirestoreHelper
+import com.example.moneymind.utils.BoolCallback
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import androidx.lifecycle.LiveData
 
 
@@ -66,6 +70,30 @@ class ExpenseRepository(private val expenseDao: ExpenseDao) {
         expenseDao.delete(expense)
     }
 
+    // ---------- Синхронизация расходов с Firestore ----------
+    fun syncExpensesFromFirestore(onComplete: (Boolean) -> Unit) {
+        FirestoreHelper.loadExpensesFromFirestore(object : FirestoreHelper.ExpenseDataCallback {
+            override fun onExpensesLoaded(expenses: List<Expense>) {
+                GlobalScope.launch(Dispatchers.IO) {
+                    try {
+                        expenseDao.deleteAll()
+                        expenseDao.insertAll(expenses)
+                        onComplete(true)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        onComplete(false)
+                    }
+                }
+            }
 
+            override fun onError(e: Exception) { onComplete(false) }
+        })
+    }
 
+    // ✅ Перегрузка для вызова из Java (MainActivity)
+    fun syncExpensesFromFirestore(onComplete: BoolCallback) {
+        syncExpensesFromFirestore { success ->
+            onComplete.onResult(success)
+        }
+    }
 }

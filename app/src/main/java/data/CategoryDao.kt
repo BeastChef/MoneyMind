@@ -34,6 +34,9 @@ interface CategoryDao {
     // Вставка всех категорий (например, по умолчанию)
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(categories: List<Category>)
+    // Получить категорию по UUID
+    @Query("SELECT * FROM categories WHERE uuid = :uuid LIMIT 1")
+    suspend fun getByUuid(uuid: String): Category?
 
     // Удалить все категории
     @Query("DELETE FROM categories")
@@ -70,4 +73,5 @@ interface CategoryDao {
     // Получить категорию по имени и иконке
     @Query("SELECT * FROM categories WHERE name = :name AND iconName = :iconName LIMIT 1")
     suspend fun getCategoryByNameAndIcon(name: String, iconName: String): Category?
+
 }

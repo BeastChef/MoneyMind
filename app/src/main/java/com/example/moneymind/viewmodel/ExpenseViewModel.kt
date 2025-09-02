@@ -5,7 +5,7 @@ import com.example.moneymind.utils.FirestoreHelper
 import androidx.lifecycle.*
 import com.example.moneymind.data.Category
 import com.example.moneymind.data.CategoryRepository
-
+import com.example.moneymind.utils.BoolCallback
 import com.example.moneymind.data.Expense
 import com.example.moneymind.data.ExpenseRepository
 import kotlinx.coroutines.launch
@@ -146,6 +146,22 @@ class ExpenseViewModel(
             }
         })
     }
+    fun syncExpensesFromFirestore(onComplete: (Boolean) -> Unit) {
+        expenseRepository.syncExpensesFromFirestore(onComplete)
+    }
 
+    fun syncExpensesFromFirestore(onComplete: BoolCallback) {
+        // мостик из Java-SAM в лямбду Kotlin
+        syncExpensesFromFirestore { success -> onComplete.onResult(success) }
+    }
+
+    fun syncCategoriesFromFirestore(onComplete: (Boolean) -> Unit) {
+        categoryRepository.syncCategoriesFromFirestore(onComplete)
+    }
+
+    fun syncCategoriesFromFirestore(onComplete: BoolCallback) {
+        // мостик из Java-SAM в лямбду Kotlin
+        syncCategoriesFromFirestore { success -> onComplete.onResult(success) }
+    }
 
 }

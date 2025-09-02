@@ -356,14 +356,40 @@ public class MainActivity extends BaseActivityJ {
     private void initializeEverything() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
-            // Если пользователь авторизован, синхронизируем данные
-            synchronizeData(); // Логика синхронизации расходов
+            String uid = currentUser.getUid();
 
-            // Синхронизация категорий
-            categoryViewModel.syncCategoriesFromFirestore(this);  // Вызов метода синхронизации категорий
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(uid)
+                    .get()
+                    .addOnSuccessListener(document -> {
+                        if (!document.exists()) {
+                            // 🔥 Новый пользователь — создаём дефолтные категории
+                            FirestoreHelper.saveDefaultCategoriesToFirestore(this);
+                        }
+
+                        // После этого синкаем категории
+                        expenseViewModel.syncCategoriesFromFirestore(success -> {
+                            if (success) {
+                                Log.d("Sync", "Категории успешно синхронизированы");
+                            } else {
+                                Log.e("Sync", "Ошибка при синхронизации категорий");
+                            }
+                            return null;
+                        });
+
+                        // И расходы
+                        expenseViewModel.syncExpensesFromFirestore(success -> {
+                            if (success) {
+                                Log.d("Sync", "Расходы успешно синхронизированы");
+                            } else {
+                                Log.e("Sync", "Ошибка при синхронизации расходов");
+                            }
+                            return null;
+                        });
+                    });
         }
     }
-
     private void synchronizeData() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {

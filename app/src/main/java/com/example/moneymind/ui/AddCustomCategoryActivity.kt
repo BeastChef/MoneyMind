@@ -70,34 +70,49 @@ class AddCustomCategoryActivity : BaseActivityK() {
             }
 
             val iconName = resources.getResourceEntryName(selectedIconResId)
-
-            // Создаем категорию
-            val category = CustomCategoryEntity(
-                id = 0,
-                name = name,
-                iconResId = selectedIconResId,
-                iconName = iconName,
-                isIncome = isIncome
-            )
+            val color = (0xFF000000..0xFFFFFFFF).random().toInt()
 
             lifecycleScope.launch {
-                // Проверяем, существует ли уже такая категория в базе данных
-                val existingCategory = viewModel.getCategoryByNameAndIcon(name, iconName)
+                // 🔥 Проверяем по имени и типу (чтобы "Лес" доход ≠ "Лес" расход)
+                val existingCategory = viewModel.getCategoryByNameAndType(name, isIncome)
+
                 if (existingCategory != null) {
+                    // ⚡ Используем старый UUID
+                    val updatedCategory = existingCategory.copy(
+                        name = name,
+                        iconResId = selectedIconResId,
+                        iconName = iconName,
+                        isIncome = isIncome,
+                        color = color
+                    )
+
+                    viewModel.updateCustom(updatedCategory)
+                    FirestoreHelper.saveCustomCategoryToFirestore(updatedCategory)
+
                     Toast.makeText(this@AddCustomCategoryActivity, getString(R.string.updated), Toast.LENGTH_SHORT).show()
                 } else {
-                    // Вставляем категорию в базу данных
-                    viewModel.insertCustom(category)
+                    // Создаём новую с новым UUID
+                    val newCategory = CustomCategoryEntity(
+                        id = 0,
+                        uuid = java.util.UUID.randomUUID().toString(),
+                        name = name,
+                        iconResId = selectedIconResId,
+                        iconName = iconName,
+                        isIncome = isIncome,
+                        color = color
+                    )
 
-                    // Сохраняем категорию в Firestore
-                    FirestoreHelper.saveCustomCategoryToFirestore(category)
+                    viewModel.insertCustom(newCategory)
+                    FirestoreHelper.saveCustomCategoryToFirestore(newCategory)
 
                     Toast.makeText(this@AddCustomCategoryActivity, getString(R.string.category_added), Toast.LENGTH_SHORT).show()
-                    setResult(RESULT_OK)
-
-                    finish()
                 }
+
+                setResult(RESULT_OK)
+                finish()
             }
         }
+
+
     }
 }

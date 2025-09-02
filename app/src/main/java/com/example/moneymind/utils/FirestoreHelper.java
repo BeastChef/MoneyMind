@@ -1,5 +1,7 @@
 package com.example.moneymind.utils;
 
+import com.example.moneymind.data.AppDatabase;
+import com.example.moneymind.data.CategoryDao;
 import com.example.moneymind.data.Expense;
 import com.example.moneymind.data.Category;
 import com.example.moneymind.model.CustomCategoryEntity;
@@ -14,6 +16,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,24 +59,24 @@ public class FirestoreHelper {
     public static void saveCustomCategoryToFirestore(CustomCategoryEntity customCategory) {
         String userId = getUserUid();
 
-        // Создаем Map для данных категории
-        Map<String, Object> customCategoryData = new HashMap<>();
-        customCategoryData.put("name", customCategory.getName());
-        customCategoryData.put("iconResId", customCategory.getIconResId());
-        customCategoryData.put("iconName", customCategory.getIconName());
-        customCategoryData.put("isIncome", customCategory.isIncome());
+        Map<String, Object> data = new HashMap<>();
+        data.put("uuid", customCategory.getUuid());
+        data.put("name", customCategory.getName());
+        data.put("iconResId", customCategory.getIconResId());
+        data.put("iconName", customCategory.getIconName());
+        data.put("isIncome", customCategory.isIncome());
+        data.put("color", customCategory.getColor());
+        data.put("isCustom", true); // <— ключевой флаг!
 
         firestore.collection("users")
                 .document(userId)
                 .collection("categories")
-                .document(customCategory.getIconName())  // Используем iconName как уникальный идентификатор
-                .set(customCategoryData, SetOptions.merge())  // Сливаем данные, если категория уже существует
-                .addOnSuccessListener(aVoid -> {
-                    System.out.println("Category successfully added/updated: " + customCategory.getName());
-                })
-                .addOnFailureListener(e -> {
-                    System.out.println("Error adding category: " + e.getMessage());
-                });
+                .document(customCategory.getUuid()) // документ по UUID
+                .set(data, SetOptions.merge())
+                .addOnSuccessListener(aVoid ->
+                        Log.d("FirestoreHelper", "Custom category upserted: " + customCategory.getName()))
+                .addOnFailureListener(e ->
+                        Log.e("FirestoreHelper", "Error add/update custom category: " + e.getMessage()));
     }
 
     // Загружаем расходы для пользователя из Firestore
@@ -119,37 +122,39 @@ public class FirestoreHelper {
     }
 
 
-
     // Сохраняем расход для пользователя в Firestore
     public static void saveExpenseToFirestore(Expense expense) {
         firestore.collection("users")
-                .document(getUserUid())  // Получаем UID текущего пользователя
+                .document(getUserUid())
                 .collection("expenses")
-                .document(String.valueOf(expense.getId()))  // Используем ID расхода
+                .document(expense.getUuid())  // ✅ вместо id
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    if (!documentSnapshot.exists()) {  // Если расход еще не существует
-                        // Создаем новый объект для расхода
+                    if (!documentSnapshot.exists()) {
                         Map<String, Object> expenseData = new HashMap<>();
+                        expenseData.put("uuid", expense.getUuid());
+                        expenseData.put("title", expense.getTitle());
                         expenseData.put("amount", expense.getAmount());
                         expenseData.put("category", expense.getCategory());
                         expenseData.put("date", expense.getDate());
                         expenseData.put("type", expense.getType());
+                        expenseData.put("iconName", expense.getIconName());
+                        expenseData.put("categoryColor", expense.getCategoryColor());
+                        expenseData.put("note", expense.getNote());
 
-                        // Добавляем расход в Firestore
                         firestore.collection("users")
-                                .document(getUserUid())  // Используем UID пользователя
+                                .document(getUserUid())
                                 .collection("expenses")
-                                .document(String.valueOf(expense.getId()))  // Уникальный идентификатор
+                                .document(expense.getUuid())  // ✅ вместо id
                                 .set(expenseData)
                                 .addOnSuccessListener(aVoid -> {
-                                    System.out.println("Expense successfully added: " + expense.getId());
+                                    System.out.println("Expense successfully added: " + expense.getUuid());
                                 })
                                 .addOnFailureListener(e -> {
                                     System.out.println("Error adding expense: " + e.getMessage());
                                 });
                     } else {
-                        System.out.println("Expense already exists, skipping addition: " + expense.getId());
+                        System.out.println("Expense already exists, skipping addition: " + expense.getUuid());
                     }
                 });
     }
@@ -171,54 +176,72 @@ public class FirestoreHelper {
     }
     // В FirestoreHelper обновите метод syncCategoriesFromFirestore:
     public static void syncCategoriesFromFirestore(Context context, final CategorySyncCallback callback) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) return;
-
-        String userId = user.getUid();
+        String userId = getUserUid();
 
         firestore.collection("users")
                 .document(userId)
                 .collection("categories")
                 .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<Category> firestoreCategories = queryDocumentSnapshots.toObjects(Category.class);
+                .addOnSuccessListener(snap -> {
+                    List<Category> defaultCategories = new ArrayList<>();
+                    List<CustomCategoryEntity> customCategories = new ArrayList<>();
 
-                    // Очистка и синхронизация данных
-                    clearAndSyncCategories(context);
+                    for (DocumentSnapshot d : snap.getDocuments()) {
+                        Boolean isCustom = d.getBoolean("isCustom");
+                        if (isCustom != null && isCustom) {
+                            CustomCategoryEntity c = d.toObject(CustomCategoryEntity.class);
+                            if (c != null) customCategories.add(c);
+                        } else {
+                            // дефолтные НЕ пишем в Room через sync
+                            Category c = d.toObject(Category.class);
+                            if (c != null) defaultCategories.add(c);
+                        }
+                    }
 
-                    // Передаем загруженные категории в callback
-                    callback.onCategoriesLoaded(firestoreCategories);
+                    // ⚡ Работаем только с кастомными
+                    CustomCategoryDaoWrapper customWrapper = new CustomCategoryDaoWrapper(context);
+                    customWrapper.deleteAllCustom();
+                    customWrapper.insertCustomCategories(customCategories);
+
+                    // Возвращаем все категории (если надо)
+                    callback.onCategoriesLoaded(defaultCategories);
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("FirestoreHelper", "Error syncing categories from Firestore: " + e.getMessage());
+                    Log.e("FirestoreHelper", "Error syncing categories: " + e.getMessage());
                     callback.onError(e);
                 });
     }
 
+
+
     // Сохраняем категорию для пользователя в Firestore
-    public static void saveCategoryToFirestore(Category category) {
+    public static void saveCategoryToFirestore(Category category, Context context) {
+        String userId = getUserUid();
+
         firestore.collection("users")
-                .document(getUserUid())  // Получаем UID текущего пользователя
+                .document(userId)
                 .collection("categories")
-                .document(category.getIconName())  // Используем iconName как уникальный идентификатор категории
+                .document(category.getUuid())  // ✅ вместо iconName
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    if (!documentSnapshot.exists()) {  // Если категория еще не существует
-                        // Создаем новый объект для категории
+                    if (!documentSnapshot.exists()) {
                         Map<String, Object> categoryData = new HashMap<>();
+                        categoryData.put("uuid", category.getUuid());
                         categoryData.put("name", category.getName());
                         categoryData.put("iconResId", category.getIconResId());
                         categoryData.put("iconName", category.getIconName());
                         categoryData.put("isIncome", category.isIncome());
 
-                        // Добавляем категорию в Firestore
                         firestore.collection("users")
-                                .document(getUserUid())  // Используем UID пользователя
+                                .document(userId)
                                 .collection("categories")
-                                .document(category.getIconName())  // Уникальный идентификатор
+                                .document(category.getUuid())  // ✅ вместо iconName
                                 .set(categoryData)
                                 .addOnSuccessListener(aVoid -> {
                                     System.out.println("Category successfully added: " + category.getName());
+                                    if (context != null) {
+                                        addCategoryToLocalDb(context, category);
+                                    }
                                 })
                                 .addOnFailureListener(e -> {
                                     System.out.println("Error adding category: " + e.getMessage());
@@ -226,17 +249,26 @@ public class FirestoreHelper {
                     } else {
                         System.out.println("Category already exists, skipping addition: " + category.getName());
                     }
+                })
+                .addOnFailureListener(e -> {
+                    System.out.println("Error checking Firestore for category: " + e.getMessage());
                 });
     }
+    private static void addCategoryToLocalDb(Context context, Category category) {
+        // Используем обертку CategoryDaoWrapper для работы с локальной базой данных
+        CategoryDaoWrapper daoWrapper = new CategoryDaoWrapper(context);
 
+        // Вставляем категорию в базу данных через обертку (передаем категорию как список)
+        daoWrapper.insertCategories(new ArrayList<>(Collections.singletonList(category))); // Передаем категорию в виде списка
+    }
 
     // Обновить расход в Firestore
     public static void updateExpenseInFirestore(Expense expense) {
         firestore.collection("users")
                 .document(getUserUid())
                 .collection("expenses")
-                .document(String.valueOf(expense.getId()))  // Используем ID расхода для обновления
-                .set(expense);  // Обновляем расход
+                .document(expense.getUuid())  // ✅ вместо id
+                .set(expense);
     }
 
     // Удалить расход из Firestore
@@ -244,7 +276,7 @@ public class FirestoreHelper {
         firestore.collection("users")
                 .document(getUserUid())
                 .collection("expenses")
-                .document(String.valueOf(expense.getId()))  // Используем ID расхода для удаления
+                .document(expense.getUuid())  // ✅ вместо id
                 .delete()
                 .addOnSuccessListener(aVoid -> {
                     System.out.println("Expense successfully deleted.");
@@ -254,23 +286,33 @@ public class FirestoreHelper {
                 });
     }
 
+    // Удалить кастомную категорию из Firestore
+    public static void deleteCustomCategoryFromFirestore(CustomCategoryEntity category) {
+        firestore.collection("users")
+                .document(getUserUid())
+                .collection("categories")
+                .document(category.getUuid())
+                .delete()
+                .addOnSuccessListener(aVoid ->
+                        Log.d("FirestoreHelper", "Custom category deleted"))
+                .addOnFailureListener(e ->
+                        Log.e("FirestoreHelper", "Error deleting custom category: " + e.getMessage()));
+    }
 
-    // Удалить категорию из Firestore
+    // ✅ Удалить категорию из Firestore по UUID
     public static void deleteCategoryFromFirestore(Category category) {
         firestore.collection("users")
                 .document(getUserUid())
                 .collection("categories")
-                .document(category.getIconName())  // Используем iconName как уникальный идентификатор
+                .document(category.getUuid())  // используем UUID, а не iconName
                 .delete()
                 .addOnSuccessListener(aVoid -> {
-                    System.out.println("Category successfully deleted.");
+                    System.out.println("Category successfully deleted: " + category.getName());
                 })
                 .addOnFailureListener(e -> {
                     System.out.println("Error deleting category: " + e.getMessage());
                 });
     }
-
-
 
 
     // Копируем данные между пользователями (например, из гостевого аккаунта в полноценный)
@@ -297,48 +339,66 @@ public class FirestoreHelper {
     }
 
 
-
     // Добавить дефолтные категории в Firestore
     public static void saveDefaultCategoriesToFirestore(Context context) {
-        String userId = getUserUid();  // Получаем UID пользователя
+        String userId = getUserUid();
 
-        // Проверка, если категории уже есть
         firestore.collection("users")
                 .document(userId)
                 .collection("categories")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    if (querySnapshot.isEmpty()) {
-                        // Если категорий нет, добавляем дефолтные
-                        List<Category> defaultCategories = DefaultCategoryInitializer.getDefaultCategories(context.getResources());
-                        for (Category category : defaultCategories) {
+                    List<Category> existingCategories = querySnapshot.toObjects(Category.class);
+
+                    // Получаем дефолтные категории из ресурсов
+                    List<Category> defaultCategories =
+                            DefaultCategoryInitializer.getDefaultCategories(context.getResources());
+
+                    for (Category defCategory : defaultCategories) {
+                        boolean exists = false;
+
+                        // Проверяем по UUID
+                        for (Category existing : existingCategories) {
+                            if (existing.getUuid().equals(defCategory.getUuid())) {
+                                exists = true;
+                                break;
+                            }
+                        }
+
+                        if (!exists) {
                             Map<String, Object> categoryData = new HashMap<>();
-                            categoryData.put("name", category.getName());
-                            categoryData.put("iconResId", category.getIconResId());
-                            categoryData.put("iconName", category.getIconName());
-                            categoryData.put("isIncome", category.isIncome());
+                            categoryData.put("uuid", defCategory.getUuid());
+                            categoryData.put("name", defCategory.getName());
+                            categoryData.put("iconResId", defCategory.getIconResId());
+                            categoryData.put("iconName", defCategory.getIconName());
+                            categoryData.put("isIncome", defCategory.isIncome());
+                            categoryData.put("color", defCategory.getColor());
 
                             firestore.collection("users")
                                     .document(userId)
                                     .collection("categories")
-                                    .document(category.getIconName())  // Используем iconName как уникальный идентификатор
+                                    .document(defCategory.getUuid()) // ⚡ теперь UUID, а не iconName!
                                     .set(categoryData)
                                     .addOnSuccessListener(aVoid -> {
-                                        System.out.println("Default category successfully written: " + category.getName());
+                                        Log.d("FirestoreHelper", "Default category added: " + defCategory.getName());
                                     })
                                     .addOnFailureListener(e -> {
-                                        System.out.println("Error writing default category: " + e.getMessage());
+                                        Log.e("FirestoreHelper", "Error adding default category: " + e.getMessage());
                                     });
                         }
                     }
                 })
                 .addOnFailureListener(e -> {
-                    System.out.println("Error checking categories: " + e.getMessage());
+                    Log.e("FirestoreHelper", "Error checking default categories: " + e.getMessage());
                 });
     }
 
-
-
+    // ✅ Добавляем метод без context
+    public static void saveCategoryToFirestore(Category category) {
+        // Просто вызываем оригинальный метод с null вместо context
+        // или логикой без локального добавления
+        saveCategoryToFirestore(category, null);
+    }
 
     // Проверка на наличие данных в Firestore
     public static void checkAndRestoreData(String fromUid) {
