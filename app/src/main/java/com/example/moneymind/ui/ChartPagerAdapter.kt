@@ -28,36 +28,12 @@ class ChartPagerAdapter(
     private var summaryMode: Boolean = false
     private var selectedStatsType: Int = 0
 
-    private val incomeColors = listOf(
-        Color.parseColor("#4CAF50"), Color.parseColor("#2196F3"), Color.parseColor("#9C27B0"),
-        Color.parseColor("#00BCD4"), Color.parseColor("#8BC34A"), Color.parseColor("#03A9F4"),
-        Color.parseColor("#673AB7"), Color.parseColor("#009688"), Color.parseColor("#AED581"),
-        Color.parseColor("#64B5F6"), Color.parseColor("#9575CD"), Color.parseColor("#81C784"),
-        Color.parseColor("#7986CB"), Color.parseColor("#4DB6AC"), Color.parseColor("#1DE9B6")
-    )
-
-    private val expenseColors = listOf(
-        Color.parseColor("#E91E63"), // розовый
-        Color.parseColor("#9C27B0"), // фиолетовый
-        Color.parseColor("#3F51B5"), // синий
-        Color.parseColor("#FFEB3B"), // жёлтый
-        Color.parseColor("#795548"), // коричневый
-        Color.parseColor("#607D8B"), // сизый
-        Color.parseColor("#BA68C8"), // светло-фиолетовый
-        Color.parseColor("#7986CB"), // светло-синий
-        Color.parseColor("#FFD54F"), // светло-жёлтый
-        Color.parseColor("#A1887F"), // серо-коричневый
-        Color.parseColor("#90A4AE"), // светло-сизый
-        Color.parseColor("#CE93D8"), // сиреневый
-        Color.parseColor("#F8BBD0"), // светло-розовый
-        Color.parseColor("#D1C4E9"), // лавандовый
-        Color.parseColor("#BCAAA4"),  // светло-коричневый
-        Color.parseColor("#F44336"), Color.parseColor("#FF9800"), Color.parseColor("#FF5722"),
-        Color.parseColor("#FFC107"), Color.parseColor("#E91E63"), Color.parseColor("#FF7043"),
-        Color.parseColor("#FF8A65"), Color.parseColor("#D32F2F"), Color.parseColor("#F06292"),
-        Color.parseColor("#FFB300"), Color.parseColor("#FF5252"), Color.parseColor("#F9A825"),
-        Color.parseColor("#F50057"), Color.parseColor("#FFA726"), Color.parseColor("#E64A19")
-    )
+    // Метод для проверки текущей темы (темная или светлая)
+    private fun isDarkMode(): Boolean {
+        val nightModeFlags = context.resources.configuration.uiMode and
+                android.content.res.Configuration.UI_MODE_NIGHT_MASK
+        return nightModeFlags == android.content.res.Configuration.UI_MODE_NIGHT_YES
+    }
 
     fun setExpenses(expenses: List<Expense>, isSummaryMode: Boolean, statsType: Int) {
         expenseData = expenses.sortedBy { it.date }
@@ -108,7 +84,7 @@ class ChartPagerAdapter(
                 }
             }
             valueTextSize = 12f
-            valueTextColor = Color.BLACK
+            valueTextColor = if (isDarkMode()) Color.WHITE else Color.BLACK  // Белый для темной темы, черный для светлой
         }
 
         barChart.data = BarData(dataSet).apply { barWidth = 0.8f }
@@ -138,7 +114,7 @@ class ChartPagerAdapter(
         val lineColor = when (selectedStatsType) {
             R.id.statsTypeIncomes -> ContextCompat.getColor(context, R.color.income_color_strong)
             R.id.statsTypeExpenses -> ContextCompat.getColor(context, R.color.expense_color_orange)
-            else -> Color.BLUE
+            else -> if (isDarkMode()) Color.WHITE else Color.BLACK  // Белый для темной темы, черный для светлой
         }
 
         val dataSet = LineDataSet(entries, "Баланс по дням").apply {
@@ -147,6 +123,7 @@ class ChartPagerAdapter(
             lineWidth = 2f
             circleRadius = 4f
             valueTextSize = 12f
+            valueTextColor = if (isDarkMode()) Color.WHITE else Color.BLACK  // Белый для темной темы, черный для светлой
         }
 
         lineChart.data = LineData(dataSet)
@@ -173,6 +150,9 @@ class ChartPagerAdapter(
         val labels = mutableListOf<String>()
         val colors = mutableListOf<Int>()
 
+        // Изменяем цвет центрального круга в зависимости от темы
+        val centerCircleColor = if (isDarkMode()) Color.parseColor("#424242") else Color.WHITE  // Темно-серый для темной темы, белый для светлой
+
         when (selectedStatsType) {
             R.id.statsTypeAll -> {
                 val incomeLabel = context.getString(R.string.filter_incomes)
@@ -194,7 +174,7 @@ class ChartPagerAdapter(
                     colors.add(ContextCompat.getColor(context, R.color.expense_color_orange))
                 }
 
-                applyPieChart(chart, entries, labels, colors, centerText, expenseData, true)
+                applyPieChart(chart, entries, labels, colors, centerText, expenseData, true, centerCircleColor)
             }
 
             R.id.statsTypeIncomes, R.id.statsTypeExpenses -> {
@@ -209,7 +189,7 @@ class ChartPagerAdapter(
                         entries.add(PieEntry(sum, category))
                         labels.add(category)
 
-                        // берём цвет из первой записи этой категории
+                        // берем цвет из первой записи этой категории
                         val color = expenses.firstOrNull()?.categoryColor ?: Color.LTGRAY
                         colors.add(color)
                     }
@@ -220,10 +200,76 @@ class ChartPagerAdapter(
                 else
                     context.getString(R.string.filter_expenses)
 
-                applyPieChart(chart, entries, labels, colors, centerText, filtered, false)
+                applyPieChart(chart, entries, labels, colors, centerText, filtered, false, centerCircleColor)
             }
         }
+
+        // Цвет для текста и значений на PieChart
+        chart.setEntryLabelColor(if (isDarkMode()) Color.WHITE else Color.BLACK)
+        chart.setCenterTextColor(if (isDarkMode()) Color.WHITE else Color.BLACK)
     }
+
+    private fun applyPieChart(
+        chart: PieChart,
+        entries: List<PieEntry>,
+        labels: List<String>,
+        colors: List<Int>,
+        centerText: String,
+        dataSource: List<Expense>,
+        summaryMode: Boolean,
+        centerCircleColor: Int
+    ) {
+        val incomeStr = context.getString(R.string.filter_incomes)
+        val expenseStr = context.getString(R.string.filter_expenses)
+
+        val dataSet = PieDataSet(entries, "")
+        dataSet.colors = colors
+        dataSet.valueTextSize = 14f
+        dataSet.valueTextColor = if (isDarkMode()) Color.WHITE else Color.BLACK
+
+        val data = PieData(dataSet)
+        chart.data = data
+        chart.centerText = centerText
+        chart.setEntryLabelColor(Color.DKGRAY)
+        chart.description.isEnabled = false
+        chart.legend.isEnabled = false
+        chart.setUsePercentValues(true)
+        chart.setCenterTextSize(18f)
+        chart.setHoleRadius(40f)
+        chart.setTransparentCircleRadius(45f)
+        chart.setHoleColor(centerCircleColor)  // Устанавливаем цвет центрального круга
+
+        chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                val label = (e as? PieEntry)?.label ?: return
+                val filtered = if (summaryMode) {
+                    val type = if (label == incomeStr) "income" else "expense"
+                    dataSource.filter { it.type == type }
+                } else {
+                    dataSource.filter { it.category == label }
+                }
+
+                val details = filtered.map {
+                    val sign = if (it.type == "income") "+ " else "- "
+                    "• ${it.category}. ${it.title} : $sign${it.amount} "
+                }
+
+                AlertDialog.Builder(context)
+                    .setTitle(label)
+                    .setMessage(details.joinToString("\n").ifEmpty { context.getString(R.string.no_data_for_selected_day) })
+                    .setPositiveButton(context.getString(R.string.ok), null)
+                    .show()
+            }
+
+            override fun onNothingSelected() {}
+        })
+
+        chart.animateY(800)
+        chart.invalidate()
+    }
+
+
+
     private fun applyPieChart(
         chart: PieChart,
         entries: List<PieEntry>,
@@ -239,7 +285,7 @@ class ChartPagerAdapter(
         val dataSet = PieDataSet(entries, "")
         dataSet.colors = colors
         dataSet.valueTextSize = 14f
-        dataSet.valueTextColor = Color.BLACK
+        dataSet.valueTextColor = if (isDarkMode()) Color.WHITE else Color.BLACK
 
         val data = PieData(dataSet)
         chart.data = data
@@ -266,7 +312,6 @@ class ChartPagerAdapter(
                     val sign = if (it.type == "income") "+ " else "- "
                     "• ${it.category}. ${it.title} : $sign${it.amount} "
                 }
-
 
                 AlertDialog.Builder(context)
                     .setTitle(label)
@@ -319,21 +364,31 @@ class ChartPagerAdapter(
     }
 
     private fun setupChartBase(chart: BarLineChartBase<*>, labels: List<String>) {
+        // Для светлой или темной темы
+        val textColor = if (isDarkMode()) Color.WHITE else Color.BLACK
+
+        // Настройка оси X
         chart.xAxis.apply {
             valueFormatter = IndexAxisValueFormatter(labels)
             position = XAxis.XAxisPosition.BOTTOM
             granularity = 1f
             setDrawGridLines(false)
             labelRotationAngle = 45f
+            setTextColor(textColor)  // Используем метод setTextColor для изменения цвета текста оси X
         }
 
+        // Настройка оси Y (левая ось)
         chart.axisLeft.apply {
             axisMinimum = -findMaxY()
             axisMaximum = findMaxY()
             setDrawGridLines(true)
+            setTextColor(textColor)  // Используем метод setTextColor для изменения цвета текста оси Y
         }
 
+        // Настройка правой оси (отключение)
         chart.axisRight.isEnabled = false
+
+        // Отключаем ненужные элементы
         chart.legend.isEnabled = false
         chart.description.isEnabled = false
         chart.setScaleEnabled(false)

@@ -29,9 +29,13 @@ class ChooseExpenseCategoryActivity : BaseActivityK() {
         setContentView(R.layout.activity_choose_expense_category)
 
         findViewById<TextView>(R.id.btnCancel).setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
             finish()
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+            overridePendingTransition(0, 0) // 🚀 без анимации
         }
+
 
         val tabLayout = findViewById<TabLayout>(R.id.categoryTabLayout)
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.income)))

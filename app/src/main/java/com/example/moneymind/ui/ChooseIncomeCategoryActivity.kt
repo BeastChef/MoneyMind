@@ -29,9 +29,13 @@ class ChooseIncomeCategoryActivity : BaseActivityK() {
         setContentView(R.layout.activity_choose_income_category)
 
         findViewById<TextView>(R.id.btnCancel).setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
             finish()
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+            overridePendingTransition(0, 0) // 🚀 без анимации
         }
+
 
         val tabLayout = findViewById<TabLayout>(R.id.categoryTabLayout)
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.income)))
@@ -65,7 +69,7 @@ class ChooseIncomeCategoryActivity : BaseActivityK() {
                 putExtra("category_id", category.id)
                 putExtra("is_income", category.isIncome)
                 putExtra("is_custom", category.isCustom)
-                putExtra("uuid", category.uuid) // 🚀 добавляем uuid
+                intent.putExtra("is_custom", false)
             }
             startActivity(intent)
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
@@ -84,10 +88,11 @@ class ChooseIncomeCategoryActivity : BaseActivityK() {
     }
 
     private fun observeCategories() {
+        // Получаем и дефолтные, и кастомные категории
         categoryViewModel.getCategories(isIncome = true).observe(this) { defaultList ->
             categoryViewModel.getCustomCategories(isIncome = true).observe(this) { customList ->
                 val combined = (defaultList.map { it.toCategoryItem() } + customList.map { it.toCategoryItem() })
-                    .distinctBy { it.uuid } // 🚀 фильтруем по uuid
+                    .distinctBy { it.uuid }  // 🚀 фильтруем по uuid
                 adapter.submitList(combined)
             }
         }

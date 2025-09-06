@@ -20,5 +20,14 @@
         <!-- 📊 Цвета для вкладок (TabLayout) -->
         <item name="chartTabSelectedTextColor">#F0F0F0</item>
         <item name="chartTabIndicatorColor">#C792EA</item>
+
+        <!-- 🚀 Исправляем белую вспышку -->
+        <item name="android:windowBackground">@color/dm_background</item>
+        <item name="android:windowDisablePreview">true</item>
+
+        <!-- 🌙 Цвета текста -->
+        <item name="android:textColorPrimary">#FFFFFF</item>  <!-- Белый для основного текста -->
+        <item name="android:textColorSecondary">#B0B0B0</item>  <!-- Светло-серый для вторичного текста -->
     </style>
+
 </resources>
