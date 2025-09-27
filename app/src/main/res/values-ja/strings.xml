@@ -132,4 +132,9 @@
     <string name="google_signin_failed">Googleへのサインインに失敗しました</string>
     <string name="google_signin_error">Googleからのデータ取得中にエラーが発生しました</string>
     <string name="firebase_signin_error">Firebaseへのサインインに失敗しました</string>
+    <string name="logout_success">正常にログアウトしました</string>
+    <string name="logout_error">ログアウト中にエラーが発生しました</string>
+    <string name="guest_mode">ゲストモード</string>
+    <string name="logout_button">ログアウト</string>
+    <string name="logged_in_as">ログイン中: %1$s</string>
 </resources>

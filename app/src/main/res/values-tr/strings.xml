@@ -132,4 +132,9 @@
     <string name="google_signin_failed">Google ile giriş başarısız</string>
     <string name="google_signin_error">Google dan veri alınırken bir hata oluştu</string>
     <string name="firebase_signin_error">Firebase giriş hatası</string>
+    <string name="logout_success">Çıkış başarılı</string>
+    <string name="logout_error">Çıkış hatası</string>
+    <string name="guest_mode">Ziyaretçi modu</string>
+    <string name="logout_button">Çıkış yap</string>
+    <string name="logged_in_as">Şu anda giriş yaptığınız kullanıcı: %1$s</string>
 </resources>

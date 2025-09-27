@@ -132,6 +132,9 @@
     <string name="google_signin_failed">通过 Google 登录失败</string>
     <string name="google_signin_error">从 Google 获取数据时出错</string>
     <string name="firebase_signin_error">Firebase 登录失败</string>
-
-
+    <string name="logout_success">成功退出</string>
+    <string name="logout_error">退出失败</string>
+    <string name="guest_mode">访客模式</string>
+    <string name="logout_button">退出</string>
+    <string name="logged_in_as">您已登录为: %1$s</string>
 </resources>

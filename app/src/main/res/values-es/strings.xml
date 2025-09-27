@@ -132,4 +132,9 @@
     <string name="google_signin_failed">Error al iniciar sesión con Google</string>
     <string name="google_signin_error">Error al obtener los datos de Google</string>
     <string name="firebase_signin_error">Error al iniciar sesión en Firebase</string>
+    <string name="logout_success">Cierre de sesión exitoso</string>
+    <string name="logout_error">Error al cerrar sesión</string>
+    <string name="guest_mode">Modo invitado</string>
+    <string name="logout_button">Cerrar sesión</string>
+    <string name="logged_in_as">Has iniciado sesión como: %1$s</string>
 </resources>

@@ -132,5 +132,9 @@
     <string name="google_signin_failed">Fehler bei der Google-Anmeldung</string>
     <string name="google_signin_error">Fehler beim Abrufen der Daten von Google</string>
     <string name="firebase_signin_error">Fehler bei der Anmeldung bei Firebase</string>
-
+    <string name="logout_success">Erfolgreich abgemeldet</string>
+    <string name="logout_error">Fehler beim Abmelden</string>
+    <string name="guest_mode">Gastmodus</string>
+    <string name="logout_button">Abmelden</string>
+    <string name="logged_in_as">Sie sind eingeloggt als: %1$s</string>
 </resources>

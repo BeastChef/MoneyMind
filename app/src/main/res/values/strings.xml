@@ -135,4 +135,9 @@
     <string name="google_signin_failed">Ошибка входа через Google</string>
     <string name="google_signin_error">Ошибка при получении данных от Google</string>
     <string name="firebase_signin_error">Ошибка входа в Firebase</string>
+    <string name="logout_success">Выход успешно выполнен</string>
+    <string name="logout_error">Ошибка выхода</string>
+    <string name="guest_mode">Гостевой режим</string>
+    <string name="logout_button">Выйти</string>
+    <string name="logged_in_as">Вы вошли как: %1$s</string>
 </resources>

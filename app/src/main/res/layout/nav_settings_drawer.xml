@@ -65,7 +65,7 @@
         android:id="@+id/btnLogout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Выйти"
+        android:text="@string/logout_button"
         android:layout_marginTop="4dp"
         android:backgroundTint="@color/expense_color"
         android:textColor="@android:color/white"

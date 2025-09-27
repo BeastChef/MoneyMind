@@ -133,4 +133,9 @@
     <string name="google_signin_failed">فشل تسجيل الدخول عبر Google</string>
     <string name="google_signin_error">حدث خطأ أثناء استلام البيانات من Google</string>
     <string name="firebase_signin_error">فشل تسجيل الدخول إلى Firebase</string>
+    <string name="logout_success">تم تسجيل الخروج بنجاح</string>
+    <string name="logout_error">خطأ في تسجيل الخروج</string>
+    <string name="guest_mode">وضع الضيف</string>
+    <string name="logout_button">تسجيل الخروج</string>
+    <string name="logged_in_as">لقد سجلت الدخول كـ: %1$s</string>
 </resources>

@@ -132,4 +132,9 @@
     <string name="google_signin_failed">Accesso a Google non riuscito</string>
     <string name="google_signin_error">Errore durante il recupero dei dati da Google</string>
     <string name="firebase_signin_error">Accesso a Firebase non riuscito</string>
+    <string name="logout_success">Disconnessione riuscita</string>
+    <string name="logout_error">Errore durante la disconnessione</string>
+    <string name="guest_mode">Modalità ospite</string>
+    <string name="logout_button">Disconnettersi</string>
+    <string name="logged_in_as">Sei connesso come: %1$s</string>
 </resources>

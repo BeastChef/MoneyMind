@@ -132,4 +132,9 @@
     <string name="google_signin_failed">Google sign-in failed</string>
     <string name="google_signin_error">Error retrieving data from Google</string>
     <string name="firebase_signin_error">Firebase sign-in failed</string>
+    <string name="logout_success">Logout successful</string>
+    <string name="logout_error">Logout error</string>
+    <string name="guest_mode">Guest mode</string>
+    <string name="logout_button">Log out</string>
+    <string name="logged_in_as">You are logged in as: %1$s</string>
 </resources>

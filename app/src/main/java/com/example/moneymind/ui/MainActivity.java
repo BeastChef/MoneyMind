@@ -285,9 +285,9 @@ public class MainActivity extends BaseActivityJ {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             if (user.isAnonymous()) {
-                accountStatusText.setText("Вы вошли как: Гость");
+                accountStatusText.setText(" ");
             } else {
-                accountStatusText.setText("Вы вошли как: " + user.getDisplayName());
+                accountStatusText.setText(getString(R.string.logged_in_as, user.getDisplayName()));
             }
         }
         Button logoutButton = navView.findViewById(R.id.btnLogout);
@@ -297,11 +297,11 @@ public class MainActivity extends BaseActivityJ {
                 FirebaseAuth.getInstance().signInAnonymously()
                         .addOnCompleteListener(authTask -> {
                             if (authTask.isSuccessful()) {
-                                Toast.makeText(this, "Вы вышли. Вход как гость.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, " ", Toast.LENGTH_SHORT).show();
                                 updateAccountStatus(accountStatusText); // 🟢 обновляем текст
                                 recreate(); // 🔄 перезапуск для обновления UI
                             } else {
-                                Toast.makeText(this, "Ошибка выхода", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, getString(R.string.logout_success), Toast.LENGTH_SHORT).show();
                             }
                         });
             });
@@ -591,10 +591,10 @@ public class MainActivity extends BaseActivityJ {
             if (user.isAnonymous()) {
                 accountStatusText.setText("Вы вошли как: Гость");
             } else {
-                accountStatusText.setText("Вы вошли как: " + user.getDisplayName());
+                accountStatusText.setText(getString(R.string.logged_in_as, user.getDisplayName()));
             }
         } else {
-            accountStatusText.setText("Пользователь не найден");
+            accountStatusText.setText(getString(R.string.guest_mode));
         }
     }
 

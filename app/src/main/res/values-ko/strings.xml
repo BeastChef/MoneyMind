@@ -132,5 +132,9 @@
     <string name="google_signin_failed">Google 로그인 실패</string>
     <string name="google_signin_error">Google에서 데이터를 가져오는 중 오류가 발생했습니다</string>
     <string name="firebase_signin_error">Firebase 로그인 실패</string>
-
+    <string name="logout_success">로그아웃 성공</string>
+    <string name="logout_error">로그아웃 오류</string>
+    <string name="guest_mode">게스트 모드</string>
+    <string name="logout_button">로그아웃</string>
+    <string name="logged_in_as">로그인한 사용자: %1$s</string>
 </resources>
