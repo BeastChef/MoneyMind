@@ -14,15 +14,21 @@ class ExpenseViewModel(
     private val expenseRepository: ExpenseRepository,
     private val categoryRepository: CategoryRepository
 ) : ViewModel() {
-    val allExpenses: LiveData<List<Expense>> = expenseRepository.allExpenses
+
+    private val _allExpenses: LiveData<List<Expense>> = expenseRepository.allExpenses
+    val allExpenses: LiveData<List<Expense>> get() = _allExpenses
+
     val allExpensesOnly: LiveData<List<Expense>> = expenseRepository.allExpensesOnly
     val allIncomes: LiveData<List<Expense>> = expenseRepository.allIncomes
 
 
 
-
+    fun getExpensesBetweenDates(startDate: Long, endDate: Long, type: String): LiveData<List<Expense>> {
+        return expenseRepository.getExpensesBetweenDates(startDate, endDate, type)
+    }
     fun insert(expense: Expense) = viewModelScope.launch {
-        expenseRepository.insert(expense)
+        expenseRepository.insert(expense)  // Вставляем в локальную базу данных
+        FirestoreHelper.saveExpenseToFirestore(expense)  // Вставляем в Firebase
     }
 
     fun update(expense: Expense) = viewModelScope.launch {
@@ -55,13 +61,10 @@ class ExpenseViewModel(
     fun getLast90DaysIncomes(): LiveData<List<Expense>> = expenseRepository.getIncomesFromDate(daysAgo(90))
     fun getLast365DaysIncomes(): LiveData<List<Expense>> = expenseRepository.getIncomesFromDate(daysAgo(365))
 
-
     // Методы для работы с произвольным диапазоном дат (для календаря)
     fun getExpensesBetween(startDate: Long, endDate: Long): LiveData<List<Expense>> {
         return expenseRepository.getExpensesBetweenDates(startDate, endDate)
     }
-
-
 
 
 
@@ -81,7 +84,6 @@ class ExpenseViewModel(
         FirestoreHelper.saveCategoryToFirestore(category)
         Log.d("Firestore", "Saving expense and category to Firestore...");
     }
-
 
 
     // Методы для работы с последними расходами (все за последние 7, 30 дней)
@@ -147,21 +149,23 @@ class ExpenseViewModel(
         })
     }
     fun syncExpensesFromFirestore(onComplete: (Boolean) -> Unit) {
-        expenseRepository.syncExpensesFromFirestore(onComplete)
+        expenseRepository.syncExpensesFromFirestore { success ->
+            if (success) {
+                // Если синхронизация успешна, данные уже были обновлены в локальной базе данных.
+                // Вы можете использовать репозиторий или другие методы для обработки этих данных, если нужно.
+                // Например, если обновили какие-то конкретные расходы, нужно их синхронизировать
+                // например так: FirestoreHelper.saveExpenseToFirestore(expense)
+            }
+            onComplete(success)  // Завершаем логику синхронизации
+        }
     }
 
-    fun syncExpensesFromFirestore(onComplete: BoolCallback) {
-        // мостик из Java-SAM в лямбду Kotlin
-        syncExpensesFromFirestore { success -> onComplete.onResult(success) }
-    }
+
 
     fun syncCategoriesFromFirestore(onComplete: (Boolean) -> Unit) {
         categoryRepository.syncCategoriesFromFirestore(onComplete)
     }
 
-    fun syncCategoriesFromFirestore(onComplete: BoolCallback) {
-        // мостик из Java-SAM в лямбду Kotlin
-        syncCategoriesFromFirestore { success -> onComplete.onResult(success) }
-    }
+
 
 }

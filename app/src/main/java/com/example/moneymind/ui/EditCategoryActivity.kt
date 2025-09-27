@@ -3,6 +3,7 @@ package com.example.moneymind.ui
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.*
 
 import androidx.lifecycle.ViewModelProvider
@@ -94,28 +95,14 @@ class EditCategoryActivity : BaseActivityK() {
             }
         }
 
-        iconView.setOnClickListener { showIconPickerBottomSheet() }
+        // Заглушка: блокируем редактирование имени категории
+        inputName.isEnabled = false  // Блокируем поле ввода
+
+        // Скрываем кнопку "Сохранить"
+        btnSave.visibility = View.GONE  // Скрывает кнопку "Сохранить"
 
         btnSave.setOnClickListener {
-            val name = inputName.text.toString().trim()
-            if (name.isEmpty()) {
-                Toast.makeText(this, getString(R.string.enter_name), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            lifecycleScope.launch {
-                if (isCustom && categoryToEdit != null) {
-                    val updated = categoryToEdit!!.copy(name = name, iconResId = selectedIconResId, iconName = iconName)
-                    viewModel.updateCustom(updated)
-                } else if (categoryDefault != null) {
-                    val updated = categoryDefault!!.copy(name = name, iconResId = selectedIconResId, iconName = iconName)
-                    viewModel.update(updated)
-                }
-
-                Toast.makeText(this@EditCategoryActivity, getString(R.string.category_updated), Toast.LENGTH_SHORT).show()
-                setResult(RESULT_OK, Intent().putExtra("edited_type", if (isIncome) "income" else "expense"))
-                finish()
-            }
+            // Ничего не делаем, так как кнопка скрыта
         }
 
         btnDelete.setOnClickListener {

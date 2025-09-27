@@ -13,6 +13,9 @@ class ExpenseRepository(private val expenseDao: ExpenseDao) {
     val allExpensesOnly: LiveData<List<Expense>> = expenseDao.getAllExpensesOnly()
     val allIncomes: LiveData<List<Expense>> = expenseDao.getAllIncomes()
 
+    fun getExpensesBetweenDates(start: Long, end: Long, type: String): LiveData<List<Expense>> {
+        return expenseDao.getExpensesBetweenDates(start, end, type)
+    }
     fun getAllFromDate(fromDate: Long): LiveData<List<Expense>> {
         return expenseDao.getAllTransactionsFromDate(fromDate)
     }

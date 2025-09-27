@@ -121,7 +121,6 @@ public class FirestoreHelper {
                 .addOnFailureListener(callback::onError);  // Обработка ошибки
     }
 
-
     // Сохраняем расход для пользователя в Firestore
     public static void saveExpenseToFirestore(Expense expense) {
         firestore.collection("users")
@@ -170,7 +169,7 @@ public class FirestoreHelper {
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                         doc.getReference().delete();
                     }
-                    saveDefaultCategoriesToFirestore(context);  // Добавляем дефолтные категории
+                      // Добавляем дефолтные категории
                 })
                 .addOnFailureListener(e -> Log.e("FirestoreHelper", "Error clearing categories: " + e.getMessage()));
     }
@@ -211,7 +210,6 @@ public class FirestoreHelper {
                     callback.onError(e);
                 });
     }
-
 
 
     // Сохраняем категорию для пользователя в Firestore
@@ -286,6 +284,9 @@ public class FirestoreHelper {
                 });
     }
 
+
+
+
     // Удалить кастомную категорию из Firestore
     public static void deleteCustomCategoryFromFirestore(CustomCategoryEntity category) {
         firestore.collection("users")
@@ -314,7 +315,6 @@ public class FirestoreHelper {
                 });
     }
 
-
     // Копируем данные между пользователями (например, из гостевого аккаунта в полноценный)
     public static void copyDataBetweenUsers(String fromUid, String toUid) {
         // Копируем расходы
@@ -338,60 +338,8 @@ public class FirestoreHelper {
                 });
     }
 
-
     // Добавить дефолтные категории в Firestore
-    public static void saveDefaultCategoriesToFirestore(Context context) {
-        String userId = getUserUid();
 
-        firestore.collection("users")
-                .document(userId)
-                .collection("categories")
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    List<Category> existingCategories = querySnapshot.toObjects(Category.class);
-
-                    // Получаем дефолтные категории из ресурсов
-                    List<Category> defaultCategories =
-                            DefaultCategoryInitializer.getDefaultCategories(context.getResources());
-
-                    for (Category defCategory : defaultCategories) {
-                        boolean exists = false;
-
-                        // Проверяем по UUID
-                        for (Category existing : existingCategories) {
-                            if (existing.getUuid().equals(defCategory.getUuid())) {
-                                exists = true;
-                                break;
-                            }
-                        }
-
-                        if (!exists) {
-                            Map<String, Object> categoryData = new HashMap<>();
-                            categoryData.put("uuid", defCategory.getUuid());
-                            categoryData.put("name", defCategory.getName());
-                            categoryData.put("iconResId", defCategory.getIconResId());
-                            categoryData.put("iconName", defCategory.getIconName());
-                            categoryData.put("isIncome", defCategory.isIncome());
-                            categoryData.put("color", defCategory.getColor());
-
-                            firestore.collection("users")
-                                    .document(userId)
-                                    .collection("categories")
-                                    .document(defCategory.getUuid()) // ⚡ теперь UUID, а не iconName!
-                                    .set(categoryData)
-                                    .addOnSuccessListener(aVoid -> {
-                                        Log.d("FirestoreHelper", "Default category added: " + defCategory.getName());
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Log.e("FirestoreHelper", "Error adding default category: " + e.getMessage());
-                                    });
-                        }
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("FirestoreHelper", "Error checking default categories: " + e.getMessage());
-                });
-    }
 
     // ✅ Добавляем метод без context
     public static void saveCategoryToFirestore(Category category) {

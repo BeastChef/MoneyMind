@@ -36,7 +36,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.example.moneymind.R;
 import com.example.moneymind.data.AppDatabase;
 import com.example.moneymind.data.Category;
@@ -66,7 +65,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 
 import java.util.List;
 
@@ -116,8 +114,8 @@ public class MainActivity extends BaseActivityJ {
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
         // 🧠 Вот здесь вызываем обновление категорий
-        DefaultCategoryInitializer.INSTANCE.updateCategoriesIfNeeded(this);
-        DefaultCategoryInitializer.INSTANCE.updateNamesAsync(this);
+
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                 checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -156,7 +154,6 @@ public class MainActivity extends BaseActivityJ {
 
     }
     private void setupUI() {
-
 
         topAppBar = findViewById(R.id.topAppBar);
         filterSpinner = findViewById(R.id.filterSpinner);
@@ -230,23 +227,17 @@ public class MainActivity extends BaseActivityJ {
         recyclerView.setLayoutAnimation(new LayoutAnimationController(
                 AnimationUtils.loadAnimation(this, R.anim.item_animation)));
 
-        adapter.setOnExpenseClickListener(expense -> {
-            Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
-            intent.putExtra("expense_id", expense.getId());
-            intent.putExtra("selected_category", expense.getCategory());
-            intent.putExtra("selected_icon", expense.getIconName());
-            intent.putExtra("is_income", "income".equals(expense.getType()));
-            intent.putExtra("is_custom", true);
-            intent.putExtra("from_main_tab", true);
-            startActivity(intent);
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        });
+        adapter.setOnExpenseClickListener(null); // Убираем обработчик кликов
 
         adapter.setOnExpenseLongClickListener(expense -> {
             new AlertDialog.Builder(this)
-                    .setTitle(getString(R.string.delete_record_message))  // Здесь будет перевод "Удалить запись"
+                    .setTitle(getString(R.string.delete_record_message))
                     .setMessage(getString(R.string.delete_record_message) + " «" + expense.getCategory() + "»?")
-                    .setPositiveButton(getString(R.string.delete), (dialog, which) -> viewModel.delete(expense))
+                    .setPositiveButton(getString(R.string.delete), (dialog, which) -> {
+                        viewModel.delete(expense);  // Удаление записи
+                        Log.d("Delete", "Expense deleted: " + expense.getCategory());
+                        updateFilteredData();  // Пересчитываем фильтрацию после удаления
+                    })
                     .setNegativeButton(getString(R.string.cancel), null)
                     .show();
         });
@@ -365,7 +356,7 @@ public class MainActivity extends BaseActivityJ {
                     .addOnSuccessListener(document -> {
                         if (!document.exists()) {
                             // 🔥 Новый пользователь — создаём дефолтные категории
-                            FirestoreHelper.saveDefaultCategoriesToFirestore(this);
+
                         }
 
                         // После этого синкаем категории
@@ -431,7 +422,6 @@ public class MainActivity extends BaseActivityJ {
                 });
     }
 
-
     private void openDatePicker() {
         MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
         builder.setTitleText(getString(R.string.select_period_title));  // Устанавливаем заголовок для выбора периода
@@ -463,43 +453,52 @@ public class MainActivity extends BaseActivityJ {
         });
     }
 
+
+    private LiveData<List<Expense>> currentData;
+
     private void updateFilteredData() {
-        LiveData<List<Expense>> data;
+        Log.d("FilteredData", "Update started.");
+
         boolean isExpense = selectedTypeFilter == R.id.filterExpenses;
         boolean isIncome = selectedTypeFilter == R.id.filterIncomes;
 
+        // Новый параметр для фильтрации по типу (расходы/доходы)
+        String typeFilter = isExpense ? "expense" : isIncome ? "income" : "all"; // фильтрация по типу
+
+        LiveData<List<Expense>> newData;
+
         if (customRangeActive) {
-            // Если выбран кастомный диапазон
-            if (isExpense) {
-                data = viewModel.getExpensesBetweenDates(customStartDate, customEndDate);  // Фильтруем только по расходам
-            } else if (isIncome) {
-                data = viewModel.getExpensesBetweenDates(customStartDate, customEndDate);  // Фильтруем только по доходам
-            } else {
-                data = viewModel.getExpensesBetweenDates(customStartDate, customEndDate);  // Фильтруем по всем
-            }
+            newData = viewModel.getExpensesBetweenDates(customStartDate, customEndDate, typeFilter);
         } else {
-            // Стандартная фильтрация по времени
             switch (selectedDateFilter) {
                 case 1:
-                    data = isExpense ? viewModel.getLast7DaysExpensesOnly()
+                    newData = isExpense ? viewModel.getLast7DaysExpensesOnly()
                             : isIncome ? viewModel.getLast7DaysIncomes()
                             : viewModel.getLast7DaysAll();
                     break;
                 case 2:
-                    data = isExpense ? viewModel.getLast30DaysExpensesOnly()
+                    newData = isExpense ? viewModel.getLast30DaysExpensesOnly()
                             : isIncome ? viewModel.getLast30DaysIncomes()
                             : viewModel.getLast30DaysAll();
                     break;
                 default:
-                    data = isExpense ? viewModel.getAllExpensesOnly()
+                    newData = isExpense ? viewModel.getAllExpensesOnly()
                             : isIncome ? viewModel.getAllIncomes()
                             : viewModel.getAllExpenses();
             }
         }
 
-        data.observe(this, expenses -> {
-            adapter.setExpenseList(expenses);
-            updateSummaryCards(expenses);
+        // Отвязываем предыдущий observer
+        if (currentData != null) {
+            currentData.removeObservers(this);
+        }
+        currentData = newData;
+
+        // Подписываемся только один раз
+        currentData.observe(this, expenses -> {
+            Log.d("FilteredData", "Filtered expenses count after update: " + expenses.size());
+            adapter.setExpenseList(expenses);  // Обновляем список с использованием метода адаптера
+            updateSummaryCards(expenses);  // Обновляем итоговые данные
         });
     }
 
@@ -577,7 +576,7 @@ public class MainActivity extends BaseActivityJ {
 
         // Обновляем названия категорий асинхронно
         Executors.newSingleThreadExecutor().execute(() -> {
-            DefaultCategoryInitializer.INSTANCE.updateNamesAsync(getApplicationContext());
+
         });
 
         // Перезапускаем активити

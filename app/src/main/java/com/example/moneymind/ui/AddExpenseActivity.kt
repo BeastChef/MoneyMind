@@ -163,10 +163,12 @@ class AddExpenseActivity : BaseActivityK() {
                 if (selectedExpenseId != null) {
                     viewModel.update(expense)
                     Snackbar.make(saveButton, getString(R.string.updated), Snackbar.LENGTH_SHORT).show()
+
                 } else {
                     viewModel.insert(expense)
-                    Snackbar.make(saveButton, getString(R.string.saved), Snackbar.LENGTH_SHORT).show()
                     FirestoreHelper.saveExpenseToFirestore(expense)
+                    Snackbar.make(saveButton, getString(R.string.saved), Snackbar.LENGTH_SHORT).show()
+
                 }
                 finish()
             }

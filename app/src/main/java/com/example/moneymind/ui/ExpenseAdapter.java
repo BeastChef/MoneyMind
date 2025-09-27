@@ -69,7 +69,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         // Формат суммы
         boolean isIncome = "income".equalsIgnoreCase(expense.getType());
         double amount = expense.getAmount();
-        String formatted = (isIncome ? "+ " : "- ") + amount + " ₽";
+        String formatted = (isIncome ? "+ " : "- ") + amount;
         holder.amount.setText(formatted);
 
         // Цвет текста суммы

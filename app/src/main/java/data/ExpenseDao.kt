@@ -6,6 +6,7 @@ import androidx.room.*
 @Dao
 interface ExpenseDao {
 
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(expense: Expense)
 
