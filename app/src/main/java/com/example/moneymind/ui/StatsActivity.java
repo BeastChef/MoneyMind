@@ -88,7 +88,8 @@ public class StatsActivity extends BaseActivityJ {
                 this,
                 new ExpenseViewModelFactory(
                         ((MoneyMindApp) getApplication()).getExpenseRepositoryInstance(),  // Используем новый геттер
-                        ((MoneyMindApp) getApplication()).getCategoryRepositoryInstance()  // Используем новый геттер
+                        ((MoneyMindApp) getApplication()).getCategoryRepositoryInstance(),  // Используем новый геттер
+                        getApplication()
                 )
         ).get(ExpenseViewModel.class);
 

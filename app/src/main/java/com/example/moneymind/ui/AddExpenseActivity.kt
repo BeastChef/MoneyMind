@@ -55,7 +55,8 @@ class AddExpenseActivity : BaseActivityK() {
     private val viewModel: ExpenseViewModel by viewModels {
         ExpenseViewModelFactory(
             (application as MoneyMindApp).expenseRepository,  // передаем ExpenseRepository
-            (application as MoneyMindApp).categoryRepository // передаем CategoryRepository
+            (application as MoneyMindApp).categoryRepository, // передаем CategoryRepository
+            application // Передаем Application
         )
     }
 

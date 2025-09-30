@@ -134,7 +134,10 @@ public class MainActivity extends BaseActivityJ {
         // ✅ ViewModel
         ExpenseRepository expenseRepository = new ExpenseRepository(AppDatabase.getDatabase(this).expenseDao());
         CategoryRepository categoryRepository = new CategoryRepository(AppDatabase.getDatabase(this).categoryDao(), AppDatabase.getDatabase(this).customCategoryDao());
-        ExpenseViewModelFactory factory = new ExpenseViewModelFactory(expenseRepository, categoryRepository);
+        ExpenseViewModelFactory factory = new ExpenseViewModelFactory( new ExpenseRepository(AppDatabase.getDatabase(this).expenseDao()),
+                new CategoryRepository(AppDatabase.getDatabase(this).categoryDao(), AppDatabase.getDatabase(this).customCategoryDao()),
+                getApplication() // Передаем application
+        );
         expenseViewModel = new ViewModelProvider(this, factory).get(ExpenseViewModel.class);
         viewModel = expenseViewModel;  // 🔥 Делаем так, чтобы viewModel не была null
 
