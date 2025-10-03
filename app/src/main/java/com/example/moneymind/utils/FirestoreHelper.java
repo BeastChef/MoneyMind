@@ -271,53 +271,110 @@ public class FirestoreHelper {
 
     // Удалить расход из Firestore
     public static void deleteExpenseFromFirestore(Expense expense) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String userUid = user != null ? user.getUid() : "guest"; // Получаем UID текущего пользователя
+
         firestore.collection("users")
-                .document(getUserUid())
+                .document(userUid)
                 .collection("expenses")
-                .document(expense.getUuid())  // ✅ вместо id
+                .document(expense.getUuid())  // Уникальный идентификатор расхода
                 .delete()
                 .addOnSuccessListener(aVoid -> {
                     System.out.println("Expense successfully deleted.");
+                    // Удаляем из гостевой учетной записи, если это необходимо
+                    deleteExpenseFromGuest(expense);
                 })
                 .addOnFailureListener(e -> {
                     System.out.println("Error deleting expense: " + e.getMessage());
                 });
     }
 
+    private static void deleteExpenseFromGuest(Expense expense) {
+        firestore.collection("users")
+                .document("guest") // Учитываем гостевую учетную запись
+                .collection("expenses")
+                .document(expense.getUuid())
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    System.out.println("Expense deleted from guest.");
+                })
+                .addOnFailureListener(e -> {
+                    System.out.println("Error deleting expense from guest: " + e.getMessage());
+                });
+    }
 
 
 
-    // Удалить кастомную категорию из Firestore
+
+    // Удалить кастомную категорию из Firestore и из гостевого аккаунта
     public static void deleteCustomCategoryFromFirestore(CustomCategoryEntity category) {
+        // Удаляем кастомную категорию для текущего пользователя
         firestore.collection("users")
                 .document(getUserUid())
                 .collection("categories")
                 .document(category.getUuid())
                 .delete()
-                .addOnSuccessListener(aVoid ->
-                        Log.d("FirestoreHelper", "Custom category deleted"))
-                .addOnFailureListener(e ->
-                        Log.e("FirestoreHelper", "Error deleting custom category: " + e.getMessage()));
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FirestoreHelper", "Custom category deleted");
+                    // Также удаляем кастомную категорию из гостевого аккаунта
+                    deleteCustomCategoryFromGuest(category);  // Удаление из гостевого аккаунта
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirestoreHelper", "Error deleting custom category: " + e.getMessage());
+                });
     }
 
-    // ✅ Удалить категорию из Firestore по UUID
+    // Удалить кастомную категорию из гостевого аккаунта
+    private static void deleteCustomCategoryFromGuest(CustomCategoryEntity category) {
+        firestore.collection("users")
+                .document("guest") // Гостевой аккаунт
+                .collection("categories")
+                .document(category.getUuid())  // используем UUID
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FirestoreHelper", "Custom category deleted from guest account");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirestoreHelper", "Error deleting custom category from guest account: " + e.getMessage());
+                });
+    }
+
+    // Удалить категорию из Firestore и из гостевого аккаунта
     public static void deleteCategoryFromFirestore(Category category) {
+        // Удаляем категорию для текущего пользователя
         firestore.collection("users")
                 .document(getUserUid())
                 .collection("categories")
-                .document(category.getUuid())  // используем UUID, а не iconName
+                .document(category.getUuid())  // используем UUID
                 .delete()
                 .addOnSuccessListener(aVoid -> {
                     System.out.println("Category successfully deleted: " + category.getName());
+                    // Также удаляем категорию из гостевого аккаунта
+                    deleteCategoryFromGuest(category);  // Удаление из гостевого аккаунта
                 })
                 .addOnFailureListener(e -> {
                     System.out.println("Error deleting category: " + e.getMessage());
                 });
     }
 
+    // Удалить категорию из гостевого аккаунта
+    private static void deleteCategoryFromGuest(Category category) {
+        firestore.collection("users")
+                .document("guest") // Гостевой аккаунт
+                .collection("categories")
+                .document(category.getUuid())  // используем UUID
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FirestoreHelper", "Category deleted from guest account: " + category.getName());
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirestoreHelper", "Error deleting category from guest account: " + e.getMessage());
+                });
+    }
+
     // Копируем данные между пользователями (например, из гостевого аккаунта в полноценный)
     public static void copyDataBetweenUsers(String fromUid, String toUid) {
-        // Копируем расходы
+        // Копирование расходов
         firestore.collection("users").document(fromUid).collection("expenses")
                 .get().addOnSuccessListener(query -> {
                     for (DocumentSnapshot doc : query.getDocuments()) {
@@ -327,7 +384,7 @@ public class FirestoreHelper {
                     }
                 });
 
-        // Копируем категории
+        // Копирование категорий
         firestore.collection("users").document(fromUid).collection("categories")
                 .get().addOnSuccessListener(query -> {
                     for (DocumentSnapshot doc : query.getDocuments()) {

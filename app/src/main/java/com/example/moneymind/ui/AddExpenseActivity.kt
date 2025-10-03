@@ -31,7 +31,6 @@ class AddExpenseActivity : BaseActivityK() {
     }
 
 
-
     private lateinit var titleInput: TextInputEditText
     private lateinit var amountInput: TextInputEditText
     private lateinit var dateInput: TextInputEditText
@@ -60,11 +59,9 @@ class AddExpenseActivity : BaseActivityK() {
         )
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         super.onCreate(savedInstanceState)
-
 
 
         isFromMainTab = intent.getBooleanExtra("from_main_tab", false)
@@ -175,7 +172,6 @@ class AddExpenseActivity : BaseActivityK() {
             }
         }
     }
-
 
 
     private fun showCategoryDetails() {

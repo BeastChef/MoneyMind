@@ -41,6 +41,14 @@
     <color name="expense_gray">#EEEEEE</color>
     <color name="expense_default">#F5F5F5</color>
     <color name="darker_gray">#666666</color>
+    <color name="category_color_1">#FF5733</color> <!-- Приятный красный -->
+    <color name="category_color_2">#33FF57</color> <!-- Приятный зеленый -->
+    <color name="category_color_3">#3357FF</color> <!-- Приятный синий -->
+    <color name="category_color_4">#FF33A1</color> <!-- Розовый -->
+    <color name="category_color_5">#FF8C00</color> <!-- Оранжевый -->
+    <color name="category_color_6">#9B59B6</color> <!-- Фиолетовый -->
+    <color name="category_color_7">#F1C40F</color> <!-- Желтый -->
+    <color name="category_color_8">#16A085</color> <!-- Бирюзовый -->
 
 
 
