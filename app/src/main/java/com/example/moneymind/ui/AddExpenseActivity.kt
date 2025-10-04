@@ -55,7 +55,7 @@ class AddExpenseActivity : BaseActivityK() {
         ExpenseViewModelFactory(
             (application as MoneyMindApp).expenseRepository,  // передаем ExpenseRepository
             (application as MoneyMindApp).categoryRepository, // передаем CategoryRepository
-            application // Передаем Application
+
         )
     }
 
@@ -160,6 +160,7 @@ class AddExpenseActivity : BaseActivityK() {
             lifecycleScope.launch {
                 if (selectedExpenseId != null) {
                     viewModel.update(expense)
+                    FirestoreHelper.updateExpenseInFirestore(expense) // Синхронизация с Firebase
                     Snackbar.make(saveButton, getString(R.string.updated), Snackbar.LENGTH_SHORT).show()
 
                 } else {

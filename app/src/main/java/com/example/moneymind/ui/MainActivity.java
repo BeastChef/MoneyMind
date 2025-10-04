@@ -134,10 +134,7 @@ public class MainActivity extends BaseActivityJ {
         // ✅ ViewModel
         ExpenseRepository expenseRepository = new ExpenseRepository(AppDatabase.getDatabase(this).expenseDao());
         CategoryRepository categoryRepository = new CategoryRepository(AppDatabase.getDatabase(this).categoryDao(), AppDatabase.getDatabase(this).customCategoryDao());
-        ExpenseViewModelFactory factory = new ExpenseViewModelFactory( new ExpenseRepository(AppDatabase.getDatabase(this).expenseDao()),
-                new CategoryRepository(AppDatabase.getDatabase(this).categoryDao(), AppDatabase.getDatabase(this).customCategoryDao()),
-                getApplication() // Передаем application
-        );
+        ExpenseViewModelFactory factory = new ExpenseViewModelFactory(expenseRepository, categoryRepository);
         expenseViewModel = new ViewModelProvider(this, factory).get(ExpenseViewModel.class);
         viewModel = expenseViewModel;  // 🔥 Делаем так, чтобы viewModel не была null
 
@@ -230,13 +227,7 @@ public class MainActivity extends BaseActivityJ {
         recyclerView.setLayoutAnimation(new LayoutAnimationController(
                 AnimationUtils.loadAnimation(this, R.anim.item_animation)));
 
-        adapter.setOnExpenseClickListener(expense -> {
-            // Здесь вы открываете экран редактирования
-            Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
-            intent.putExtra("expense_id", expense.getId());
-            intent.putExtra("selected_category", expense.getCategory());
-            startActivity(intent);
-        });
+        adapter.setOnExpenseClickListener(null);
 
         adapter.setOnExpenseLongClickListener(expense -> {
             new AlertDialog.Builder(this)
@@ -365,6 +356,7 @@ public class MainActivity extends BaseActivityJ {
                     .addOnSuccessListener(document -> {
                         if (!document.exists()) {
                             // 🔥 Новый пользователь — создаём дефолтные категории
+
                         }
 
                         // После этого синкаем категории
@@ -386,24 +378,6 @@ public class MainActivity extends BaseActivityJ {
                             }
                             return null;
                         });
-
-                        // Если пользователь был в гостевом режиме, синхронизируем данные
-                        if (currentUser.isAnonymous()) {
-                            FirestoreHelper.checkAndRestoreData("guest"); // Синхронизация с данными гостевого аккаунта
-
-                            // Синхронизируем категории, после восстановления данных
-                            FirestoreHelper.syncCategoriesFromFirestore(this, new FirestoreHelper.CategorySyncCallback() {
-                                @Override
-                                public void onCategoriesLoaded(List<Category> categories) {
-                                    Log.d("Sync", "Категории из гостевого аккаунта успешно синхронизированы.");
-                                }
-
-                                @Override
-                                public void onError(Exception e) {
-                                    Log.e("Sync", "Ошибка при синхронизации категорий из гостевого аккаунта: " + e.getMessage());
-                                }
-                            });
-                        }
                     });
         }
     }

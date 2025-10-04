@@ -1,9 +1,5 @@
 package com.example.moneymind.viewmodel
 
-import android.app.Application
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.util.Log
 import com.example.moneymind.utils.FirestoreHelper
 import androidx.lifecycle.*
@@ -15,10 +11,9 @@ import com.example.moneymind.data.ExpenseRepository
 import kotlinx.coroutines.launch
 
 class ExpenseViewModel(
-    application: Application,
     private val expenseRepository: ExpenseRepository,
     private val categoryRepository: CategoryRepository
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     private val _allExpenses: LiveData<List<Expense>> = expenseRepository.allExpenses
     val allExpenses: LiveData<List<Expense>> get() = _allExpenses
@@ -28,32 +23,17 @@ class ExpenseViewModel(
 
 
 
+    fun getExpensesBetweenDates(startDate: Long, endDate: Long, type: String): LiveData<List<Expense>> {
+        return expenseRepository.getExpensesBetweenDates(startDate, endDate, type)
+    }
     fun insert(expense: Expense) = viewModelScope.launch {
         try {
-            // Сохраняем локально
-            expenseRepository.insert(expense)
-
-            // Проверка наличия интернета
-            if (isConnectedToInternet()) {
-                // Если интернет доступен, синхронизируем с Firestore
-                FirestoreHelper.saveExpenseToFirestore(expense)
-            } else {
-                // Логируем, что интернет недоступен, и сохраняем только локально
-                Log.d("ExpenseViewModel", "No internet, saving expense locally")
-            }
+            expenseRepository.insert(expense)  // Сохраняем локально
+            FirestoreHelper.saveExpenseToFirestore(expense)  // Пытаемся синхронизировать с Firestore
         } catch (e: Exception) {
-            // Логируем ошибку, если что-то пошло не так при синхронизации
             Log.e("ExpenseViewModel", "Ошибка синхронизации с Firestore: ${e.message}")
-            // Даже если ошибка при синхронизации, данные сохраняются локально
+            // Сохраняем только локально, если не получилось синхронизировать с Firestore
         }
-    }
-
-    // Добавляем метод проверки наличия интернета
-    fun isConnectedToInternet(): Boolean {
-        val cm = getApplication<Application>().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = cm.activeNetwork
-        val capabilities = cm.getNetworkCapabilities(network)
-        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     fun update(expense: Expense) = viewModelScope.launch {
@@ -119,8 +99,8 @@ class ExpenseViewModel(
     private fun daysAgo(days: Int): Long {
         return System.currentTimeMillis() - days * 24L * 60 * 60 * 1000
     }
-    fun getExpensesBetweenDates(startDate: Long, endDate: Long, type: String): LiveData<List<Expense>> {
-        return expenseRepository.getExpensesBetweenDates(startDate, endDate, type)
+    fun getExpensesBetweenDates(startDate: Long, endDate: Long): LiveData<List<Expense>> {
+        return expenseRepository.getExpensesBetweenDates(startDate, endDate)
     }
 
     // Метод восстановления данных с Firebase
