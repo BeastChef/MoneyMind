@@ -2,6 +2,7 @@ package com.example.moneymind.ui;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,11 +67,18 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         // Название категории
         holder.title.setText(expense.getCategory());
 
+        // Название траты
+        holder.expenseTitle.setText(expense.getTitle());  // Отображаем название траты
+
         // Формат суммы
         boolean isIncome = "income".equalsIgnoreCase(expense.getType());
         double amount = expense.getAmount();
         String formatted = (isIncome ? "+ " : "- ") + amount;
         holder.amount.setText(formatted);
+
+        // Формат даты
+        String formattedDate = DateFormat.format("dd/MM/yyyy", expense.getDate()).toString();
+        holder.date.setText(formattedDate);  // Отображаем дату
 
         // Цвет текста суммы
         int textColor = ContextCompat.getColor(context,
@@ -110,13 +118,15 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     }
 
     public static class ExpenseViewHolder extends RecyclerView.ViewHolder {
-        TextView title, amount;
+        TextView title, amount, date, expenseTitle;  // Новые TextView для даты и названия траты
         ImageView icon;
 
         public ExpenseViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.expense_title);
             amount = itemView.findViewById(R.id.expense_amount);
+            date = itemView.findViewById(R.id.expense_date);  // Инициализация для даты
+            expenseTitle = itemView.findViewById(R.id.expense_title_item);  // Инициализация для названия траты
             icon = itemView.findViewById(R.id.expense_icon);
         }
     }

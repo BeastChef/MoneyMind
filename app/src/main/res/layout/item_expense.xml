@@ -29,13 +29,14 @@
             android:scaleType="centerInside"
             android:contentDescription="@string/expense_icon" />
 
-        <!-- Название + сумма -->
+        <!-- Название, сумма, название траты и дата -->
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1">
 
+            <!-- Название категории -->
             <TextView
                 android:id="@+id/expense_title"
                 android:layout_width="wrap_content"
@@ -47,6 +48,18 @@
                 android:maxLines="1"
                 android:ellipsize="end" />
 
+            <!-- Название траты -->
+            <TextView
+                android:id="@+id/expense_title_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Название траты"
+                android:textSize="14sp"
+                android:textColor="?android:textColorPrimary"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <!-- Сумма -->
             <TextView
                 android:id="@+id/expense_amount"
                 android:layout_width="wrap_content"
@@ -55,6 +68,15 @@
                 android:textSize="14sp"
                 android:textColor="#D32F2F"
                 android:layout_marginTop="2dp" />
+
+            <!-- Дата -->
+            <TextView
+                android:id="@+id/expense_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12/10/2023"
+                android:textSize="12sp"
+                android:textColor="#888" />
         </LinearLayout>
 
     </LinearLayout>

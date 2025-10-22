@@ -429,5 +429,37 @@ public class FirestoreHelper {
         void onCategoriesLoaded(List<Category> categories); // Успешная загрузка категорий
         void onError(Exception e); // Обработка ошибок
     }
+    // Синхронизация данных между гостевым аккаунтом и полноценным аккаунтом
+    public static void syncDataFromGuestToUser() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            String guestId = "guest"; // ID гостевого аккаунта
+
+            // Копируем данные между учетными записями
+            copyDataBetweenUsers(guestId, userId);
+
+            // После копирования данных можно очистить данные гостевой учетной записи
+            clearGuestData(guestId);
+        }
+    }
+    // Очистка данных гостевой учетной записи после синхронизации
+    public static void clearGuestData(String guestUid) {
+        firestore.collection("users").document(guestUid).collection("expenses")
+                .get().addOnSuccessListener(querySnapshot -> {
+                    // Удаляем все расходы из гостевого аккаунта
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        doc.getReference().delete();
+                    }
+                });
+
+        firestore.collection("users").document(guestUid).collection("categories")
+                .get().addOnSuccessListener(querySnapshot -> {
+                    // Удаляем все категории из гостевого аккаунта
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        doc.getReference().delete();
+                    }
+                });
+    }
 
 }
